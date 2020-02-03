@@ -100,7 +100,8 @@ module.exports = function (ctx) {
         'QTab',
         'QRouteTab',
         'QBtnDropdown',
-        'QScrollArea'
+        'QScrollArea',
+        'QChip'
       ],
       directives: [],
 

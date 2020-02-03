@@ -2,9 +2,9 @@
     <q-page>
         <template>
             <div>
-                <q-splitter v-model="splitterModel" :limits="[20, 20]" style="position: fixed">
+                <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">
                 <template v-slot:before>
-                    <q-tabs v-model="tab" vertical class="text-grey-8 bg-white" style="width: 250px; position: fixed;border: 1px solid;border-color: pink;" active-color="pink-3" active-bg-color="pink-1">
+                <q-tabs v-model="tab" vertical class="text-grey-8 bg-white full-height relative-position" active-color="pink-3" active-bg-color="pink-1">
                 <q-scroll-area class="fit">
                     <div class="text-h6 text-center q-py-md">FOOD CHOICES
                         <q-btn-dropdown active-color="pink-3" active-bg-color="pink-1" flat dense dropdown-icon="more_vert" color="grey-8">
@@ -28,27 +28,30 @@
                         </q-btn-dropdown>
                     </div>
                 <q-tab name="ALLMS"  label="ALL"></q-tab>
-                    <div class="row" dense v-for="(i, index) in FoodCategory" :key="index">
-                        <q-tab :name="i.category" :label="i.category"/>
-                        <q-btn v-show="editCateg" no-caps flat dense color="teal" @click="geteditCateg(i)" icon="mdi-pencil"/>
-                        <q-btn v-show="deleteCateg" no-caps flat icon="delete" dense @click="openDeleteDialog(i)" color="pink-6"/>
+                 <q-tab :name="i.category"  v-for="(i, index) in FoodCategory" :key="index" class="">
+                    <div class="container row">
+                    <div>{{i.category}}</div>
+                    <q-btn v-show="editCateg" no-caps flat dense color="teal" @click="geteditCateg(i)" icon="mdi-pencil" size="sm" class="q-mx-sm"/>
+                    <q-btn v-show="deleteCateg" no-caps flat icon="delete" dense @click="openDeleteDialog(i)" color="pink-6" size="sm" class="q-mx-sm"/>
                     </div>
+                 </q-tab>
+
                 </q-scroll-area>
-                 <div>
-                    <q-tab name="addInc" @click="addincDialog = true" class="fixed-bottom-left" style="width: 250px" label="ADD INCLUSION"></q-tab>
-                 </div>
+                <q-tab name="addInc" @click="addincDialog = true" class="absolute-bottom"  label="ADD INCLUSION"></q-tab>
+
                 </q-tabs>
                 </template>
 
                 <template v-slot:after>
                     <div class="q-px-md text-grey-8">
                         <div class="q-my-md">
-                            <q-page-sticky position="top-left" :offset="[255, 5]">
-                                <q-btn flat fab icon="mdi-plus-thick" color="pink-3" @click="addFoodDialog = true" />
+                            
+                                <q-btn flat fab icon="mdi-plus-thick" color="pink-3" @click="addFoodDialog = true">
                                     <q-tooltip>
                                         Add Food
                                     </q-tooltip>
-                            </q-page-sticky>
+                                </q-btn>
+
                         </div>
                     </div>
                     <div class="fixed-center" style="margin-left: 110px; width: 70%;" >
@@ -61,9 +64,17 @@
                                         </q-card-section>
                                         <q-card-section side>
                                             <q-list dense>
-                                            <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
+                                            <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name" v-show="col.name != 'partyTrayPrice'">
                                                 <q-item-section>
                                                 <q-item-label>{{ col.label }}: {{ col.value }}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            <q-item class="q-mt-sm" v-show="props.row.partyTrayPrice">
+                                            <span class="full-width text-center text-weight-bold">PARTY TRAY PRICES</span>
+                                            </q-item>
+                                            <q-item v-for="(price, index) in props.row.partyTrayPrice" :key="index">
+                                                <q-item-section>
+                                                <q-item-label>{{ price.label }}: {{ price.price }}</q-item-label>
                                                 </q-item-section>
                                             </q-item>
                                         </q-list>
@@ -79,34 +90,32 @@
             </div>
         </template>
         <q-dialog v-model="addFoodDialog" persistent>
-            <q-card style="min-width: 400px">
-                <q-card-section>
+            <q-card style="min-width: 400px" >
+                <q-card-section class="q-pb-none">
                 <div class="text-h6">New Food</div>
                 </q-card-section>
 
-                <q-card-section>
-                <q-uploader ref="foodref" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="pink-3" square flat bordered style="width: 500px; border-color: pink" />
-                <q-select color="pink-3" class="q-ma-sm" outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
-                <q-input color="pink-3" class="q-ma-sm" dense v-model="foodNames" label="Food Name"/>
-                <q-input color="pink-3" class="q-ma-sm" type="number" dense v-model="foodPrice" label="Package Price"/>
-                <div v-show="hidelabel">
-                    <q-card class="my-card q-ma-sm" style="border: 1.5px solid;border-color: pink;">
-                        <q-btn flat class="full-width" color="pink-3" label="Add Party Tray Package" @click="showlabel = true; hidelabel = false">
+                <q-card-section class="q-pa-md">
+                <div class="container row q-ma-md">
+                <q-input color="pink-3" outlined class="q-mr-md col" dense v-model="foodNames" label="Food Name"/>
+                <q-input color="pink-3" outlined class="col-3" type="number" dense v-model="foodPrice" label="Package Price"/>
+                </div>
+                <q-select color="pink-3" class="q-ma-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
+
+                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="pink-3" square flat bordered style="width: 500px; border-color: pink" />
+
+                <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: pink;">
+                    <div class="q-mx-md text-weight-bold text-grey-8">
+                        <span>
+                        Party Tray Size
+                        </span>
+                        <q-btn class="float-right" flat color="pink-3" size="sm" label="Add Party Tray Package" @click="showlabel = true; hidelabel = false">
                             <q-icon name="mdi-plus-thick" flat fab color="pink-3" />
                         </q-btn>
-                        <div>
-                            <q-list dense class="text-h6 text-left text-grey-8 bg-white" v-for="(i, index) in this.PartyTrayLabel" :key="index">
-                                <q-item clickable v-ripple dense>
-                                    <q-item-section>
-                                        <q-item-label dense class="q-pl-xl" lines="1">{{i.label}} {{i.paxMin}}-{{i.paxMax}}</q-item-label>
-                                    </q-item-section>
-                                    <q-item-section side>
-                                        <q-input color="pink-3" class="q-ma-sm q-pr-xl" type="number" dense v-model="partyTrayPrice" label="Party Tray Price"/>
-                                    </q-item-section>
-                                </q-item>
-                            </q-list>
-                        </div>
-                    </q-card>
+                    </div>
+                    <div class="q-gutter-xs">
+                        <q-checkbox v-model="selection" :val="i" :label="i.label +' ('+ i.paxMin +' - '+ i.paxMax +' PAX)'" color="pink-6" v-for="(i, index) in this.PartyTrayLabel" :key="index"/>
+                    </div>
                 </div>
                 <div v-show="showlabel">
                     <q-card class="my-card q-ma-sm">
@@ -121,11 +130,32 @@
                         </q-card-actions>
                     </q-card>    
                 </div>
+                <div v-show="this.selection.length != 0">
+                    <div class="my-card q-ma-md q-pa-md" style="border: 1.5px solid;border-color: pink;">
+                        <div>
+                            <div class="q-ml-md text-weight-bold text-grey-8">
+                            Party Tray Pricing
+                            </div>
+                            <q-list dense class="text-left text-grey-8 bg-white" v-for="(i, index) in selection" :key="index">
+                                <q-item dense>
+                                    <q-item-section>
+                                        <q-item-label dense class="q-pl-xl" lines="1">{{i.label}} {{i.paxMin}}-{{i.paxMax}}</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section side>
+                                        <q-input color="pink-3" class="q-ma-sm q-pr-xl" type="number" dense v-model="partyTrayPricing[index]" label="Party Tray Price"/>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </div>
+                    </div>
+                </div>
+
                 </q-card-section> 
 
                 <q-card-actions align="right" class="text-primary">
                 <q-btn flat label="Cancel" v-close-popup color="grey-8" />
                 <q-btn flat label="Add Food" @click="addFood" color="pink-3" v-close-popup />
+                <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
             </q-card>
         </q-dialog>
@@ -170,7 +200,8 @@ let sri = require('simple-random-id')
 export default {
     data(){
         return {
-            partyTrayPrice: 0,
+            partyTrayPricing: [],
+            selection: [],
             hidelabel: true,
             showlabel: false,
             minpax: 0,
@@ -202,7 +233,8 @@ export default {
             columns: [
                 { name: 'category', required: true, label: 'Food Category', align: 'center', field: 'category', sortable: true },
                 { name: 'foodName', align: 'center', label: 'Food Name', field: 'foodName', sortable: true },
-                { name: 'foodPrice', align: 'center', label: 'Package Price', field: 'foodPrice', sortable: true }
+                { name: 'foodPrice', align: 'center', label: 'Package Price', field: 'foodPrice', sortable: true },
+                { name: 'partyTrayPrice', align: 'center', label: 'Party Tray Prices', field: 'partyTrayPrice', sortable: true }
             ]
         }
     },
@@ -232,6 +264,29 @@ export default {
                 })
 
                 return optionss
+        },
+        mergePricing(){
+
+                console.log(this.selection)
+                console.log(this.partyTrayPricing)  
+
+                if(this.selection.length == 0 || this.partyTrayPricing.length == 0){
+                    console.log('no pricing')
+                    return 0
+                }
+
+                let merge = []
+                for( var x = 0; x < this.selection.length; x++){
+                    let m = {...this.selection[x]}
+                    m.price = this.partyTrayPricing[x]
+                    let key = m['.key']
+                    m.sizeKey = key
+                    delete m['.key']
+                    merge.push(m)
+                }
+
+                console.log(merge,'merge')
+                return merge
             }
     },
     methods:{
@@ -395,12 +450,25 @@ export default {
                   }).onOk(() => {
                       vm.uploadFoodPhoto()
                       .then((user) => {
-                        var food = {
-                        category: this.selectCategory,
-                        foodName: this.foodNames,
-                        foodPic: this.newFoodPic,
-                        foodPrice: this.foodPrice
+                        let food
+                        if(this.mergePricing == 0){
+                            food = {
+                                category: this.selectCategory,
+                                foodName: this.foodNames,
+                                foodPic: this.newFoodPic,
+                                foodPrice: this.foodPrice,
+                            }   
+                        } else {
+                            let partyTrays = this.mergePricing
+                            food = {
+                                category: this.selectCategory,
+                                foodName: this.foodNames,
+                                foodPic: this.newFoodPic,
+                                foodPrice: this.foodPrice,
+                                partyTrayPrice: partyTrays
+                            }
                         }
+
                             vm.$firestoreApp.collection('Food').add(food)
                             this.$q.notify({
                                   message: 'Food Added!',
@@ -413,6 +481,8 @@ export default {
                                 this.selectCategory = ''
                                 this.foodNames = ''
                                 this.foodPrice = 0
+                                this.selection = []
+                                this.partyTrayPricing = []
                           })
                       }).onCancel(()=>{
                             this.addFoodDialog = true
@@ -579,6 +649,7 @@ export default {
                 })
 
             },
+
     }
 }
 </script>

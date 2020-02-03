@@ -1,9 +1,9 @@
 <template>
-  <q-layout view="lHh lpR lFf">
-    <q-header class="bg-white" bordered style="height: 60px;border: 1px solid;border-color: pink;">
+  <q-layout view="hHh LpR fFf">
+    <q-header class="bg-white" bordered style="border: 1px solid;border-color: pink;">
       <q-toolbar>
         <q-btn
-          color="primary"
+          color="pink-3"
           flat
           dense
           round
@@ -13,8 +13,8 @@
           aria-label="Menu"
         />
 
-        <q-toolbar-title>
-          COMPANY NAME
+        <q-toolbar-title class="text-pink-3">
+          Carmen's Diner and Catering Services
         </q-toolbar-title>
       </q-toolbar>
       <div class="fixed-right q-pt-sm">
@@ -37,7 +37,7 @@
         v-model="drawer"
         overlay
         show-if-above
-        :width="250"
+        :width="280"
         :breakpoint="400"
         class="text-pink-3"
         style="overflow: hidden;"
