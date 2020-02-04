@@ -27,8 +27,8 @@
                             </q-list>
                         </q-btn-dropdown>
                     </div>
-                <q-tab name="ALLMS" value="ALL" label="ALL"></q-tab>
-                 <q-tab :name="i.category" :value="i.category" v-for="(i, index) in FoodCategory" :key="index" class="">
+                <q-tab name="ALLMS"  label="ALL"></q-tab>
+                 <q-tab :name="i.category"  v-for="(i, index) in FoodCategory" :key="index" class="">
                     <div class="container row">
                     <div>{{i.category}}</div>
                     <q-btn v-show="editCateg" no-caps flat dense color="teal" @click="geteditCateg(i)" icon="mdi-pencil" size="sm" class="q-mx-sm"/>
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     <div class="fixed-center" style="margin-left: 110px; width: 70%;" >
-                        <q-table grid :data="filtercateg" :columns="columns">
+                        <q-table grid :data="Food" :columns="columns">
                             <template v-slot:item="props">
                                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card class="my-card" style="max-width: 230px;border: 2px solid;border-color: pink;" >
@@ -227,7 +227,6 @@ export default {
             FoodCategory: [],
             PartyTrayLabel: [],
             tab: 'ALLMS',
-            tabfilter: '',
             incPrice: 0,
             filter: '',
             pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
@@ -256,23 +255,7 @@ export default {
             console.log(this.storageRef, 'store')
     },
     computed: {
-        filtercateg(){
-            console.log(this.tab, 'tab')
-            if(this.tab === 'ALLMS'){
-                    let filter = this.$lodash.filter(this.Food, m => {
-                    console.log(m, 'm')
-                    return m
-                })
-                    return filter
-            }else{
-                let filters = this.$lodash.filter(this.Food, m => {
-                    console.log(m, 'm')
-                    return m.category == this.tab
-                })
-                    return filters
-            }
-        },
-        categoryOpt(){
+      categoryOpt(){
                 let optionss = this.FoodCategory.map(m => {
                     return {
                         label: m.category,
