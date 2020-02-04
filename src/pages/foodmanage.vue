@@ -4,6 +4,7 @@
             <div>
                 <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">
                 <template v-slot:before>
+                    chols
                 <q-tabs v-model="tab" vertical class="text-grey-8 bg-white full-height relative-position" active-color="pink-3" active-bg-color="pink-1">
                 <q-scroll-area class="fit">
                     <div class="text-h6 text-center q-py-md">FOOD CHOICES
