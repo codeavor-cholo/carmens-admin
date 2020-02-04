@@ -338,7 +338,7 @@ export default {
                         cancel: 'Cancel',
                         persistent: true
                             }).onOk(() => { 
-                            this.$firestoreApp.collection('PartyTrayLabel').add(pTrayLabel)
+                            
                             this.$q.notify({
                                     message: 'Party Tray Label Added!',
                                     icon: 'mdi-folder-plus-outline',
