@@ -62,7 +62,9 @@
         </template>
         <q-dialog v-model="addPackageDialog" persistent>
             <q-card style="min-width: 800px">
-
+                <q-banner inline-actions class="text-white bg-warning" v-show="showCompleteBanner">
+                    <q-icon name="warning"/>&nbsp;Complete the <b>Viand Qty Input</b> to show <b>Price per Pax</b>
+                </q-banner>
                 <div class="container row" >
                 <q-card-section class="q-pa-md col-8">
                     <div class="text-h6 q-pb-none q-ml-md">New Package</div>
@@ -76,7 +78,7 @@
                             </span>
                         </div>
                         <div class="q-gutter-xs">
-                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="pink-6" v-for="(i, index) in this.mergeData" :key="index"/>
+                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="pink-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category)"/>
                         </div>
                     </div>
                     <div v-show="this.selection.length != 0">
@@ -85,14 +87,14 @@
                                 <div class="q-ml-md text-weight-bold text-grey-8">
                                 Food Choices
                                 </div>
-                                <q-list dense class="text-left text-grey-8 bg-white" v-for="(i, index) in this.selection" :key="index">
-                                    <q-item dense>
+                                <q-list dense class="text-left text-grey-8 bg-white" >
+                                    <q-item dense v-for="(i, index) in this.selection" :key="index">
                                         <q-item-section>
                                             <q-item-label dense class="q-pl-md" lines="1" v-if="i.min == undefined">{{i.category}}</q-item-label>
                                             <q-item-label dense class="q-pl-md" lines="1" v-else>{{i.category+' ('+ i.min +' - '+ i.max +' Pesos)'}}</q-item-label>
                                         </q-item-section>
                                         <q-item-section side>
-                                            <q-input color="pink-3" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[index]" label="Viands Qty" outlined/>
+                                            <q-input color="pink-3" outlined="" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[i.category]" label="Viands Qty"/>
                                         </q-item-section>
                                     </q-item>
                                 </q-list>
@@ -135,7 +137,7 @@
                                     <q-item-label dense lines="1" v-else>{{i.category+' ('+ i.min +' - '+ i.max +' Pesos)'}}</q-item-label>
                                 </q-item-section>
                                 <q-item-section side class="text-teal">
-                                    {{viandsQty[index]}}
+                                    {{viandsQty[i.category]}}
                                 </q-item-section>
                             </q-item>
                             <q-separator/>
@@ -191,10 +193,13 @@
 export default {
     data(){
         return {
+            showCompleteBanner: false,
+            checkerArray: [],
             filter: '',
             splitterModel: 20,
             Inclusion: [],
             Packages: [],
+            viandsArray:[],
             viandsQty: [],
             selection: [],
             selectedInclusions: [],
@@ -329,25 +334,32 @@ export default {
         },
         mergePricing(){
 
-                console.log(this.selection)
-                console.log(this.viandsQty)  
+                console.log(this.selection.length,'selectionlength')
+                console.log(this.selection,'selection')
+                console.log(this.viandsQty,'checkviands') 
+                
+                let keys = this.$lodash.keys(this.viandsQty)
+                console.log(keys,'keys')
 
-                if(this.selection.length == 0 || this.viandsQty.length == 0 || this.selection.length != this.viandsQty.length){
+                if(this.selection.length != keys.length){
+                    this.showCompleteBanner = true
                     console.log('no pricing')
                     return 0
-                }
-
+                } 
+                    this.showCompleteBanner = false
+                
                 let merge = []
                 for( var x = 0; x < this.selection.length; x++){
                     let m = {...this.selection[x]}
                     delete m.foods
-                    m.viandsQty = this.viandsQty[x]
+                    m.viandsQty = this.viandsQty[m.category]
                     merge.push(m)
                 }
 
                 console.log(merge,'merge')
                 return merge
-            }
+            },
+
     },
     methods:{
         addPackage(){
@@ -405,9 +417,23 @@ export default {
         resetValues(){
             this.selection = []
             this.selectedInclusions = []
+            this.viandsQty = []
             this.packageName = ''
             this.packagePrice = 0
-        }
+        },
+        findIndexSelection(arr,val){
+            return this.$lodash.findIndex(arr,val)
+        },
+        checkIfRemoved(category){
+            var index = this.findIndexSelection(this.selection,category)
+            if(index == -1){
+                delete this.viandsQty[category]
+                console.log(this.viandsQty,'this.viandsQty')
+            }
+
+        },
+
+
     }
 }
 </script>
