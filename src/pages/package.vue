@@ -363,7 +363,7 @@ export default {
     },
     methods:{
         addPackage(){
-            if(this.selection.length == 0 || this.selectedInclusions.length == 0 || this.viandsQty.length == 0 || this.packageName == '' || this.packagePrice == 0){
+            if(this.selection.length == 0 || this.selectedInclusions.length == 0 || this.packageName == '' || this.packagePrice == 0){
                 this.$q.dialog({
                   title: 'Required Fields is Empty.',
                   message: 'Fill up all Requirements',
