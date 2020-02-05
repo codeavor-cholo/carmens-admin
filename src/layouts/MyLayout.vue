@@ -24,7 +24,7 @@
                     <div class="row no-wrap q-pa-md">
                       <div class="column items-center">
                         <!-- <div class="text-subtitle1 q-mt-md q-mb-xs">{{email}}</div> -->
-                        <q-btn color="primary" label="Logout" @click="logout" push size="sm" v-close-popup/>
+                        <q-btn color="pink" label="Logout" @click="logout" push size="sm" v-close-popup/>
                       </div>
                     </div>
                   </q-menu>
@@ -58,7 +58,7 @@
                 <q-icon name="mdi-view-dashboard" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>DashBoard</q-item-label>
+                <q-item-label>Dashboard</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -71,7 +71,7 @@
             >
                   <q-item clickable :to="{ name: 'foodmanage' }">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon name="mdi-settings" />
+                      <q-icon name="fastfood" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Food Management</q-item-label>
@@ -80,7 +80,7 @@
 
                   <q-item clickable :to="{ name: 'package' }">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon name="mdi-settings" />
+                      <q-icon name="assignment" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Package Management</q-item-label>
@@ -91,13 +91,14 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
-          <div class="absolute-bottom bg-transparent">
-            <q-avatar size="56px" class="q-mb-sm">
+        <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px;" >
+          <div class="absolute-bottom bg-transparent" >
+            <q-avatar color="pink-3" size="56px" class="q-my-sm" text-color="white" style="filter: none;">{{userEmail.charAt(0).toUpperCase()}}</q-avatar>
+            <!-- <q-avatar size="56px" class="q-mb-sm">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-            </q-avatar>
-            <div class="text-weight-bold">STYX SALCEDO</div>
-            <div>@superstyx017</div>
+            </q-avatar> -->
+            <!-- <div class="text-weight-bold">STYX SALCEDO</div> -->
+            <div>{{userEmail}}</div>
           </div>
         </q-img>
       </q-drawer>
@@ -118,7 +119,24 @@ export default {
   data () {
     return {
             drawer: false,
+            userEmail: ''
       }
+  },
+  created() {
+          let self = this
+          this.$firebase.auth().onAuthStateChanged(function(user) {
+              
+              if (user) {
+                let gg = {...user}
+                console.log('createdUser',user)
+                console.log('createdUser',user.email)
+                self.userEmail = gg.email
+                
+              } else {
+                  // No user is signed in.
+                  self.$router.push('/')
+              }
+          })
   },
   methods: {
     logout(){
