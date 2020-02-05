@@ -319,13 +319,10 @@ export default {
             }
         },
         categoryOpt(){
-                let arr
+                let arr = []
                 let optionss = this.FoodCategory.map(m => {
                     if(m.category == this.tab && this.tab != 'ALL'){
-                        arr = {
-                            label: m.category,
-                            value: m.category
-                        }
+                        arr.push(m.category)
                     }
 
                     return {
@@ -333,8 +330,7 @@ export default {
                         value: m.category
                     }
                 })
-
-                this.selectCategory = arr
+                this.selectCategory = arr[0]
                 return optionss
         },
         mergePricing(){
@@ -557,6 +553,7 @@ export default {
                                 this.partyTrayPricing = []
                           })
                       }).onCancel(()=>{
+                            console.log(this.selectCategory)
                             this.addFoodDialog = true
                       })
                   }
