@@ -5,7 +5,7 @@
                 <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">
                 <template v-slot:before>
                 <q-tabs v-model="tab" vertical class="text-grey-8 bg-white full-height relative-position" active-color="pink-3" active-bg-color="pink-1">
-                <q-scroll-area class="fit">
+                
                     <div class="text-h6 text-center q-py-md">FOOD CHOICES
                         <q-btn-dropdown active-color="pink-3" active-bg-color="pink-1" flat dense dropdown-icon="more_vert" color="grey-8">
                             <q-list class="text-grey-8" dense>
@@ -27,7 +27,11 @@
                             </q-list>
                         </q-btn-dropdown>
                     </div>
-                <q-tab name="ALLMS" value="ALL" label="ALL"></q-tab>
+                <div class="relative-position text-center">
+                <q-btn color="teal" outline class="q-mb-md" icon="check" label="DONE EDITING" @click="editCateg = false" v-show="editCateg == true"/>
+                <q-btn color="teal" outline class="q-mb-md" icon="check" label="DONE DELETING" @click="deleteCateg = false" v-show="deleteCateg == true"/>
+                <q-scroll-area style="height:75vh" :visible="true">
+                <q-tab name="ALL" value="ALL" label="ALL"></q-tab>
                  <q-tab :name="i.category" :value="i.category" v-for="(i, index) in FoodCategory" :key="index" class="">
                     <div class="container row">
                     <div>{{i.category}}</div>
@@ -35,38 +39,54 @@
                     <q-btn v-show="deleteCateg" no-caps flat icon="delete" dense @click="openDeleteDialog(i)" color="pink-6" size="sm" class="q-mx-sm"/>
                     </div>
                  </q-tab>
-
+                 <br><br>
                 </q-scroll-area>
-                <q-tab name="addInc" @click="addincDialog = true" class="absolute-bottom"  label="ADD INCLUSION"></q-tab>
+                <q-btn label="SCROLL FOR MORE CATEGORIES" flat size="sm" class="bg-white absolute-bottom full-width" color="pink-6"></q-btn>
+                </div>
+                <q-tab name="addInc"  class="absolute-bottom bg-white"  label="INCLUSIONS"></q-tab>
 
                 </q-tabs>
                 </template>
 
                 <template v-slot:after>
-                    <div class="q-px-md text-grey-8">
+                    <q-scroll-area style="height:100%" :visible="true">
+                    <div class="q-px-md text-grey-8 full-width">
                         <div class="q-my-md">
-                            
-                                <q-btn flat fab icon="mdi-plus-thick" color="pink-3" @click="addFoodDialog = true">
+                                <q-btn fab icon="mdi-plus-thick" color="pink-3" v-show="tab != 'addInc'" @click="addFoodDialog = true">
                                     <q-tooltip>
                                         Add Food
                                     </q-tooltip>
                                 </q-btn>
-
+                                <q-btn fab icon="mdi-plus-thick" color="amber" v-show="tab == 'addInc'" @click="addincDialog = true">
+                                    <q-tooltip>
+                                        Add Inclusions
+                                    </q-tooltip>
+                                </q-btn>
+                                <q-input v-model="filter" clearable dense type="text" :label="tab !='addInc' ? 'Search Food' : 'Search Inclusions'" color="pink-3" class="q-ma-md float-right" outlined icon="search" >
+                                    <template v-slot:prepend>
+                                        <q-icon name="search" />
+                                    </template>
+                                </q-input>
                         </div>
                     </div>
-                    <div class="fixed-center" style="margin-left: 110px; width: 70%;" >
-                        <q-table grid :data="filtercateg" :columns="columns">
+                    <div>
+                        <q-table grid :data="filtercateg" :columns="tab !='addInc' ? columns : incColumns" :pagination="pagination" :filter="filter" class="q-px-sm full-width align-center ">
                             <template v-slot:item="props">
-                                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
-                                    <q-card class="my-card" style="max-width: 230px;border: 2px solid;border-color: pink;" >
+                                
+                                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
+                                    <q-card class="my-card" style="border: 2px solid;border-color: pink;" >
+                                        <div v-if="tab != 'addInc'">
                                         <q-card-section>
-                                            <q-img :src="props.row.foodPic" style="border: 2px solid;border-color: pink; height: 140px; max-width: 200px"/>
+                                            <q-img :src="props.row.foodPic" :ratio="4/3"/>
                                         </q-card-section>
                                         <q-card-section side>
                                             <q-list dense>
                                             <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name" v-show="col.name != 'partyTrayPrice'">
-                                                <q-item-section>
-                                                <q-item-label>{{ col.label }}: {{ col.value }}</q-item-label>
+                                                <q-item-section dense>
+                                                <q-item-label lines="1" overline>{{ col.label }}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section side dense>
+                                                <q-item-label lines="2" caption>{{ col.value }}</q-item-label>
                                                 </q-item-section>
                                             </q-item>
                                             <q-item class="q-mt-sm" v-show="props.row.partyTrayPrice">
@@ -74,16 +94,34 @@
                                             </q-item>
                                             <q-item v-for="(price, index) in props.row.partyTrayPrice" :key="index">
                                                 <q-item-section>
-                                                <q-item-label>{{ price.label }}: {{ price.price }}</q-item-label>
+                                                <q-item-label overline>{{ price.label }}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section side>
+                                                <q-item-label caption>{{ price.price }}</q-item-label>
                                                 </q-item-section>
                                             </q-item>
+                                            
                                         </q-list>
                                         </q-card-section>
+                                        </div>
+                                        <div v-else>
+                                            <q-list>
+                                                <q-item class="text-h6">
+                                                    <q-item-section>
+                                                        <q-item-label overline> {{props.row.inclusion}}</q-item-label>
+                                                    </q-item-section>
+                                                    <q-item-section side>
+                                                        <q-item-label > {{props.row.inclusionPrice}}</q-item-label>
+                                                    </q-item-section>
+                                                </q-item>
+                                            </q-list>
+                                        </div>
                                     </q-card>
                                 </div>
                             </template>
                         </q-table>
                     </div>
+                    </q-scroll-area>
                 </template>
 
                 </q-splitter>
@@ -170,9 +208,9 @@
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
-                    <q-btn flat label="Cancel" v-close-popup @click="clears"/>
-                    <q-btn v-if="!isEdit" flat label="Add Category" v-close-popup v-on:click="addCateg"/>
-                    <q-btn v-if="isEdit" flat label="Update Category" v-close-popup v-on:click="setTask"/>
+                    <q-btn flat label="Cancel" v-close-popup @click="clears" color="grey-8"/>
+                    <q-btn v-if="!isEdit" flat label="Add Category" color="pink-6" v-close-popup v-on:click="addCateg"/>
+                    <q-btn v-if="isEdit" flat label="Update Category" color="pink-6" v-close-popup v-on:click="setTask"/>
                 </q-card-actions>
             </q-card>
         </q-dialog>
@@ -200,6 +238,7 @@ let sri = require('simple-random-id')
 export default {
     data(){
         return {
+            filter: '',
             partyTrayPricing: [],
             selection: [],
             hidelabel: true,
@@ -209,6 +248,7 @@ export default {
             packageLabel: '',
             foodPrice: 0,
             Food: [],
+            Inclusion: [],
             incName: '',
             addincDialog: false,
             newFoodPic: '',
@@ -226,16 +266,20 @@ export default {
             categName: '',
             FoodCategory: [],
             PartyTrayLabel: [],
-            tab: 'ALLMS',
+            tab: 'ALL',
             tabfilter: '',
             incPrice: 0,
             filter: '',
-            pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
+            pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 9},
             columns: [
                 { name: 'category', required: true, label: 'Food Category', align: 'center', field: 'category', sortable: true },
                 { name: 'foodName', align: 'center', label: 'Food Name', field: 'foodName', sortable: true },
                 { name: 'foodPrice', align: 'center', label: 'Package Price', field: 'foodPrice', sortable: true },
-                { name: 'partyTrayPrice', align: 'center', label: 'Party Tray Prices', field: 'partyTrayPrice', sortable: true }
+
+            ],
+            incColumns: [
+                { name: 'inclusion', align: 'center', label: 'Inclusion', field: 'inclusion', sortable: true },
+                { name: 'inclusionPrice', align: 'center', label: 'Inclusion Price', field: 'inclusionPrice', sortable: true }
             ]
         }
     },
@@ -244,7 +288,7 @@ export default {
             .then(PartyTrayLabel => {
             console.log(PartyTrayLabel, 'PartyTrayLabel')
             }),
-        this.$binding('FoodCategory', this.$firestoreApp.collection('FoodCategory'))
+            this.$binding('FoodCategory', this.$firestoreApp.collection('FoodCategory'))
             .then(FoodCategory => {
             console.log(FoodCategory, 'FoodCategory')
             }),
@@ -252,19 +296,21 @@ export default {
             .then(Food => {
             console.log(Food, 'Food')
             }),
+            this.$binding('Inclusion', this.$firestoreApp.collection('Inclusion'))
+            .then(Inclusion => {
+            console.log(Inclusion, 'Inclusion')
+            }),
             this.storageRef = this.$firebase.storage().ref()
             console.log(this.storageRef, 'store')
     },
     computed: {
         filtercateg(){
             console.log(this.tab, 'tab')
-            if(this.tab === 'ALLMS'){
-                    let filter = this.$lodash.filter(this.Food, m => {
-                    console.log(m, 'm')
-                    return m
-                })
-                    return filter
-            }else{
+            if(this.tab === 'ALL'){
+                return this.Food
+            } else if (this.tab === 'addInc'){
+                return this.Inclusion
+            } else{
                 let filters = this.$lodash.filter(this.Food, m => {
                     console.log(m, 'm')
                     return m.category == this.tab
@@ -273,13 +319,22 @@ export default {
             }
         },
         categoryOpt(){
+                let arr
                 let optionss = this.FoodCategory.map(m => {
+                    if(m.category == this.tab && this.tab != 'ALL'){
+                        arr = {
+                            label: m.category,
+                            value: m.category
+                        }
+                    }
+
                     return {
                         label: m.category,
                         value: m.category
                     }
                 })
 
+                this.selectCategory = arr
                 return optionss
         },
         mergePricing(){

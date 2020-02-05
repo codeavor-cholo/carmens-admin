@@ -1,8 +1,8 @@
 {
   "name": "itsbuco",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "description": "Carmen's Admin Dashboard",
+  "productName": "Carmen's Admin Dashboard",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "itsme",
