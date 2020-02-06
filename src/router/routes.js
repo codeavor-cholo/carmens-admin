@@ -5,10 +5,11 @@ const routes = [
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: '/dashboard', meta: {requiredAuth: true}, name: 'dashboard', component: () => import('pages/dashboard.vue') },
+      { path: '/dashboard', meta: {requiredAuth: true}, name: 'dashboard', component: () => import('pages/dashboard.vue') },  
       { path: '/walkin', meta: {requiredAuth: true}, name: 'walkin', component: () => import('pages/walkin.vue') },
       { path: '/foodmanage', meta: {requiredAuth: true}, name: 'foodmanage', component: () => import('pages/foodmanage.vue') },
       { path: '/package', meta: {requiredAuth: true}, name: 'package', component: () => import('pages/package.vue') },
+      { path: '/otherManage', meta: {requiredAuth: true}, name: 'otherManage', component: () => import('pages/otherManage.vue') },
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },
