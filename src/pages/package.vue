@@ -1,5 +1,5 @@
 <template>
-    <q-page>
+    <q-page class="flex flex-center">
         <template>  
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
@@ -19,10 +19,10 @@
                                         Add New Package
                     </q-tooltip>
                 </q-btn>
-                    <div class="fixed-center" style="margin-left: 110px; width: 70%;" >
+                    <div class="q-mx-lg" >
                         <q-table grid :data="Packages" :columns="columns" :filter="filter">
                             <template v-slot:item="props">
-                                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
+                                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card class="my-card" style="border: 2px solid;border-color: grey;" >
                                         <q-card-section side>
                                             <q-list dense>
