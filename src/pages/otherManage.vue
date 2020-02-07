@@ -42,7 +42,7 @@
                                 </q-input> -->
                         </div>
                         <div>
-                        <q-table grid :data="filterTable" :columns="tab == 'motif' ? motifColumns : tab == 'city' ? cityColumns : tab == 'category' ? categColumns : incColumns" :filter="filter" class="q-px-sm full-width align-center ">
+                        <q-table grid :data="filterTable" :columns="tab == 'motif' ? motifColumns : tab == 'city' ? cityColumns : tab == 'category' ? categColumns : incColumns" :pagination.sync="tab == 'motif' ? motifpagination:citypagination" :filter="filter" class="q-px-sm full-width align-center ">
                             <template v-slot:item="props">
                                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card class="my-card" style="border: 2px solid;border-color: pink;" >
@@ -243,6 +243,10 @@ export default {
       FoodCategory: [],
       City: [],
       Inclusion: [],
+      motifpagination: { sortBy: 'motif', descending: false, page: 1, rowsPerPage: 10},
+      citypagination: { sortBy: 'city', descending: false, page: 1, rowsPerPage: 10},
+    //   categpagination: { sortBy: 'category', descending: false, page: 1, rowsPerPage: 10},
+    //   incpagination: { sortBy: 'inclusion', descending: false, page: 1, rowsPerPage: 10},
       motifColumns: [
                 { name: 'motif', align: 'center', label: 'Motif', field: 'motif', sortable: true },
         ],

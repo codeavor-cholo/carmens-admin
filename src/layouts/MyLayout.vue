@@ -33,12 +33,21 @@
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding style="background-color: white; height: 500px;">
-            <q-item clickable @click="$router.push('/walkin')">
+            <q-item clickable @click="$router.push('/walkinreserve')">
               <q-item-section avatar>
                 <q-icon name="mdi-walk" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Walk-In</q-item-label>
+                <q-item-label>Walk-In Reservation</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable @click="$router.push('/partytrayordering')">
+              <q-item-section avatar>
+                <q-icon name="mdi-cart-outline" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Party Tray Ordering</q-item-label>
               </q-item-section>
             </q-item>
             
