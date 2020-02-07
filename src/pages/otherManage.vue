@@ -17,7 +17,7 @@
                         <div class="q-my-md q-pt-xl">
                                 <q-btn label="Add Motif" color="pink-3" v-show="tab == 'motif'" @click="addmotifdialog = true, isEditMotif = false">
                                     <q-tooltip>
-                                        Add Motif
+                                        Add Motif 
                                     </q-tooltip>
                                 </q-btn>
                                 <q-btn color="pink-3" label="Add City" v-show="tab == 'city'" @click="addcitydialog = true, isEditCity = false">
