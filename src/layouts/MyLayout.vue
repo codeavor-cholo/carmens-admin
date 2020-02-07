@@ -2,19 +2,9 @@
   <q-layout view="hHh LpR fFf">
     <q-header class="bg-white" bordered style="border: 1px solid;border-color: pink;">
       <q-toolbar>
-        <q-btn
-          color="pink-3"
-          flat
-          dense
-          round
-          @click="drawer = !drawer"
-          icon="menu"
-          elevated
-          aria-label="Menu"
-        />
-
+        <q-btn color="pink-3" flat dense round @click="drawer = !drawer" icon="menu" elevated aria-label="Menu"/>
         <q-toolbar-title class="text-pink-3">
-          Carmen's Diner and Catering Services
+          <img style="height:80%;width:130px" src="statics/pics/carmen-logo.png" @click="$router.push('/')">Carmen's Diner and Catering Services
         </q-toolbar-title>
       </q-toolbar>
       <div class="fixed-right q-pt-sm">
@@ -32,7 +22,6 @@
             </div>
           </div>
     </q-header>
-
     <q-drawer
         v-model="drawer"
         overlay
@@ -44,12 +33,21 @@
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding style="background-color: white; height: 500px;">
-            <q-item clickable @click="$router.push('/walkin')">
+            <q-item clickable @click="$router.push('/walkinreserve')">
               <q-item-section avatar>
                 <q-icon name="mdi-walk" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Walk-In</q-item-label>
+                <q-item-label>Walk-In Reservation</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable @click="$router.push('/partytrayordering')">
+              <q-item-section avatar>
+                <q-icon name="mdi-cart-outline" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Party Tray Ordering</q-item-label>
               </q-item-section>
             </q-item>
             
@@ -84,6 +82,15 @@
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Package Management</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable :to="{ name: 'otherManage' }">
+                    <q-item-section avatar class="q-pl-xl">
+                      <q-icon name="mdi-table-chair" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Other Management</q-item-label>
                     </q-item-section>
                   </q-item>
 
