@@ -36,7 +36,7 @@
     </div>
     <div v-show="showreserveform">
         <div class="row">
-            <div class="col-8 q-pt-lg q-pl-xl q-pl-md">
+            <div class="col-8 q-pt-sm q-pl-xl q-pl-md">
                 <q-card class="my-card">
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
@@ -44,7 +44,7 @@
                       <q-btn label="Back to Form" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
                     </q-card-section>
                     <q-card-section>
-                            <div class="row">
+                            <div class="row text-grey-8">
                               <strong class="q-mt-lg q-ml-lg">EVENT DATE:</strong>
                               <div class="q-pa-md" style="max-width: 250px">
                                 <q-input filled readonly v-model="dates" style="width: 170px" mask="date">
@@ -93,7 +93,7 @@
                                         </q-popup-edit>
                                   </div>    
                               </div>
-                              <div class="row" style="margin-left: 295px; margin-top: -35px">
+                              <div class="row text-grey-8" style="margin-left: 295px; margin-top: -35px">
                                 <div class="q-mr-sm q-ml-md"><strong>Motif: </strong></div>
                                 <div class=" cursor-pointer">
                                         {{ selectMotif }}
@@ -150,7 +150,7 @@
                         <div class="q-pa-sm"> 
                           <q-card class="my-card bg-grey-3">
                             <q-card-section>
-                            <div class="row">
+                            <div class="row text-grey-8">
                               <strong >Event Place:  </strong>    
                                 <div class="q-pl-lg cursor-pointer">
                                   {{ clientAddress }}
@@ -190,7 +190,7 @@
                         </div>
                         
                         <div class="q-pa-sm q-pt-md">
-                        <q-stepper v-model="step" ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
+                        <q-stepper v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
                                 <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" selection="single" :selected.sync="selected">
                                     <template v-slot:item="props">
@@ -249,12 +249,47 @@
                                   </div>
                                 </div>
                                 <div class="row">
-                                  <div class="text-subtitle2 q-mb-sm full-width">Select Add-Ons</div>
-                                  <q-card flat class="my-card bg-grey-3 col-3 q-ma-md" v-for="(inc,i) in returnSelectedPackageInclusion" :key="i">
+                                  <div class="text-subtitle2 q-mb-sm full-width">Package Includes The Following:</div>
+                                  <q-card flat style="max-width: 150px" class="my-card bg-grey-3 col-3 q-ma-md" v-for="(inc,i) in returnSelectedPackageInclusion" :key="i">
                                     <q-card-section>
-                                        <q-checkbox color="pink-3" v-model="choiceOfInclusions" :val="inc" :label="inc.inclusion" />
+                                        <!-- <q-checkbox color="pink-3" dense v-model="choiceOfInclusions" :val="inc" :label="inc.inclusion" />-->
+                                        {{inc.inclusion}} 
                                     </q-card-section>
                                   </q-card>
+                                </div>
+                                <div>
+                                    <span class="q-mb-none q-mt-md text-subtitle2">Add-Ons:</span>
+                                    <div class="q-mt-none row">
+                                      <q-select color="pink-3" class="q-ma-sm" v-model="addons" @input="addonsPriceOptions" emit-value map-options :options="addonsOpt" style="width: 200px" filled label="Add-Ons"/>
+                                      <q-input color="pink-3" readonly class="q-ma-sm" type="number" style="width: 100px" label="Price" v-model="addonsPrice"/>
+                                      <q-input color="pink-3" class="q-ma-sm" @input="totalAddonsPrice" type="number"  style="width: 100px" label="Quantity" v-model="addonsQuantity"/>
+                                      <q-input color="pink-3" readonly class="q-ma-sm q-mr-none" type="number" style="width: 100px" label="Total Price" v-model="addonsTotalPrice"/>  
+                                      <q-btn class="q-ma-sm" style="height: 55px;margin-top: 35px" color="pink-3" label="ADD" @click="addAdditionalList"/>
+                                      <h6 class="text-teal">{{additionalPrice}}</h6>
+                                    </div>
+                                    <div>
+                                        <q-list dense bordered class="rounded-borders" style="margin-top: -25px">
+                                            <q-item v-for="(i, index) in addonsListNew" :key="index">
+                                                <q-item-section>
+                                                    <q-item-label  avatar top>{{i.addonsNames}}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section>
+                                                    <q-item-label  lines="1" center>{{i.addonsPrices}}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section>
+                                                    <q-item-label  lines="1" center>{{i.addonsQuantities}}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section>
+                                                    <q-item-label  lines="1" side>{{i.addonsTotalPrices}}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section side>
+                                                    <div class="row">
+                                                        <q-btn label="Delete" color="grey-8" @click="deleteAddons(index)" icon="mdi-delete"/>
+                                                    </div>
+                                                </q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </div>
                                 </div>
                                 
                             </q-step>
@@ -266,7 +301,7 @@
                             </q-step>
 
                             <template v-slot:navigation>
-                                <q-stepper-navigation>
+                                <q-stepper-navigation align="right">
                                 <q-btn flat  @click="$refs.stepper.next()" color="pink-3" :label="step === 3 ? 'Finish' : 'Continue'" />
                                 <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
                                 </q-stepper-navigation>
@@ -278,45 +313,59 @@
                   </q-card>
             </div>
             <q-page-sticky position="top-right" :offset="[18, 0]">
-            <div class="col-4 q-pt-lg q-pr-xl q-pl-md">
-                <q-card class="my-card">
+            <div class="col-4 q-pt-sm q-pr-sm q-pl-md">
+                <q-card class="my-card" style="width: 400px; height: 550px">
                     <q-card-section>
-                      
-                        <div class="column items-center q-pa-sm">
-                            <q-card flat class="my-card bg-grey-3" style="width:300px">
-                                <q-card-section>
-                                    <div class="column items-center">Order Summary - #04b7643</div>
-                                </q-card-section>
-                              </q-card>
+                        <div class="column items-center q-pb-sm q-pt-none q-mt-none">
+                            <q-badge color="teal">
+                                <div class="column items-center">Order Summary</div>
+                            </q-badge>
                         </div>
                         <div> 
                         <q-separator inset class="black"/>
                         </div>
                         <div class="q-pa-sm"><b>Items (Food Choices)</b></div>
+                        <q-scroll-area style="height:40vh" :visible="true">
                         <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
                           <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" :color="choice.foodChoices.length == returnLimit(choice.viandName) ? 'teal' : 'pink-6'" class="text-white" :label="choice.foodChoices.length+' / '+returnLimit(choice.viandName)" /></span>
                           <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
-                            <div class="col q-mr-sm">{{pick.foodName}}</div>
-                            <div class="col-1 text-weight-bold">x 1</div>
+                            <div dense class="col q-mr-sm">{{pick.foodName}}</div>
+                            <div dense class="col-1 text-weight-bold">x 1</div>
                           </div>
                         </div>
+                        </q-scroll-area>
 
                         <div> 
                         <q-separator inset class="black"/>
                         </div>
-
-                        <div class="q-pa-sm"><b>Add-ons</b></div>
-                        <div class="q-pa-sm row justify-between">
-                            <div>Tattoo Artists</div>
-                            <div>3,000</div>
-                        </div>
-                        <div class="q-pa-sm row justify-between">
-                            <div>Hair Braiding</div>
-                            <div>3,500</div>
-                        </div>
-                        <div class="q-pa-sm row justify-between">
-                            <div>Master of Ceremony</div>
-                            <div>3500</div>
+                        <div>
+                          <div style="float: left; width: 25%"> 
+                              <div class="q-pa-sm"><b>Inclusions: </b></div>
+                                <q-scroll-area style="height:25vh" :visible="true">
+                                  <q-list v-for="(inc,i) in returnSelectedPackageInclusion" :key="i" dense>
+                                    <q-item>
+                                        <q-item-section>
+                                            <q-item-label lines="1">{{inc.inclusion}}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                  </q-list>
+                                </q-scroll-area>
+                          </div>
+                          <div style="float: right; width: 65%;">
+                              <div class="q-pa-sm"><b>Add-Ons:</b></div>
+                              <q-scroll-area style="height:25vh" :visible="true">
+                                <q-list v-for="(i, index) in addonsListNew" :key="index" dense>
+                                    <q-item>
+                                        <q-item-section>
+                                            <q-item-label  avatar top>{{i.addonsQuantities}}x {{i.addonsNames}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section>
+                                            <q-item-label  lines="1" side>{{i.addonsTotalPrices}}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                              </q-scroll-area>
+                          </div>
                         </div>
                     </q-card-section>
                 </q-card>
@@ -341,6 +390,10 @@ export default {
       clientEmail: '',
       selectMotif: '',
       selectCity: '',
+      addons: '',
+      addonsPrice: 0,
+      addonsQuantity: 0,
+      addonsTotalPrice: 0,
       City: [],
       Packages: [],
       Motif: [],
@@ -356,6 +409,8 @@ export default {
       dates: date.formatDate(new Date(), 'YYYY/MM/DD'),
       change: false,
       address: '',
+      Addons: [],
+      addonsList: [],
       step: 1,
       filter: '',
             pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
@@ -385,14 +440,39 @@ export default {
     this.$binding('Food', this.$firestoreApp.collection('Food'))
             .then(Food => {
             console.log(Food, 'Food')
+            }),
+    this.$binding('Addons', this.$firestoreApp.collection('Addons'))
+            .then(Addons => {
+            console.log(Addons, 'Addons')
             })
   },
   computed: {
+    addonsListNew() {
+                    return this.addonsList
+    },
+    additionalPrice() {
+                    if(this.addonsList.length === 0){
+                        return 0
+                    }else{
+                    let sum = this.$lodash.sumBy(this.addonsList, 'addonsTotalPrices')
+                    // console.log(sum, 'sum')
+                    return sum
+                    }
+    },
     motifOpt(){
           let optionss = this.Motif.map(m => {
               return {
                   label: m.motif,
                   value: m.motif
+              }
+          })
+          return optionss
+      },
+      addonsOpt(){
+          let optionss = this.Addons.map(m => {
+              return {
+                  label: m.addons,
+                  value: m.addons
               }
           })
           return optionss
@@ -469,6 +549,111 @@ export default {
       }
   },
   methods: {
+    deleteAddons(index){
+                this.addonsList.splice(index, 1) 
+                this.addons = ''
+                this.addonsPrice = '0'
+                this.addonsQuantity = '0'
+                this.addonsTotalPrice = '0'
+    },
+    addAdditionalList(){
+            let optionss = this.$lodash.filter(this.addonsList, m => {
+                    if(m.addons === this.addons){
+                        return m
+                    }
+                }) 
+            if(this.addonsQuantity === 0 || this.addons === '' || this.addonsQuantity === '0' || this.addonsQuantity < 0){
+                    this.$q.dialog({
+                    title: `please fill all requirements or you have negative values`,
+                    color: 'grey-8',
+                    textColor: 'pink-6',
+                    icon: 'warning',
+                    ok: 'Ok'
+                })
+            }else{
+                if(optionss.length > 0){
+                        this.$q.dialog({
+                    title: 'Duplicate Entry!',
+                    message: 'Are you sure you want to add same Service??',
+                    ok: 'Ok',
+                    cancel: 'Cancel',
+                    persistent: true
+                    }).onOk(() => {
+                        var addons = {
+                    addonsNames: this.addons,
+                    addonsPrices: parseInt(this.addonsPrice),
+                    addonsQuantities: parseInt(this.addonsQuantity),
+                    addonsTotalPrices: parseInt(this.addonsTotalPrice)
+                    }
+                    let index = this.$lodash.findIndex(this.addonsList, a => {
+                            return a.addonsNames == this.addons
+                    })
+                    if(index === -1){
+                        this.addonsList.push(addons)
+                    }else{
+                        let tempArray = this.addonsList[index]
+                        var addonsssoo = {
+                            addonsNames: this.addons,
+                            addonsPrices: parseInt(this.addonsPrice),
+                            addonsQuantities: parseInt(this.addonsQuantity) + parseInt(tempArray.addonsQuantities),
+                            addonsTotalPrices: parseInt(this.addonsTotalPrice) + parseInt(tempArray.addonsTotalPrices)
+                        }
+                            // console.log(servicess, 'addsss')
+                            this.addonsList[index].addonsNames = addonsssoo.addonsNames 
+                            this.addonsList[index].addonsPrices = addonsssoo.addonsPrices
+                            this.addonsList[index].addonsQuantities = addonsssoo.addonsQuantities
+                            this.addonsList[index].addonsTotalPrices = addonsssoo.addonsTotalPrices
+                            // console.log(this.servicesList[index], 'index')
+                    }
+
+                    }).onCancel(() => {
+
+                    })
+                }else{
+                        var addons = {
+                    addonsNames: this.addons,
+                    addonsPrices: parseInt(this.addonsPrice),
+                    addonsQuantities: parseInt(this.addonsQuantity),
+                    addonsTotalPrices: parseInt(this.addonsTotalPrice)
+                    }
+                    let index = this.$lodash.findIndex(this.addonsList, a => {
+                            return a.addonsNames == this.addons
+                    })
+                    if(index === -1){
+                        this.addonsList.push(addons)
+                    }else{
+                        let tempArray = this.addonsList[index]
+                        var addonsssoo = {
+                            addonsNames: this.addons,
+                            addonsPrices: parseInt(this.addonsPrice),
+                            addonsQuantities: parseInt(this.addonsQuantity) + parseInt(tempArray.addonsQuantities),
+                            addonsTotalPrices: parseInt(this.addonsTotalPrice) + parseInt(tempArray.addonsTotalPrices)
+                        }
+                            // console.log(servicess, 'addsss')
+                            this.addonsList[index].addonsNames = addonsssoo.addonsNames 
+                            this.addonsList[index].addonsPrices = addonsssoo.addonsPrices
+                            this.addonsList[index].addonsQuantities = addonsssoo.addonsQuantities
+                            this.addonsList[index].addonsTotalPrices = addonsssoo.addonsTotalPrices
+                            // console.log(this.servicesList[index], 'index')
+                    }
+
+                }
+
+                    
+            }     
+    },
+    totalAddonsPrice(){      
+                        this.addonsTotalPrice = parseInt(this.addonsPrice) * parseInt(this.addonsQuantity)
+                },
+    addonsPriceOptions(){ 
+          let optionss = this.$lodash.filter(this.Addons, m => {
+						return m.addons == this.addons 
+                    })    
+            // console.log(optionss, 'ss')
+            this.addonsPrice = optionss[0].addonsPrice
+            this.addonsQuantity = 0
+            this.addonsTotalPrice = 0
+    },
     consoleselected(){
       console.log(this.selected, 'eventssss')
     },
@@ -523,7 +708,8 @@ export default {
 
     },
     backFunction(){
-          this.$q.dialog({
+      if(this.step === 2){
+        this.$q.dialog({
             title: 'Moving back will remove all your Food Choices.',
             message: 'Continue ?',
             ok: 'Yes',
@@ -531,8 +717,13 @@ export default {
             persistent: true
           }).onOk(() => {
             this.choiceOfFood = []
+            this.addonsList = []
             this.$refs.stepper.previous()
           })
+      }else {
+          this.$refs.stepper.previous()
+      }
+      
     }
   }
 }

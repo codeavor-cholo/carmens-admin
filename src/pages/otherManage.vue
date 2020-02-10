@@ -4,11 +4,13 @@
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">     
             <template v-slot:before>
                 <div class="text-h6 text-center q-py-md">FILE MANAGEMENT</div>
-                <q-tabs v-model="tab" vertical class="text-grey-8 bg-white full-height relative-position" active-color="pink-3" active-bg-color="pink-1">
+                <q-tabs v-model="tab" @click="clear" vertical class="text-grey-8 bg-white full-height relative-position" active-color="pink-3" active-bg-color="pink-1">
                 <q-tab name="motif" label="Motif" />
                 <q-tab name="city" label="City" />
                 <q-tab name="category" label="Category" />
                 <q-tab name="inclusion" label="Inclusions" />
+                <q-tab name="addons" label="Add-Ons" />
+                <q-tab name="position" label="Position" />
                 </q-tabs>
             </template>
             <template v-slot:after>
@@ -35,6 +37,16 @@
                                         Add Inclusions
                                     </q-tooltip>
                                 </q-btn>
+                                <q-btn color="pink-3" label="Add Add-Ons" v-show="tab == 'addons'" @click="addaddonsdialog = true, isEditAdd = false">
+                                    <q-tooltip>
+                                        Add Add-Ons
+                                    </q-tooltip>
+                                </q-btn>
+                                <q-btn color="pink-3" label="Add Positon" v-show="tab == 'position'" @click="addpositiondialog = true, isEditPos = false">
+                                    <q-tooltip>
+                                        Add Position
+                                    </q-tooltip>
+                                </q-btn>
                                 <!-- <q-input v-model="filter" clearable dense type="text" :label="tab !='addInc' ? 'Search Food' : 'Search Inclusions'" color="pink-3" class="q-ma-md float-right" outlined icon="search" >
                                     <template v-slot:prepend>
                                         <q-icon name="search" />
@@ -42,7 +54,7 @@
                                 </q-input> -->
                         </div>
                         <div>
-                        <q-table grid :data="filterTable" :columns="tab == 'motif' ? motifColumns : tab == 'city' ? cityColumns : tab == 'category' ? categColumns : incColumns" :pagination.sync="tab == 'motif' ? motifpagination:citypagination" :filter="filter" class="q-px-sm full-width align-center ">
+                        <q-table grid :data="filterTable" :columns="tab == 'motif' ? motifColumns : tab == 'city' ? cityColumns : tab == 'category' ? categColumns : tab == 'addons' ? addColumns : tab == 'position' ? posColumns : incColumns" :pagination.sync="tab == 'motif' ? motifpagination:citypagination" :filter="filter" class="q-px-sm full-width align-center ">
                             <template v-slot:item="props">
                                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card class="my-card" style="border: 2px solid;border-color: pink;" >
@@ -109,6 +121,49 @@
                                                 </q-item>
                                             </q-list>
                                         </div>
+                                        <div v-else-if="tab == 'position'">
+                                            <q-list>
+                                                <q-item class="text-h6">
+                                                    <q-item-section>
+                                                        <q-item-label overline> {{props.row.position}}</q-item-label>
+                                                    </q-item-section>
+                                                    <q-item-section class="row">
+                                                        <q-btn flat dense color="teal" icon="mdi-pencil" @click="geteditPos(props.row)">
+                                                            <q-tooltip>
+                                                                Edit
+                                                            </q-tooltip>
+                                                        </q-btn>
+                                                        <q-btn flat icon="delete" dense color="pink-6" @click="openDeleteDialogPos(props.row)">
+                                                            <q-tooltip>
+                                                                Delete
+                                                            </q-tooltip>
+                                                        </q-btn>
+                                                    </q-item-section>
+                                                </q-item>
+                                            </q-list>
+                                        </div>
+                                        <div v-else-if="tab == 'addons'">
+                                            <q-list>
+                                                <q-item class="text-h6">
+                                                    <q-item-section>
+                                                        <q-item-label overline> {{props.row.addons}}</q-item-label>
+                                                        <q-item-label overline> {{props.row.addonsPrice}}</q-item-label>
+                                                    </q-item-section>
+                                                    <q-item-section class="row">
+                                                        <q-btn flat dense color="teal" icon="mdi-pencil" @click="geteditAdd(props.row)">
+                                                            <q-tooltip>
+                                                                Edit
+                                                            </q-tooltip>
+                                                        </q-btn>
+                                                        <q-btn flat icon="delete" dense color="pink-6" @click="openDeleteDialogAdd(props.row)">
+                                                            <q-tooltip>
+                                                                Delete
+                                                            </q-tooltip>
+                                                        </q-btn>
+                                                    </q-item-section>
+                                                </q-item>
+                                            </q-list>
+                                        </div>
                                         <div v-else>
                                             <q-list>
                                                 <q-item class="text-h6">
@@ -155,7 +210,7 @@
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
-                    <q-btn flat color="grey-8" label="Cancel" v-close-popup/>
+                    <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
                     <q-btn v-if="!isEditMotif" flat color="pink-3" label="Add Motif" v-close-popup @click="addMotif"/>
                     <q-btn v-if="isEditMotif" flat label="Update Motif" color="teal" v-close-popup v-on:click="setTask"/>
                 </q-card-actions>
@@ -173,7 +228,7 @@
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
-                    <q-btn flat color="grey-8" label="Cancel" v-close-popup/>
+                    <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
                     <q-btn v-if="!isEditCity" flat color="pink-3" label="Add City" @click="addCity" v-close-popup/>
                     <q-btn v-if="isEditCity" flat label="Update City" color="teal" v-close-popup v-on:click="setTaskCity"/>
                 </q-card-actions>
@@ -191,7 +246,7 @@
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
-                    <q-btn flat color="grey-8" label="Cancel" v-close-popup/>
+                    <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
                     <q-btn flat v-if="!isEditCateg" color="pink-3" label="Add Category" @click="addCateg" v-close-popup/>
                     <q-btn flat v-if="isEditCateg" label="Update Category" color="teal" v-close-popup v-on:click="setTaskCateg"/>
                 </q-card-actions>
@@ -210,9 +265,46 @@
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
-                    <q-btn flat color="grey-8" label="Cancel" v-close-popup/>
+                    <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
                     <q-btn flat v-if="!isEditInc" color="pink-3" label="Add Inclusion" @click="addInc" v-close-popup/>
-                    <q-btn flat v-if="isEditInc" label="Update Category" color="teal" v-close-popup v-on:click="setTaskInc"/>
+                    <q-btn flat v-if="isEditInc" label="Update Inclusion" color="teal" v-close-popup v-on:click="setTaskInc"/>
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+        <!-- Add-Ons Dialog -->
+        <q-dialog v-model="addaddonsdialog" persistent>
+            <q-card style="min-width: 400px">
+                <q-card-section>
+                    <div class="text-h6">{{isEditAdd ? 'Edit Add-Ons': 'Add New Add-Ons'}}</div>
+                </q-card-section>
+
+                <q-card-section>
+                    <q-input class="q-ma-sm" dense v-model="addons" label="Add-Ons"/>
+                    <q-input type="number" class="q-ma-sm" dense v-model="addonsPrice" label="Add-Ons Prive"/>
+                </q-card-section>
+
+                <q-card-actions align="right" class="text-primary">
+                    <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
+                    <q-btn flat v-if="!isEditAdd" color="pink-3" label="Add Add-Ons" @click="addaddOns" v-close-popup/>
+                    <q-btn flat v-if="isEditAdd" label="Update Add-Ons" color="teal" v-close-popup v-on:click="setTaskAdd"/>
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+        <!-- Position Dialog -->
+        <q-dialog v-model="addpositiondialog" persistent>
+            <q-card style="min-width: 400px">
+                <q-card-section>
+                    <div class="text-h6">{{isEditPos ? 'Edit Postion': 'Add New Position'}}</div>
+                </q-card-section>
+
+                <q-card-section>
+                    <q-input class="q-ma-sm" dense v-model="position" label="Position"/>
+                </q-card-section>
+
+                <q-card-actions align="right" class="text-primary">
+                    <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
+                    <q-btn flat v-if="!isEditPos" color="pink-3" label="Add Position" @click="addposition" v-close-popup/>
+                    <q-btn flat v-if="isEditPos" label="Update Position" color="teal" v-close-popup v-on:click="setTaskPos"/>
                 </q-card-actions>
             </q-card>
         </q-dialog>
@@ -227,8 +319,12 @@ export default {
       isEditInc: false,
       isEditMotif: false,
       isEditCity: false,
+      isEditAdd: false,
+      addpositiondialog: false,
+      isEditPos: false,
       filter: '',
       tab: 'motif',
+      position: '',
       splitterModel: 20,
       addmotifdialog: false,
       motif: '',
@@ -239,9 +335,14 @@ export default {
       addinclusiondialog: false,
       inclusion: '',
       inclusionPrice: 0,
+      addaddonsdialog: false,
+      addons: '',
+      addonsPrice: 0,
       Motif: [],
       FoodCategory: [],
       City: [],
+      Position: [],
+      Addons: [],
       Inclusion: [],
       motifpagination: { sortBy: 'motif', descending: false, page: 1, rowsPerPage: 10},
       citypagination: { sortBy: 'city', descending: false, page: 1, rowsPerPage: 10},
@@ -259,6 +360,13 @@ export default {
       incColumns: [
                 { name: 'inclusion', align: 'center', label: 'Inclusion', field: 'inclusion', sortable: true },
                 { name: 'inclusionPrice', align: 'center', label: 'Price', field: 'inclusionPrice', sortable: true },
+        ],
+      addColumns: [
+                { name: 'addons', align: 'center', label: 'Add-Ons', field: 'addons', sortable: true },
+                { name: 'addonsPrice', align: 'center', label: 'Add-Ons Price', field: 'addonsPrice', sortable: true },
+        ],
+      posColumns: [
+                { name: 'position', align: 'center', label: 'Position', field: 'position', sortable: true },
         ],
     }
   },
@@ -278,6 +386,14 @@ export default {
       this.$binding('Inclusion', this.$firestoreApp.collection('Inclusion'))
             .then(Inclusion => {
             console.log(Inclusion, 'Inclusion')
+            }),
+      this.$binding('Addons', this.$firestoreApp.collection('Addons'))
+            .then(Addons => {
+            console.log(Addons, 'Addons')
+            }),
+      this.$binding('Position', this.$firestoreApp.collection('Position'))
+            .then(Position => {
+            console.log(Position, 'Position')
             })
   },
   computed: {
@@ -289,12 +405,247 @@ export default {
                 return this.City
             }else if (this.tab === 'category'){
                 return this.FoodCategory
+            }else if (this.tab === 'addons'){
+                return this.Addons
+            }else if (this.tab === 'position'){
+                return this.Position
             }else{
                 return this.Inclusion
             }
         },
   },
   methods: {
+    // Position Add Edit Delete
+      setTaskPos(){
+                var positionBago = {
+                    position: this.position,
+                }
+                if(this.position === ''){
+                    this.$q.dialog({
+                    title: 'Field Required!',
+                    message: 'Fill all Requirements?',
+                    ok: 'Ok',
+                    cancel: 'Cancel'
+                    })
+                    }else
+                    this.$q.dialog({
+                    title: 'Update Position',
+                    message: 'Update This Position?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => { 
+                    this.$firestoreApp.collection('Position').doc(this.positionID).set(positionBago)
+                    this.$q.notify({
+                            message: 'Position Updated!',
+                            icon: 'mdi-update',
+                            color: 'teal',
+                            textColor: 'white',
+                            position: 'center'
+                        })
+                        this.position = ''
+                        this.addpositiondialog = false  
+                }).onCancel(()=>{
+                    this.addpositiondialog = true
+                })  
+            },
+      geteditPos (task) {
+            console.log(task, 'task')
+            this.positionID = task['.key']
+            this.position = task.position
+			this.addpositiondialog = true
+			this.isEditPos = true
+		    },
+      openDeleteDialogPos (task) {
+                var id = task['.key']
+                this.$q.dialog({
+                    title: 'Delete Position?',
+                    message: 'Delete This Position?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => { 
+                    this.$firestoreApp.collection('Position').doc(id).delete()
+                    this.$q.notify({
+                            message: 'Position Deleted!',
+                            icon: 'mdi-delete',
+                            color: 'pink-6',
+                            textColor: 'white',
+                            position: 'center'
+                        })
+                })
+
+            },
+      addposition () {
+            var position = {
+                position: this.position
+            }   
+            let optionss = this.$lodash.filter(this.Position, m => {
+                if(m.position === this.position){
+                    return m
+                }
+            })   
+                console.log(optionss, 'option')
+                 
+                if(this.position === '') {
+                this.$q.dialog({
+                title: 'Required!',
+                message: 'Fill all Requirements??',
+                ok: 'Ok',
+                persistent: true
+                }).onOk(()=>{
+                    this.addpositiondialog = true
+                })
+                }else{
+                    if(optionss.length > 0){
+                    this.$q.dialog({
+                    title: 'Duplicate Entry!',
+                    message: 'Unable to save?',
+                    ok: 'Ok',
+                    persistent: true
+                        }).onOk(() => {
+                            this.addpositiondialog = true
+                        })
+                    }
+                    else{
+                        this.$q.dialog({
+                        title: 'Add Position',
+                        message: 'Add This Position?',
+                        ok: 'Yes',
+                        cancel: 'Cancel',
+                        persistent: true
+                            }).onOk(() => { 
+                            this.$firestoreApp.collection('Position').add(position)
+                            this.$q.notify({
+                                    message: 'Position Added!',
+                                    icon: 'mdi-folder-plus-outline',
+                                    color: 'pink-3',
+                                    textColor: 'white',
+                                    position: 'center'
+                            })
+                                this.position = ''
+                            }).onCancel(()=>{
+                                this.addpositiondialog = true
+                            })
+                    }
+                }
+            },
+    // Addons Add Edit Delete
+      setTaskAdd(){
+                var addonsBago = {
+                    addons: this.addons,
+                    addonsPrice: this.addonsPrice
+                }
+                if(this.addons === '' || this.addonsPrice === '' || this.addonsPrice === 0){
+                    this.$q.dialog({
+                    title: 'Field Required!',
+                    message: 'Fill all Requirements?',
+                    ok: 'Ok',
+                    cancel: 'Cancel'
+                    })
+                    }else
+                    this.$q.dialog({
+                    title: 'Update Add-Ons',
+                    message: 'Update This Add-Ons?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => { 
+                    this.$firestoreApp.collection('Addons').doc(this.addonsID).set(addonsBago)
+                    this.$q.notify({
+                            message: 'Add-Ons Updated!',
+                            icon: 'mdi-update',
+                            color: 'teal',
+                            textColor: 'white',
+                            position: 'center'
+                        })
+                        this.addons = ''
+                        this.addonsPrice = 0
+                        this.addaddonsdialog = false  
+                }).onCancel(()=>{
+                    this.addaddonsdialog = true
+                })  
+            },
+      geteditAdd (task) {
+            console.log(task, 'task')
+            this.addonsID = task['.key']
+            this.addons = task.addons
+            this.addonsPrice = task.addonsPrice
+			this.addaddonsdialog = true
+			this.isEditAdd = true
+		    },
+      openDeleteDialogAdd (task) {
+                var id = task['.key']
+                this.$q.dialog({
+                    title: 'Delete Add-Ons?',
+                    message: 'Delete This Add-Ons?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => { 
+                    this.$firestoreApp.collection('Addons').doc(id).delete()
+                    this.$q.notify({
+                            message: 'Add-Ons Deleted!',
+                            icon: 'mdi-delete',
+                            color: 'pink-6',
+                            textColor: 'white',
+                            position: 'center'
+                        })
+                })
+
+            },
+      addaddOns () {
+            var addons = {
+                addons: this.addons,
+                addonsPrice: this.addonsPrice
+            }   
+            let optionss = this.$lodash.filter(this.Addons, m => {
+                if(m.addons === this.addons){
+                    return m
+                }
+            })   
+                console.log(optionss, 'option')
+                 
+                if(this.addons === '' || this.addonsPrice === '' || this.addonsPrice === 0) {
+                this.$q.dialog({
+                title: 'Required!',
+                message: 'Fill all Requirements??',
+                ok: 'Ok',
+                persistent: true
+                }).onOk(()=>{
+                    this.addaddonsdialog = true
+                })
+                }else{
+                    if(optionss.length > 0){
+                    this.$q.dialog({
+                    title: 'Duplicate Entry!',
+                    message: 'Unable to save?',
+                    ok: 'Ok',
+                    persistent: true
+                        }).onOk(() => {
+                            this.addaddonsdialog = true
+                        })
+                    }
+                    else{
+                        this.$q.dialog({
+                        title: 'Add Add-Ons',
+                        message: 'Add This Add-Ons?',
+                        ok: 'Yes',
+                        cancel: 'Cancel',
+                        persistent: true
+                            }).onOk(() => { 
+                            this.$firestoreApp.collection('Addons').add(addons)
+                            this.$q.notify({
+                                    message: 'Add-Ons Added!',
+                                    icon: 'mdi-folder-plus-outline',
+                                    color: 'pink-3',
+                                    textColor: 'white',
+                                    position: 'center'
+                            })
+                                this.addons = ''
+                                this.addonsPrice = 0
+                            }).onCancel(()=>{
+                                this.addaddonsdialog = true
+                            })
+                    }
+                }
+            },
     // Inclusion Add Edit Delete
       setTaskInc(){
                 var inclusionBago = {
@@ -323,6 +674,8 @@ export default {
                             textColor: 'white',
                             position: 'center'
                         })
+                        this.inclusion = ''
+                        this.inclusionPrice = 0
                         this.addinclusiondialog = false  
                 }).onCancel(()=>{
                     this.addinclusiondialog = true
@@ -404,6 +757,7 @@ export default {
                                     position: 'center'
                             })
                                 this.inclusion = ''
+                                this.inclusionPrice = 0
                             }).onCancel(()=>{
                                 this.addinclusiondialog = true
                             })
@@ -437,6 +791,7 @@ export default {
                             textColor: 'white',
                             position: 'center'
                         })
+                        this.category = ''
                         this.addcategorydialog = false  
                 }).onCancel(()=>{
                     this.addcategorydialog = true
@@ -549,6 +904,7 @@ export default {
                             textColor: 'white',
                             position: 'center'
                         })
+                        this.city = ''
                         this.addcitydialog = false  
                 }).onCancel(()=>{
                     this.addcitydialog = true
@@ -661,6 +1017,7 @@ export default {
                             textColor: 'white',
                             position: 'center'
                         })
+                        this.motif = ''
                         this.addmotifdialog = false  
                 }).onCancel(()=>{
                     this.addmotifdialog = true
@@ -746,6 +1103,21 @@ export default {
                     }
                 }
             },
+        clear(){
+            if(this.tab === 'motif'){
+               this.motif = ''
+            }else if(this.tab === 'city'){
+               this.city = ''
+            }else if(this.tab === 'category'){
+               this.category = ''
+            }else if(this.tab === 'inclusion'){
+               this.inclusion = ''
+               this.inclusionPrice = 0
+            }else if(this.tab === 'addons'){
+               this.addons = ''
+               this.addonsPrice = 0
+            }
+         }
   }
 }
 </script>
