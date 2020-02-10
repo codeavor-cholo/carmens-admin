@@ -195,7 +195,7 @@
                                 <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" selection="single" :selected.sync="selected">
                                     <template v-slot:item="props">
                                         <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition" color="pink-3" :style="props.selected ? 'transform: scale(0.95);' : ''">
-                                            <q-card class="my-card" style="border: 2px solid;border-color: grey;" >
+                                            <q-card class="my-card" style="border: 2px solid;border-color: grey;" :class="props.selected ? 'bg-grey-2' : ''">
                                                 <q-card-section side>
                                                     <q-list dense>
                                                     <q-item class="q-mt-sm">
@@ -231,7 +231,31 @@
                                 </q-table>
                             </q-step>
 
-                            <q-step :name="2" title="Create an ad group" caption="Optional" icon="create_new_folder" :done="step > 2">
+                            <q-step :name="2" title="Select Food of Choice" icon="fastfood" :done="step > 2">
+                                <div v-for="(food,i) in foodChoice" :key="i" v-show="selected != null">
+                                  <span class="q-mb-none q-mt-md text-subtitle2"> Select <span class="text-teal text-h6 text-weight-bolder">{{returnLimit(food.viandName)}}</span> Choice<span v-show="returnLimit(food.viandName) > 1">s</span> of {{food.viandName}}  </span>
+                                  <div class="row">
+                                    <q-img
+                                      v-for="(choice,j) in food.foodChoices" :key="j"
+                                      :src="choice.foodPic"
+                                      :ratio="1"
+                                      class="col-3 q-ma-md rounded-borders"
+                                      :style="returnSelectedStatus(choice) ? 'transform: scale(0.95);border: 4px solid;border-color: pink;' : ''"
+                                    >
+                                    <div class="absolute-bottom text-overline">
+                                      <q-checkbox color="pink-3" v-model="choiceOfFood" :val="choice" :label="choice.foodName" @input="consoleChoice,checkQty(choice,returnLimit(food.viandName),food.viandName)"/>
+                                    </div>
+                                    </q-img>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="text-subtitle2 q-mb-sm full-width">Select Add-Ons</div>
+                                  <q-card flat class="my-card bg-grey-3 col-3 q-ma-md" v-for="(inc,i) in returnSelectedPackageInclusion" :key="i">
+                                    <q-card-section>
+                                        <q-checkbox color="pink-3" v-model="choiceOfInclusions" :val="inc" :label="inc.inclusion" />
+                                    </q-card-section>
+                                  </q-card>
+                                </div>
                                 
                             </q-step>
 
@@ -244,7 +268,7 @@
                             <template v-slot:navigation>
                                 <q-stepper-navigation>
                                 <q-btn flat  @click="$refs.stepper.next()" color="pink-3" :label="step === 3 ? 'Finish' : 'Continue'" />
-                                <q-btn v-if="step > 1" flat color="grey-8" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
+                                <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>
                         </q-stepper>
@@ -268,14 +292,14 @@
                         <div> 
                         <q-separator inset class="black"/>
                         </div>
-                    
-                        <div class="q-pa-sm"><b>Items</b></div>
-                        <div class="q-pa-sm">Mutton Fry</div>
-                        <div class="q-pa-sm">Chicken Fried Rice</div>
-                        <div class="q-pa-sm">Chili Prawn</div>
-                        <div class="q-pa-sm">Ghost Chicken</div>
-                        <div class="q-pa-sm">Chicken G5</div>
-                        <div class="q-pa-sm">Fish Gravy</div>
+                        <div class="q-pa-sm"><b>Items (Food Choices)</b></div>
+                        <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
+                          <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" :color="choice.foodChoices.length == returnLimit(choice.viandName) ? 'teal' : 'pink-6'" class="text-white" :label="choice.foodChoices.length+' / '+returnLimit(choice.viandName)" /></span>
+                          <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
+                            <div class="col q-mr-sm">{{pick.foodName}}</div>
+                            <div class="col-1 text-weight-bold">x 1</div>
+                          </div>
+                        </div>
 
                         <div> 
                         <q-separator inset class="black"/>
@@ -322,8 +346,11 @@ export default {
       Motif: [],
       selected: [],
       Inclusion: [],
-      showreserveform: false,
-      showdateform: true,
+      Food: [],
+      choiceOfFood: [],
+      choiceOfInclusions: [],
+      showreserveform: true, //this is opposite
+      showdateform: false,
       tab: 'partytray',
       splitterModel: 20,
       dates: date.formatDate(new Date(), 'YYYY/MM/DD'),
@@ -355,6 +382,10 @@ export default {
             .then(Inclusion => {
             console.log(Inclusion, 'Inclusion')
             })
+    this.$binding('Food', this.$firestoreApp.collection('Food'))
+            .then(Food => {
+            console.log(Food, 'Food')
+            })
   },
   computed: {
     motifOpt(){
@@ -375,11 +406,134 @@ export default {
           })
           return optionss
       },
+
+      foodChoice(){
+        try {
+          let viands = this.selected[0].viands
+          console.log(viands)
+          let foodWithPriceInViands = []
+          let foods =  this.Food
+          for(var x = 0; x < foods.length; x++){
+            for(var y=0; y < viands.length; y++){
+              if(foods[x].foodPrice != null && foods[x].category == viands[y].category){
+                let push = {...foods[x]}
+                let key = push['.key']
+                delete push['.key']
+                push.foodKey = key
+                foodWithPriceInViands.push(push)
+              }
+            }
+          }
+          console.log(foodWithPriceInViands,'foodWithPriceInViands')
+          let groups = this.$lodash.groupBy(foodWithPriceInViands,'category')
+          console.log(groups,'groups')
+
+          let map = this.$lodash.map(groups,function(value,key){
+            return {
+              viandName: key,
+              foodChoices: value
+            }
+          })
+
+          console.log(map,'map')
+          return map
+        } catch (err) {
+          return []
+        }
+      },
+      returnSelectedPackageInclusion(){
+        try {
+          return this.selected[0].inclusions
+        } catch (err) {
+          return []
+        }
+      },
+      returnChoiceOfFood(){
+        try {
+          let groups = this.$lodash.groupBy(this.choiceOfFood,'category')
+          console.log(groups,'groups')
+
+          let map = this.$lodash.map(groups,function(value,key){
+            return {
+              viandName: key,
+              foodChoices: value
+            }
+          })
+
+          console.log(map,'mapChoices')
+
+          return map
+        } catch (err){
+          return []
+        }
+      }
   },
   methods: {
     consoleselected(){
-                 console.log(this.selected, 'eventssss')
+      console.log(this.selected, 'eventssss')
     },
+    consoleChoice(){
+      console.log(choiceOfFood,'choiceOfFood')
+    },
+    returnSelectedStatus(choice){
+      let count = this.$lodash.findIndex(this.choiceOfFood, a=>{
+        return a.foodName == choice.foodName
+      })
+      console.log(count,'index')
+      if(count > -1){
+        return true
+      } else {
+        return false
+      }
+    },
+    returnLimit(viand){
+      try {
+        let viands = this.selected[0].viands
+        let limit = viands.filter(a=>{
+          return a.category == viand
+        })
+        return limit[0].viandsQty
+
+      }catch(err){
+        return ''
+      }
+    },
+    checkQty(food,qty,viandName){
+      console.log(food)
+      console.log(qty)
+      console.log(viandName, 'yeah')
+      let selection = this.choiceOfFood
+      console.log(selection,'selection')
+      //get QTY of viand in selection
+      let count = this.$lodash.filter(selection, a=>{
+        return a.category == viandName
+      })
+      if(count.length > qty){
+        this.$q.dialog({
+            title: viandName + ' Selection Max Reached',
+            message: 'Removing last food choice.',
+            ok: 'Ok',
+            persistent: true
+          }).onOk(() => {
+            this.choiceOfFood.splice(selection.length-1,1)
+            console.log('removed last')
+            console.log(selection)
+          })
+      }
+
+    },
+    backFunction(){
+          this.$q.dialog({
+            title: 'Moving back will remove all your Food Choices.',
+            message: 'Continue ?',
+            ok: 'Yes',
+            cancel: 'No',
+            persistent: true
+          }).onOk(() => {
+            this.choiceOfFood = []
+            this.$refs.stepper.previous()
+          })
+    }
   }
 }
 </script>

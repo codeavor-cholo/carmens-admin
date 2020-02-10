@@ -76,6 +76,15 @@
                     </q-item-section>
                   </q-item>
 
+                  <q-item clickable :to="{ name: 'partytraymanage' }">
+                    <q-item-section avatar class="q-pl-xl">
+                      <q-icon name="fastfood" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Party Trays Management</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
                   <q-item clickable :to="{ name: 'package' }">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon name="assignment" />

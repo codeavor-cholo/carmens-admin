@@ -9,6 +9,7 @@ const routes = [
       { path: '/walkinreserve', meta: {requiredAuth: true}, name: 'walkinreserve', component: () => import('pages/walkinreserve.vue') },
       { path: '/partytrayordering', meta: {requiredAuth: true}, name: 'partytrayordering', component: () => import('pages/partytrayordering.vue') },
       { path: '/foodmanage', meta: {requiredAuth: true}, name: 'foodmanage', component: () => import('pages/foodmanage.vue') },
+      { path: '/partytraymanage', meta: {requiredAuth: true}, name: 'partytraymanage', component: () => import('pages/partytraymanage.vue') },
       { path: '/package', meta: {requiredAuth: true}, name: 'package', component: () => import('pages/package.vue') },
       { path: '/otherManage', meta: {requiredAuth: true}, name: 'otherManage', component: () => import('pages/otherManage.vue') },
     ]
