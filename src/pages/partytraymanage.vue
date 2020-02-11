@@ -406,6 +406,7 @@ export default {
                                 this.addFoodDialog = true
                             })
                     }
+                    
                 }
             },
         addFood () {

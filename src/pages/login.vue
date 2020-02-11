@@ -10,10 +10,10 @@
         </div>
         <div style="margin:0; padding:0 0 20px; color:#1E90FF; text-align:center;" class="text-h5 text-pink-3">LOGIN HERE</div>
       <q-card-section>
-        <q-input color="pink-6" outlined style="width:100%; margin-bottom: 20px; border: none; border-bottom: 1px solid #fff; background: white; outline:none; height:50px; color:#fff; font-size: 16px;" v-model="email" type="email" prefix="Email:">
+        <q-input color="pink-6" outlined style="width:100%; margin-bottom: 20px; border: none; border-bottom: 1px solid #fff; background: white; outline:none; height:50px; color:#fff; font-size: 16px;" v-model="email" type="text" prefix="Username:">
         <template v-slot:append>
           <q-avatar>
-            <q-icon name="mail" />
+            <q-icon name="person" />
           </q-avatar>
         </template>
       </q-input>
@@ -57,10 +57,11 @@ export default {
          password: '',   
          isPwd: '',
          registerDialog: true,
+         users: []
         }
     },
     mounted() {
-        
+            this.$binding('users', this.$firestoreApp.collection('dashboardUsers'))
     },
     
     created(){
@@ -97,41 +98,59 @@ export default {
         },
         login2(){
           let self = this
-          this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-            .then(result => {
-             console.log(result, 'result')
-             self.$firebase.auth().setPersistence(this.$firebase.auth.Auth.Persistence.LOCAL)
-                .then(function() {
-                  console.log('setPersistence!')
-                  // Existing and future Auth states are now persisted in the current
-                  // session only. Closing the window would clear any existing state even
-                  // if a user forgets to sign out.
-                  // ...
-                  // New sign-in will be persisted with session persistence.
-                  return self.$firebase.auth().signInWithEmailAndPassword(email, password);
-                })
-                .catch(function(error) {
-                  // Handle Errors here.
-                  
-                  var errorCode = error.code;
-                  var errorMessage = error.message;
-                  console.log(errorMessage)
-                });
-              self.$router.push('/home')
-            })
-            .catch(err =>{
-              console.log(err, 'error')
-              self.$router.push('/')
-              //this.isLoading = false
-            })
+          let userName = this.email + '@carmens.com'
 
+          //check Index
+          let index = this.$lodash.findIndex(this.users,a=>{
+            return a.userName == userName
+          })
+          if(index == -1){
+              this.$q.notify({
+                message: `User is not authorized to access the admin dashboard!`,
+                type: 'negative',
+                color: 'negative',
+                textColor: 'white',
+                icon: 'warning',
+                position: 'center'
+            })         
+          } else {
+            this.$firebase.auth().signInWithEmailAndPassword(userName, this.password)
+              .then(result => {
+              console.log(result, 'result')
+              self.$firebase.auth().setPersistence(this.$firebase.auth.Auth.Persistence.LOCAL)
+                  .then(function() {
+                    console.log('setPersistence!')
+                    // Existing and future Auth states are now persisted in the current
+                    // session only. Closing the window would clear any existing state even
+                    // if a user forgets to sign out.
+                    // ...
+                    // New sign-in will be persisted with session persistence.
+                    return self.$firebase.auth().signInWithEmailAndPassword(email, password);
+                  })
+                  .catch(function(error) {
+                    // Handle Errors here.
+                    
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log(errorMessage)
+                  });
+                self.$router.push('/home')
+              })
+              .catch(err =>{
+                console.log(err, 'error')
+                self.$router.push('/')
+                //this.isLoading = false
+              })
+          }
         },
         login () {
             this.$q.loading.show({
                 message: 'Some important <b>process</b> is in progress.<br/><span class="text-primary">Hang on...</span>'
               })
             console.log(this.$firebase, 'firebaseApp')
-            this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+            let userName = this.email + '@carmens.com'
+            console.log(userName,'userName')
+            this.$firebase.auth().signInWithEmailAndPassword(userName, this.password)
             .then(result => {
              console.log(result, 'result')
             //  this.isLoading = false

@@ -14,15 +14,17 @@ require('firebase/firestore')
     measurementId: "G-3GE8VKCWKK"
   };
 
-  export var firebase2 = firebase.initializeApp(firebaseConfig, 'firebase')
+  export var firebase2 = firebase.initializeApp(firebaseConfig, 'firebase2')
   export var AUTH = firebase2.auth()
+
+
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   // "async" is optional
   export default async ({ Vue }) => {
     // something to do
-    Vue.prototype.$firebase = firebase2
-    Vue.prototype.$firestoreApp = firebase2.firestore()
+    Vue.prototype.$firebase = firebase
+    Vue.prototype.$firestoreApp = firebase.firestore()
     Vue.prototype.$auth = AUTH
     Vue.use(VueFirestore)
     Vue.use(firebase)
