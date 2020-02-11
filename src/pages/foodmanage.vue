@@ -78,7 +78,13 @@
                                     <q-card class="my-card" style="border: 2px solid;border-color: pink;" >
                                         <div v-if="tab != 'addInc'">
                                         <q-card-section>
-                                            <q-img :src="props.row.foodPic" :ratio="4/3"/>
+                                            <q-img :src="props.row.foodPic" :ratio="4/3">
+                                                <q-btn round color="teal" icon="mdi-pencil">
+                                                    <q-tooltip>
+                                                        Edit Food
+                                                    </q-tooltip>  
+                                                </q-btn> 
+                                            </q-img>
                                         </q-card-section>
                                         <q-card-section side>
                                             <q-list dense>
