@@ -33,7 +33,7 @@
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding style="background-color: white; height: 500px;">
-            <q-item clickable @click="$router.push('/walkinreserve')">
+            <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnPermissions.walkIn">
               <q-item-section avatar>
                 <q-icon name="mdi-walk" />
               </q-item-section>
@@ -42,7 +42,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable @click="$router.push('/partytrayordering')">
+            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering">
               <q-item-section avatar>
                 <q-icon name="mdi-cart-outline" />
               </q-item-section>
@@ -66,8 +66,9 @@
               icon="mdi-settings-outline"
               label="File Management"
               default-opened
+              v-show="returnPermissions.food || returnPermissions.partyTray || returnPermissions.packages || returnPermissions.others"
             >
-                  <q-item clickable :to="{ name: 'foodmanage' }">
+                  <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon name="fastfood" />
                     </q-item-section>
@@ -76,7 +77,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'partytraymanage' }">
+                  <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon name="fastfood" />
                     </q-item-section>
@@ -85,7 +86,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'package' }">
+                  <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon name="assignment" />
                     </q-item-section>
@@ -94,7 +95,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'otherManage' }">
+                  <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon name="mdi-table-chair" />
                     </q-item-section>
@@ -104,6 +105,14 @@
                   </q-item>
 
             </q-expansion-item>
+            <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users">
+              <q-item-section avatar>
+                <q-icon name="people" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Users</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-scroll-area>
 
@@ -114,7 +123,7 @@
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar> -->
             <!-- <div class="text-weight-bold">STYX SALCEDO</div> -->
-            <div>{{userEmail}}</div>
+            <div class="text-h6">{{userEmail.toUpperCase()}}</div>
           </div>
         </q-img>
       </q-drawer>
@@ -135,7 +144,11 @@ export default {
   data () {
     return {
             drawer: false,
-            userEmail: ''
+            userEmail: '',
+            dashboardUsers: [],
+            uid: '',
+            permissions: {},
+            accountLoggedIn: {}
       }
   },
   created() {
@@ -145,14 +158,43 @@ export default {
               if (user) {
                 let gg = {...user}
                 console.log('createdUser',user)
-                console.log('createdUser',user.email)
-                self.userEmail = gg.email
-                
+                console.log('createdUser',user.uid)
+                let username = gg.email.toString().split('@')
+                self.userEmail = username[0]
+                self.accountLoggedIn = gg
+
               } else {
                   // No user is signed in.
                   self.$router.push('/')
               }
           })
+  },
+  mounted(){
+            this.$binding('dashboardUsers', this.$firestoreApp.collection('dashboardUsers'))
+  },
+  computed: {
+    returnPermissions(){
+      try{
+        console.log('get')
+        let user = this.accountLoggedIn
+        console.log(user)
+        if (user) {
+         let permission = this.$lodash.filter(this.dashboardUsers, a=>{
+           return a['.key'] == user.uid
+         })
+         console.log(permission[0].permissions,'permission')
+         return permission[0].permissions
+        } else {
+          console.log('err')
+          return {}
+        }
+
+      } catch(err){
+        console.log(err,'err')
+        return {}
+      }
+
+    }
   },
   methods: {
     logout(){

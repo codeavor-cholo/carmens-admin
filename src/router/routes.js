@@ -12,6 +12,7 @@ const routes = [
       { path: '/partytraymanage', meta: {requiredAuth: true}, name: 'partytraymanage', component: () => import('pages/partytraymanage.vue') },
       { path: '/package', meta: {requiredAuth: true}, name: 'package', component: () => import('pages/package.vue') },
       { path: '/otherManage', meta: {requiredAuth: true}, name: 'otherManage', component: () => import('pages/otherManage.vue') },
+      { path: '/users', meta: {requiredAuth: true}, name: 'users', component: () => import('pages/users.vue') },
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },
