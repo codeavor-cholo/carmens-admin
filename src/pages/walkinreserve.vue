@@ -9,6 +9,7 @@
                   <q-date v-model="dates" mask="YYYY/MM/DD" color="pink-3" today-btn/>
                 </div>
                 <div style="float: right;width:50%;">
+                  <p class="text-grey column items-center" style="height: 10px; margin-top: -5px; margin-bottom: 2px">+50php if pax is less than 50</p>
                   <div class="row">
                     <q-input class="q-pt-sm" color="pink-3" style="width: 163px" outlined dense v-model="clientFName" label="First Name"/>
                     <q-input class="q-pt-sm q-ml-sm" color="pink-3" style="width: 163px" outlined dense v-model="clientLName" label="Last Name"/>
@@ -190,7 +191,7 @@
                         </div>
                         
                         <div class="q-pa-sm q-pt-md">
-                        <q-stepper v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
+                        <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
                                 <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" selection="single" :selected.sync="selected">
                                     <template v-slot:item="props">
@@ -294,15 +295,77 @@
                                 
                             </q-step>
 
-                            <q-step :name="3" title="Create an ad" icon="add_comment">
-                                Try out different ad text to see what brings in the most customers, and learn how to
-                                enhance your ads using features like ad extensions. If you run into any problems with
-                                your ads, find out how to tell if they're running and how to resolve approval issues.
+                            <q-step :name="3" title="Billing" icon="mdi-package">
+                              <div align="center">
+                                <img class="q-ma-none q-pa-none" style="height:80%;width:300px" src="statics/pics/carmen-logo.png">
+                              </div>
+                              <div class="text-grey-8" align="center">
+                                  <p class="q-pb-none q-mb-none">J Center Bldg. Vista Verde Ave.</p>
+                                  <p class="q-pt-none q-mt-none q-pb-none q-mb-none">Vista Verde Executive Village Cainta, Rizal</p>
+                                  <p class="q-pt-none q-mt-none">09175057991 . 09772774030</p>
+                              </div>
+                              <div class="text-grey-8" style="float: left; width: 40%">
+                                <strong class="q-pa-md text-h6">Food Choices</strong>
+                                  <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
+                                    <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" :color="choice.foodChoices.length == returnLimit(choice.viandName) ? 'teal' : 'pink-6'" class="text-white" :label="choice.foodChoices.length+' / '+returnLimit(choice.viandName)" /></span>
+                                    <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
+                                      <div dense class="col q-mr-sm">{{pick.foodName}}</div>
+                                      <div dense class="col-1 text-weight-bold">x 1</div>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="text-grey-8" style="float: right; width: 50%">
+                                  <div class="q-pa-sm text-h6"><strong>Inclusions: </strong></div>
+                                      <q-list v-for="(inc,i) in returnSelectedPackageInclusion" :key="i" dense>
+                                        <q-item>
+                                            <q-item-section>
+                                                <q-item-label lines="1">{{inc.inclusion}}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                      </q-list>
+                                  <div class="q-pa-sm text-h6"><strong>Add-Ons:</strong></div>
+                                      <q-list v-for="(i, index) in addonsListNew" :key="index" dense>
+                                          <q-item>
+                                              <q-item-section>
+                                                  <q-item-label  avatar top>{{i.addonsQuantities}}x {{i.addonsNames}}</q-item-label>
+                                              </q-item-section>
+                                              <q-item-section>
+                                                  <q-item-label  lines="1" side>{{i.addonsTotalPrices}}php</q-item-label>
+                                              </q-item-section>
+                                          </q-item>
+                                      </q-list>
+                              </div>
+                            </q-step>
+                            <q-step :name="4" title="Payment" icon="mdi-paypal">
+                              <q-select class="q-pa-md" color="pink-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
+                              <div v-show="this.selectPay === 'CASH'">
+                                  <q-list dense>
+                                    <q-item>
+                                        <q-item-section class="q-ml-lg"><strong><b>Total Payment:</b></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
+                                    </q-item>
+                                    <q-item>
+                                        <q-item-section class="q-ml-lg"><strong><b>Reservation Fee:</b></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
+                                    </q-item>
+                                    <q-item>
+                                        <q-item-section class="q-ml-lg"><strong><b>Downpayment(50%):</b></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
+                                    </q-item>
+                                    <q-item>
+                                        <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="pink-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
+                                    </q-item>
+                                </q-list>
+                              </div>
+                              <div>
+                                
+                              </div>
                             </q-step>
 
                             <template v-slot:navigation>
                                 <q-stepper-navigation align="right">
-                                <q-btn flat  @click="$refs.stepper.next()" color="pink-3" :label="step === 3 ? 'Finish' : 'Continue'" />
+                                <q-btn flat  @click="$refs.stepper.next()" color="pink-3" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
                                 <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>
@@ -313,12 +376,12 @@
                   </q-card>
             </div>
             <q-page-sticky position="top-right" :offset="[18, 0]">
-            <div class="col-4 q-pt-sm q-pr-sm q-pl-md">
+            <div v-show="this.step < 3" class="col-4 q-pt-sm q-pr-sm q-pl-md">
                 <q-card class="my-card" style="width: 400px; height: 550px">
                     <q-card-section>
                         <div class="column items-center q-pb-sm q-pt-none q-mt-none">
                             <q-badge color="teal">
-                                <div class="column items-center">Order Summary</div>
+                                <div class="column items-center text-h6">Order Summary</div>
                             </q-badge>
                         </div>
                         <div> 
@@ -369,6 +432,72 @@
                         </div>
                     </q-card-section>
                 </q-card>
+            </div>
+            <div v-show="this.step >= 3" class="col-4 q-pt-sm q-pr-sm q-pl-md">
+                <q-card class="my-card" style="width: 400px; height: 550px">
+                    <q-card-section>
+                        <div class="column items-center q-pb-sm q-pt-none q-mt-none">
+                            <q-badge color="teal">
+                                <div class="column items-center text-h6"><b>Billing Computation</b></div>
+                            </q-badge>
+                        </div>
+                        <div> 
+                        <q-separator inset class="black"/>
+                        </div>
+                        <div class="text-grey-8">
+                          <div class="q-pa-sm column items-center text-h6">{{returnSelectedPackage}}</div>
+                          <q-list dense>
+                              <q-item >
+                                  <q-item-section class="q-ml-lg"><strong><b>Package Price:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>{{returnSelectedPackagePrice}}php</strong></q-item-section>
+                              </q-item>
+                              <q-item style="margin-top: -10px" >
+                                  <q-item-section class="q-ml-lg"><strong><b>Pax:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-xl" side><strong>x {{this.clientPax}}</strong></q-item-section>
+                              </q-item>
+                              <q-item>
+                              <q-space />
+                              <q-separator style="width: 10px" />
+                              </q-item>
+                              <q-item style="margin-top: -30px" >
+                                  <q-item-section class="q-ml-lg"><strong><b>Total:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>{{totalPackPrice}}php</strong></q-item-section>
+                              </q-item>
+                              <q-item style="margin-top: -10px" v-show="this.clientPax <= 49">
+                                  <q-item-section class="q-ml-lg"><strong><b>Pax is less than 50:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>+{{paxlessfifty}}php</strong></q-item-section>
+                              </q-item>
+                              <q-item style="margin-top: -10px" v-show="this.clientPax <= 49">
+                                  <q-item-section class="q-ml-lg"><strong><b>Total:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>{{totalPackPricewithpax}}php</strong></q-item-section>
+                              </q-item>
+                              <div style="margin-top: -10px" class="q-pt-sm text-grey-8"><b>Add-Ons:</b></div>
+                                  <q-scroll-area style="height:25vh" :visible="true">
+                                      <q-item v-for="(i, index) in addonsListNew" :key="index" dense>
+                                          <q-item-section class="q-ml-lg"><strong>{{i.addonsQuantities}}x {{i.addonsNames}}</strong></q-item-section>
+                                          <q-item-section class="q-mr-lg" side><strong>+{{i.addonsTotalPrices}}php</strong></q-item-section>
+                                      </q-item>
+                                  </q-scroll-area>
+                              <q-item>
+                                  <q-space />
+                                  <q-separator style="width: 10px" />
+                              </q-item>
+                              <q-item style="margin-top: -30px">
+                                  <q-item-section class="q-ml-lg"><strong><b>Total Payment:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
+                              </q-item>
+                              <q-item>
+                                  <q-item-section class="q-ml-lg"><strong><b>Reservation Fee:</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
+                              </q-item>
+                              <q-item>
+                                  <q-item-section class="q-ml-lg"><strong><b>Downpayment(50%):</b></strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
+                              </q-item>
+                          </q-list>
+                        </div>
+                    </q-card-section>
+                </q-card>
             </div>    
             </q-page-sticky>
         </div>
@@ -391,6 +520,12 @@ export default {
       selectMotif: '',
       selectCity: '',
       addons: '',
+      selectPay: '',
+      enterAmount: 0,
+      payoptions: [
+        {label: 'CASH', value: 'CASH'},
+        {label: 'CARD', value: 'CARD'},
+      ],
       addonsPrice: 0,
       addonsQuantity: 0,
       addonsTotalPrice: 0,
@@ -447,6 +582,62 @@ export default {
             })
   },
   computed: {
+    paxlessfifty(){
+        if(this.clientPax === 0){
+            return 0
+        }else{
+            let sum = parseInt(this.plusfifty) * parseInt(this.clientPax)
+                    return sum
+        }
+    },
+    plusfifty(){
+        if(this.clientPax <= 49){
+            return 50
+        }else{
+            return 0
+        }
+    },
+    discountedPayment(){
+        if(this.totalPayment === 0){
+            return 0
+        }else{
+        let sum = parseInt(this.totalPayment) * .50
+        return sum
+        }
+    },
+    totalPayment(){
+        if(this.incPrice === 0 && this.totalPackPricewithpax === 0){
+            return 0
+        }else{
+        let sum = parseInt(this.totalPackPricewithpax) + parseInt(this.incPrice)
+        return sum
+        }
+    },
+    incPrice(){
+        if(this.addonsList.length === 0){
+            return 0
+        }else{
+        let sum = this.$lodash.sumBy(this.addonsList, 'addonsTotalPrices')
+        // console.log(sum, 'sum')
+        return sum
+        }
+    },
+    totalPackPrice(){      
+        if(this.returnSelectedPackagePrice === 0 && this.clientPax === 0){
+            return 0
+        }else{
+        let sum = parseInt(this.clientPax) * parseInt(this.returnSelectedPackagePrice)
+        return sum
+        }
+    },
+    totalPackPricewithpax(){      
+        if(this.totalPackPrice === 0 && this.paxlessfifty === 0){
+            return 0
+        }else{
+        let sum = parseInt(this.totalPackPrice) + parseInt(this.paxlessfifty)
+        return sum
+        }
+    },
     addonsListNew() {
                     return this.addonsList
     },
@@ -524,6 +715,20 @@ export default {
       returnSelectedPackageInclusion(){
         try {
           return this.selected[0].inclusions
+        } catch (err) {
+          return []
+        }
+      },
+      returnSelectedPackage(){
+        try {
+          return this.selected[0].name
+        } catch (err) {
+          return []
+        }
+      },
+      returnSelectedPackagePrice(){
+        try {
+          return this.selected[0].price
         } catch (err) {
           return []
         }
