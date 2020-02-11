@@ -358,9 +358,10 @@
                                     </q-item>
                                 </q-list>
                               </div>
-                              <div>
-                                
+                              <div v-show="this.selectPay == 'CARD'">
+
                               </div>
+
                             </q-step>
 
                             <template v-slot:navigation>
@@ -504,11 +505,27 @@
     </div> <!-- <----- End Div-->
   </q-page>
 </template>
+<style>
+  #payment-form button{
+    display: none;
+  }
+  #payment-form{
+    width:100%;
+  }
+</style>
 <script>
 import { date } from 'quasar'
 export default {
   data () {
     return {
+      paymentUncompleted: true,
+      icon: 'keyboard_arrow_right',
+      loading: false,
+      amount: 1000,
+      token: null,
+      charge: null,
+      paydetails: null,
+
       startTime: date.formatDate(new Date(), 'hh:mmA'),
       endTime: date.formatDate(new Date(), 'hh:mmA'),
       clientAddress: '',
@@ -929,7 +946,8 @@ export default {
           this.$refs.stepper.previous()
       }
       
-    }
+    },
+
   }
 }
 </script>
