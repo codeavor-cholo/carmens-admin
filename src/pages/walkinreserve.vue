@@ -195,7 +195,7 @@
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
                                 <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" selection="single" :selected.sync="selected">
                                     <template v-slot:item="props">
-                                        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition" color="pink-3" :style="props.selected ? 'transform: scale(0.95);' : ''">
+                                        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition" color="pink-3" :style="props.selected ? 'transform: scale(0.95);' : ''">
                                             <q-card class="my-card" style="border: 2px solid;border-color: grey;" :class="props.selected ? 'bg-grey-2' : ''">
                                                 <q-card-section side>
                                                     <q-list dense>
@@ -359,7 +359,19 @@
                                 </q-list>
                               </div>
                               <div v-show="this.selectPay == 'CARD'">
-
+                                    <div class="container row q-mx-md">
+                                      <stripe-elements
+                                        ref="elementsRef"
+                                        :pk="publishableKey"
+                                        :amount="amount"
+                                        @token="tokenCreated"
+                                        @loading="loading = $event"
+                                        outline class="col-8 q-mr-md"
+                                      >
+                                      </stripe-elements>
+                                      <q-btn outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn>
+                                      <!-- <button @click="submit">Pay ${{amount / 100}}</button> -->
+                                    </div>
                               </div>
 
                             </q-step>
@@ -515,16 +527,19 @@
 </style>
 <script>
 import { date } from 'quasar'
+ import { StripeElements } from 'vue-stripe-checkout';
+
 export default {
+  components: {
+      StripeElements
+  },
   data () {
     return {
-      paymentUncompleted: true,
-      icon: 'keyboard_arrow_right',
       loading: false,
-      amount: 1000,
+      amount: 5000,
+      publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
       token: null,
       charge: null,
-      paydetails: null,
 
       startTime: date.formatDate(new Date(), 'hh:mmA'),
       endTime: date.formatDate(new Date(), 'hh:mmA'),
@@ -947,6 +962,25 @@ export default {
       }
       
     },
+    //PAY
+    submit () {
+      this.$refs.elementsRef.submit();
+    },
+    tokenCreated (token) {
+      this.token = token;
+      console.log(token,'token')
+      // for additional charge objects go to https://stripe.com/docs/api/charges/object
+      this.charge = {
+        source: token.card,
+        amount: this.amount,
+        description: this.description
+      }
+      this.sendTokenToServer(this.charge);
+    },
+    sendTokenToServer (charge) {
+      // Send to server
+      console.log(charge,'charge')
+    }
 
   }
 }
