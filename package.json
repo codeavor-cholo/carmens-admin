@@ -22,7 +22,8 @@
     "vue-apexcharts": "^1.5.2",
     "vue-chart-js": "^1.4.1",
     "vue-chartjs": "^3.5.0",
-    "vue-firestore": "^0.3.22"
+    "vue-firestore": "^0.3.22",
+    "vue-stripe-checkout": "^3.1.6"
   },
   "devDependencies": {
     "@quasar/app": "^1.0.0"
