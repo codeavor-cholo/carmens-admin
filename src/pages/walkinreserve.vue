@@ -569,8 +569,8 @@ export default {
       Food: [],
       choiceOfFood: [],
       choiceOfInclusions: [],
-      showreserveform: true, //this is opposite
-      showdateform: false,
+      showreserveform: false, //this is opposite
+      showdateform: true,
       tab: 'partytray',
       splitterModel: 20,
       dates: date.formatDate(new Date(), 'YYYY/MM/DD'),
