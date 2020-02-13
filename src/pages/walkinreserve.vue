@@ -341,15 +341,15 @@
                               <div v-show="this.selectPay === 'CASH'">
                                   <q-list dense>
                                     <q-item>
-                                        <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /></strong></q-item-section>
+                                        <q-item-section class="q-ml-lg"><strong><q-radio v-model="paymentMode" val="fullPayment" label="Total Payment" /></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
                                     </q-item>
                                     <q-item>
-                                        <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="reservationFee" label="Reservation Fee" /></strong></q-item-section>
+                                        <q-item-section class="q-ml-lg"><strong><q-radio v-model="paymentMode" val="reservationFee" label="Reservation Fee" /></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
                                     </q-item>
                                     <q-item>
-                                        <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="downPayment" label="Down Payment Fee" /></strong></q-item-section>
+                                        <q-item-section class="q-ml-lg"><strong><q-radio v-model="paymentMode" val="downPayment" label="Down Payment Fee" /></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
                                     </q-item>
                                     <q-item>
@@ -362,15 +362,26 @@
                                     <div>
                                         <q-list dense>
                                           <q-item>
-                                              <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /></strong></q-item-section>
+                                              <q-item-section class="q-ml-lg">
+                                              <strong>
+                                                <!-- <q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /> -->
+                                              <q-radio v-model="paymentMode" val="fullPayment" label="Total Payment" />
+                                              </strong>
+                                              </q-item-section>
                                               <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
                                           </q-item>
                                           <q-item>
-                                              <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="reservationFee" label="Reservation Fee" /></strong></q-item-section>
+                                              <q-item-section class="q-ml-lg"><strong>
+                                                <!-- <q-checkbox @input="paymentSelect" color="pink-3" v-model="reservationFee" label="Reservation Fee" /> -->
+                                              <q-radio v-model="paymentMode" val="reservationFee" label="Reservation Fee" />
+                                              </strong>
+                                              </q-item-section>
                                               <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
                                           </q-item>
                                           <q-item>
-                                              <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="downPayment" label="Down Payment Fee" /></strong></q-item-section>
+                                              <q-item-section class="q-ml-lg"><strong>
+                                                <!-- <q-checkbox @input="paymentSelect" color="pink-3" v-model="downPayment" label="Down Payment Fee" /> -->
+                                              <q-radio v-model="paymentMode" val="downPayment" label="Down Payment Fee" /></strong></q-item-section>
                                               <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
                                           </q-item>
                                       </q-list>
@@ -378,7 +389,7 @@
                                     <div class="container row q-mx-md">
                                       <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline class="col-8 q-mr-md">
                                       </stripe-elements>
-                                      <q-btn outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn>
+                                      <q-btn outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{toPayAmount}}</b></q-btn>
                                       <!-- <button @click="submit">Pay ${{amount / 100}}</button> -->
                                     </div>
                               </div>
@@ -544,6 +555,7 @@ export default {
   },
   data () {
     return {
+      paymentMode: 'fullPayment',
       loading: false,
       amount: 0,
       publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
@@ -625,6 +637,22 @@ export default {
             })
   },
   computed: {
+    toPayAmount(){
+      if(this.paymentMode == 'fullPayment'){
+        this.enterAmount = this.totalPayment
+        this.amount = this.totalPayment
+        return this.totalPayment
+      } else if (this.paymentMode == 'downPayment'){
+        this.enterAmount = 5000
+        this.amount = 5000
+        return 5000
+      } else {
+        this.enterAmount = this.discountedPayment
+        this.amount = this.discountedPayment     
+        return this.discountedPayment  
+      }
+
+    },
     paxlessfifty(){
         if(this.clientPax === 0){
             return 0
@@ -1000,6 +1028,8 @@ export default {
           }
       }
     },
+    //revisions for input checkbox payment select
+
     deleteAddons(index){
                 this.addonsList.splice(index, 1) 
                 this.addons = ''
