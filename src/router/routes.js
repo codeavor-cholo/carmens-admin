@@ -5,7 +5,8 @@ const routes = [
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: '/dashboard', meta: {requiredAuth: true}, name: 'dashboard', component: () => import('pages/dashboard.vue') },  
+      { path: '/dashboard', meta: {requiredAuth: true}, name: 'dashboard', component: () => import('pages/dashboard.vue') },
+      { path: '/reservation', meta: {requiredAuth: true}, name: 'reservation', component: () => import('pages/reservation.vue') },  
       { path: '/walkinreserve', meta: {requiredAuth: true}, name: 'walkinreserve', component: () => import('pages/walkinreserve.vue') },
       { path: '/partytrayordering', meta: {requiredAuth: true}, name: 'partytrayordering', component: () => import('pages/partytrayordering.vue') },
       { path: '/foodmanage', meta: {requiredAuth: true}, name: 'foodmanage', component: () => import('pages/foodmanage.vue') },

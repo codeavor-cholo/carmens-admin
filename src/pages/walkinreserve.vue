@@ -23,14 +23,14 @@
                     <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="pink-3" outlined dense v-model="clientPax" label="Pax"/>
                   </div>
                   <div class="row">
-                    <q-input type="time" class="q-pt-sm" color="pink-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
-                    <q-input type="time" class="q-pt-sm q-ml-sm" dense style="width: 163px" color="pink-3" outlined v-model="endTime" hint="End Time"/>
+                    <q-input type="time" @input="endtime" mask="YYYY-MM-DD HH:mm:ss" class="q-pt-sm" color="pink-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
+                    <q-input type="time" class="q-pt-sm q-ml-sm" mask="YYYY-MM-DD HH:mm:ss" dense style="width: 163px" color="pink-3" outlined v-model="endTime" hint="End Time"/>
                   </div>
                 </div>
               </q-card-section>
 
               <q-card-actions align="right" class="bg-white text-teal fixed-bottom">
-                <q-btn flat label="Continue" color="pink-3" @click="showreserveform = true, showdateform = false" />
+                <q-btn flat label="Continue" color="pink-3" @click="dateformCheck" />
               </q-card-actions>
             </q-card>
         </div>
@@ -341,15 +341,15 @@
                               <div v-show="this.selectPay === 'CASH'">
                                   <q-list dense>
                                     <q-item>
-                                        <q-item-section class="q-ml-lg"><strong><b>Total Payment:</b></strong></q-item-section>
+                                        <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
                                     </q-item>
                                     <q-item>
-                                        <q-item-section class="q-ml-lg"><strong><b>Reservation Fee:</b></strong></q-item-section>
+                                        <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="reservationFee" label="Reservation Fee" /></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
                                     </q-item>
                                     <q-item>
-                                        <q-item-section class="q-ml-lg"><strong><b>Downpayment(50%):</b></strong></q-item-section>
+                                        <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="downPayment" label="Down Payment Fee" /></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
                                     </q-item>
                                     <q-item>
@@ -359,15 +359,24 @@
                                 </q-list>
                               </div>
                               <div v-show="this.selectPay == 'CARD'">
+                                    <div>
+                                        <q-list dense>
+                                          <q-item>
+                                              <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /></strong></q-item-section>
+                                              <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
+                                          </q-item>
+                                          <q-item>
+                                              <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="reservationFee" label="Reservation Fee" /></strong></q-item-section>
+                                              <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
+                                          </q-item>
+                                          <q-item>
+                                              <q-item-section class="q-ml-lg"><strong><q-checkbox @input="paymentSelect" color="pink-3" v-model="downPayment" label="Down Payment Fee" /></strong></q-item-section>
+                                              <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
+                                          </q-item>
+                                      </q-list>
+                                    </div>
                                     <div class="container row q-mx-md">
-                                      <stripe-elements
-                                        ref="elementsRef"
-                                        :pk="publishableKey"
-                                        :amount="amount"
-                                        @token="tokenCreated"
-                                        @loading="loading = $event"
-                                        outline class="col-8 q-mr-md"
-                                      >
+                                      <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline class="col-8 q-mr-md">
                                       </stripe-elements>
                                       <q-btn outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn>
                                       <!-- <button @click="submit">Pay ${{amount / 100}}</button> -->
@@ -378,7 +387,8 @@
 
                             <template v-slot:navigation>
                                 <q-stepper-navigation align="right">
-                                <q-btn flat  @click="$refs.stepper.next()" color="pink-3" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
+                                <!-- <q-btn v-if="step === 4 || this.selectPay === 'CARD'" v-show="step === 4" outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn> -->
+                                <q-btn flat @click="stepcheck" color="pink-3" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
                                 <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>
@@ -527,8 +537,7 @@
 </style>
 <script>
 import { date } from 'quasar'
- import { StripeElements } from 'vue-stripe-checkout';
-
+import { StripeElements } from 'vue-stripe-checkout';
 export default {
   components: {
       StripeElements
@@ -536,11 +545,13 @@ export default {
   data () {
     return {
       loading: false,
-      amount: 5000,
+      amount: 0,
       publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
       token: null,
       charge: null,
-
+      fullPayment: false,
+      reservationFee: false,
+      downPayment: false,
       startTime: date.formatDate(new Date(), 'hh:mmA'),
       endTime: date.formatDate(new Date(), 'hh:mmA'),
       clientAddress: '',
@@ -786,6 +797,209 @@ export default {
       }
   },
   methods: {
+    dateformCheck(){
+        if(this.dates === date.formatDate(new Date(), 'YYYY-MM-DD') || this.clientFName === '' || this.clientLName === '' || this.clientEmail === '' || this.clientAddress === '' || this.selectCity === '' || this.clientEvent === '' || this.selectMotif === '' || this.pax === 0 || this.pax === '' || this.startTime === ''){
+            this.$q.dialog({
+              title: `Enable To Continue`,
+              message: 'Please Fill all the Requirements',
+              type: 'negative',
+              color: 'pink-6',
+              textColor: 'grey',
+              icon: 'warning',
+              ok: 'Ok'
+          })
+        }else{
+          this.showreserveform = true
+          this.showdateform = false
+        }
+    },
+    endtime(){
+            let newDate = new Date(this.startTime)
+            // console.log('asd',this.datestimeView)
+            newDate = date.addToDate(newDate, { hours: 5})
+            // console.log('end',date.formatDate(new Date(newDate), 'hh:mmA'))
+            this.endTime = date.formatDate(new Date(newDate), 'hh:mmA')
+    },
+    stepcheck(){
+          if(this.step === 1){
+              if(this.selected.length === 0){
+                   this.$q.dialog({
+                    title: `Enable To Continue`,
+                    message: 'Please Select Package',
+                    type: 'negative',
+                    color: 'pink-6',
+                    textColor: 'grey',
+                    icon: 'warning',
+                    ok: 'Ok'
+                })
+              }else{
+                this.$refs.stepper.next()
+              }
+          }else if(this.step === 2){
+              if(this.choiceOfFood.length === 0){
+                  this.$q.dialog({
+                    title: `Enable To Continue`,
+                    message: 'Please Select Food',
+                    type: 'negative',
+                    color: 'pink-6',
+                    textColor: 'grey',
+                    icon: 'warning',
+                    ok: 'Ok'
+                })
+              }else{
+                this.$refs.stepper.next()
+              }
+          }else if(this.step === 3){
+                this.$refs.stepper.next()
+          }else{
+              if(this.enterAmount === 0){
+                this.$q.dialog({
+                    title: `Unable to Continue??`,
+                    message: 'Please Select Payment Type??',
+                    color: 'pink-6',
+                    textColor: 'grey',
+                    icon: 'negative',
+                    ok: 'Ok'
+                })
+              }else{
+                  this.$q.dialog({
+                      title: `Reserve Now??`,
+                      message: 'Are you sure you want to Reserve this Now??',
+                      color: 'pink-3',
+                      textColor: 'grey',
+                      icon: 'mdi-positive',
+                      ok: 'Ok',
+                      cancel: 'Cancel'
+                  }).onOk(()=>{
+                      this.reserveNowCash()
+                      this.$q.notify({
+                          message: 'RESERVED!',
+                          icon: 'mdi-folder-plus-outline',
+                          color: 'teal',
+                          textColor: 'white',
+                          position: 'center'
+                  })
+                  }).onCancel(() => {
+
+                  })
+              }
+          }
+    },
+    reserveNowCard(){
+        let reserveDetails = {
+            clientReserveDate: this.dates,
+            clientFName: this.clientFName,
+            clientLName: this.clientLName,
+            clientPlace: this.clientAddress,
+            clientCity: this.selectCity,
+            clientEvent: this.clientEvent,
+            clientMotif: this.selectMotif,
+            clientPax: this.clientPax,
+            clientEmail: this.clientEmail,
+            clientStartTime: this.startTime,
+            clientEndTime: this.endTime,
+            clientSelectPackage: this.selected[0],
+            clientFoodChoice: this.choiceOfFood,
+            clientAddOns: this.addonsList,
+            clientTotalPayment: this.totalPayment,
+            clientTotalDownPayment: this.discountedPayment,
+            clientPaidAmount: this.enterAmount,
+            clientPayDetails: this.paydetails,
+            clientTokenID: this.token.id,
+            clientPaymentType: 'CARD',
+            clientReserveType: 'WALK-IN',
+            clientDateofReserve: date.formatDate(new Date(), 'YYYY-MM-DD'),
+        }
+            this.$firestoreApp.collection('Reservation').add(reserveDetails)
+                this.showreserveform = false, //this is opposite
+                this.showdateform = true,
+                this.step = 1
+                this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                this.clientFName = ''
+                this.clientLName = ''
+                this.clientAddress = ''
+                this.selectCity = ''
+                this.clientEvent = ''
+                this.selectMotif = ''
+                this.clientPax = 0
+                this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                this.selected = []
+                this.choiceOfFood = []
+                this.addonsList = []
+                this.enterAmount = 0
+                this.amount = 0
+                this.clientEmail = ''
+    },
+    reserveNowCash(){
+        let reserveDetails = {
+            clientReserveDate: this.dates,
+            clientFName: this.clientFName,
+            clientLName: this.clientLName,
+            clientPlace: this.clientAddress,
+            clientCity: this.selectCity,
+            clientEmail: this.clientEmail,
+            clientEvent: this.clientEvent,
+            clientMotif: this.selectMotif,
+            clientPax: this.clientPax,
+            clientStartTime: this.startTime,
+            clientEndTime: this.endTime,
+            clientSelectPackage: this.selected[0],
+            clientFoodChoice: this.choiceOfFood,
+            clientAddOns: this.addonsList,
+            clientTotalPayment: this.totalPayment,
+            clientTotalDownPayment: this.discountedPayment,
+            clientPaidAmount: this.enterAmount,
+            clientPayDetails: 'CASH',
+            clientPaymentType: 'CASH',
+            clientTokenID: 'CASH',
+            clientReserveType: 'WALK-IN',
+            clientDateofReserve: date.formatDate(new Date(), 'YYYY-MM-DD'),
+        } 
+            this.$firestoreApp.collection('Reservation').add(reserveDetails)
+                this.showreserveform = false, //this is opposite
+                this.showdateform = true,
+                this.step = 1
+                this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                this.clientFName = ''
+                this.clientLName = ''
+                this.clientAddress = ''
+                this.selectCity = ''
+                this.clientEvent = ''
+                this.selectMotif = ''
+                this.clientPax = 0
+                this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                this.selected = []
+                this.choiceOfFood = []
+                this.addonsList = []
+                this.enterAmount = 0
+                this.amount = 0
+                this.clientEmail = ''
+    },
+    paymentSelect(){
+      if(this.fullPayment === false && this.reservationFee === false && this.downPayment === false){
+         this.enterAmount = 0
+         this.amount = 0
+      }else{
+          if(this.fullPayment === true){
+              this.reservationFee = false
+              this.downPayment = false
+              this.enterAmount = this.totalPayment
+              this.amount = this.totalPayment
+          }if(this.reservationFee === true){
+                this.fullPayment = false
+                this.downPayment = false
+                this.enterAmount = 5000
+                this.amount = 5000
+          }if(this.downPayment === true){
+                this.reservationFee = false
+                this.fullPayment = false
+                this.enterAmount = this.discountedPayment
+                this.amount = this.discountedPayment
+          }
+      }
+    },
     deleteAddons(index){
                 this.addonsList.splice(index, 1) 
                 this.addons = ''
@@ -973,13 +1187,32 @@ export default {
       this.charge = {
         source: token.card,
         amount: this.amount,
-        description: this.description
       }
       this.sendTokenToServer(this.charge);
     },
     sendTokenToServer (charge) {
       // Send to server
       console.log(charge,'charge')
+      if(this.amount === 0){
+        this.$q.dialog({
+            title: `Unable to Continue??`,
+            message: 'Please Select Payment Type??',
+            color: 'pink-6',
+            textColor: 'grey',
+            icon: 'negative',
+            ok: 'Ok'
+        })
+      }else{
+          this.paydetails = charge
+          this.reserveNowCard()
+          this.$q.notify({
+                  message: 'RESERVED!',
+                  icon: 'mdi-folder-plus-outline',
+                  color: 'pink-3',
+                  textColor: 'white',
+                  position: 'center'
+          })
+      }
     }
 
   }
