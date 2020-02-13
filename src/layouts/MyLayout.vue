@@ -59,7 +59,15 @@
                 <q-item-label>Dashboard</q-item-label>
               </q-item-section>
             </q-item>
-
+            
+            <q-item clickable :to="{ name: 'reservation' }">
+              <q-item-section avatar>
+                <q-icon name="mdi-calendar-range" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Reservation</q-item-label>
+              </q-item-section>
+            </q-item>
 
             <q-expansion-item
               expand-separator
