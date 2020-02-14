@@ -42,6 +42,15 @@
               </q-item-section>
             </q-item>
 
+            <q-item clickable @click="$router.push('/customreservation')" v-show="returnPermissions.walkIn">
+              <q-item-section avatar>
+                <q-icon name="category" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Custom Walk-In Reservation</q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering">
               <q-item-section avatar>
                 <q-icon name="mdi-cart-outline" />
