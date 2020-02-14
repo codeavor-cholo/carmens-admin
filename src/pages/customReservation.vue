@@ -197,7 +197,7 @@
                             <q-step :name="1" title="Select Food of Choice" icon="fastfood" :done="step > 1">
                                 <q-chip class="" color="secondary" text-color="white" icon="info" label="Please be informed that price per head will vary and prices will be based on your food choices and add-ons." />
                                 <div v-for="(food,i) in foodChoice" :key="i" v-show="selected != null">
-                                  <span class="q-mb-none q-mt-md text-subtitle2"> Select <span class="text-teal text-h6 text-weight-bolder">{{returnLimit(food.viandName)}}</span> Choice<span v-show="returnLimit(food.viandName) > 1">s</span> of {{food.viandName}}  </span>
+                                  <span class="q-mb-none q-mt-md text-subtitle2"> Select <span class="text-teal text-h6 text-weight-bolder"></span> Choice of {{food.viandName}}  </span>
                                   <div class="row">
                                     <q-img
                                       v-for="(choice,j) in food.foodChoices" :key="j"
