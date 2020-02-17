@@ -10,7 +10,12 @@
                     </q-input>
                 </div>
                 <div>
-                    <q-btn size="1.7rem" class="q-mt-sm" flat color="pink-3" icon="mdi-cart" />
+                    <q-btn @click="viewFoodOrder = true" size="1.7rem" class="q-mt-sm" flat color="grey-8" icon="mdi-cart">
+                        <q-badge color="pink-3" v-show="this.cartList.length != 0" floating>{{cartLength}}</q-badge>
+                        <q-tooltip>
+                            View Food Order
+                        </q-tooltip>
+                    </q-btn>
                 </div>
             </div>          
         </div>
@@ -58,7 +63,7 @@
             </q-table>
         </div>
         <q-dialog v-model="addPorder">
-            <q-card style="min-width: 400px">
+            <q-card class="text-center text-weight-bold" style="min-width: 400px">
                             <q-img
                                 :src="this.selectedPorder.foodPic"
                                 :ratio="4/3"
@@ -67,18 +72,71 @@
                                     {{this.selectedPorder.foodName}}
                                 </div>
                             </q-img>
-                            <span class="full-width text-center text-weight-bold">PARTY TRAY PRICES</span>
-                                <div v-for="(price, index) in this.selectedPorder.partyTrayPrice" :key="index">
-                                    <div overline>{{ price.label }}({{price.paxMin}} - {{price.paxMax}})</div>
-                                    <div caption>{{ price.price }}</div>
+                            <span class="text-center text-weight-bold text-h6">PARTY TRAY SIZE/s AND PRICES</span>
+                                <div class="q-pa-sm" v-for="(price, index) in this.selectedPorder.partyTrayPrice" :key="index">
+                                    <div>
+                                        <q-checkbox @input="consolePorder" keep-color color="pink-3" dense :val="price" v-model="pOrderSelected" />
+                                        {{ price.label }}({{price.paxMin}} - {{price.paxMax}}) for {{ price.price }}php
+                                        </div>
                                 </div>
                         <q-card-section>
                     </q-card-section>
 
                     <q-card-actions align="right" class="text-primary">
-                        <q-btn flat label="Ok" v-close-popup />
+                        <q-btn flat color="grey-8" label="Cancel" v-close-popup />
+                        <q-btn flat color="pink-3" label="Add To Order" @click="addToCart" v-close-popup />
                     </q-card-actions>
                 </q-card>
+        </q-dialog>
+        <q-dialog v-model="viewFoodOrder">
+            <q-card>
+                <q-card-section>
+                <div class="text-h6">Food Ordered List</div>
+                </q-card-section>
+
+                <q-card-section class="q-pt-none">
+                    <q-list padding>
+                        <!-- <q-item>
+                            <q-item-section top avatar>
+                            <q-avatar rounded>
+                                <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                            </q-avatar>
+                            </q-item-section>
+
+                            <q-item-section>
+                            <q-item-label>Single line item</q-item-label>
+                            <q-item-label caption>Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
+                            </q-item-section>
+
+                            <q-item-section side top>
+                            <q-item-label caption>meta</q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-separator spaced /> -->
+
+                        <q-item v-for="(food, index) in this.cartList" :key="index">
+                            <q-item-section top thumbnail class="q-ml-none">
+                            <img :src="food.foodpic" style="height: 80px; max-width: 150px">
+                            </q-item-section>
+
+                            <q-item-section>
+                            <q-item-label>{{food.foodNames}}</q-item-label>
+                            <q-item-label caption>{{food.partyTraySize}}</q-item-label>
+                            </q-item-section>
+
+                            <q-item-section side top>
+                            <q-item-label caption>meta</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-separator spaced />
+                        </q-list>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                <q-btn flat label="Checkout" color="pink-3" v-close-popup />
+                </q-card-actions>
+            </q-card>
         </q-dialog>
     </q-page>
 </template>
@@ -86,6 +144,9 @@
 export default {
     data(){
         return{
+            viewFoodOrder: false,
+            cartList: [],
+            pOrderSelected: [],
             addPorder: false,
             selection: [],
             Food: [],
@@ -142,11 +203,41 @@ export default {
                 } 
             })
             return party
-            
+        },
+        cartLength(){
+            if(this.cartList.length === 0){
+                return 0
+            }else{
+                return this.cartList.length
+            }
         },
     },
     methods: {
-            openPorder (props) {
+        addToCart(){
+            var foodDetails = {
+                foodpic: this.selectedPorder.foodPic,
+                foodNames: this.selectedPorder.foodName,
+                category: this.selectedPorder.category,
+                partyTraySize: this.pOrderSelected
+            }
+            if(this.pOrderSelected.length === 0){
+                this.$q.dialog({
+                title: 'Please Select Party Tray Size   !',
+                message: 'Select Party Tray Size!',
+                ok: 'Ok',
+                persistent: true
+                }).onOk(()=>{
+                    this.addPorder = true
+                })
+            }else{
+                this.cartList.push(foodDetails)
+                console.log(this.cartList, 'cartList')
+            }
+        },
+        consolePorder(){
+            console.log('porder', this.pOrderSelected)
+        },
+        openPorder (props) {
             this.selectedPorder = props.row
         }
     }

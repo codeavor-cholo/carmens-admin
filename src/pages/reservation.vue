@@ -26,41 +26,64 @@
                                     <q-card class="my-card" style="border: 2px solid;border-color: grey;" >
                                         <q-card-section side>
                                             <q-list dense>
-                                            <q-item class="q-mt-sm">
-                                            <span class="full-width text-center text-teal text-h6 text-weight-bold">{{props.row.clientFName}} {{props.row.clientLName}}
-                                                <br>
-                                                <q-chip class="text-center">{{props.row.clientReserveDate}}</q-chip>    
-                                            </span>
+                                            <q-item>
+                                            <div class="full-width text-center text-grey-8 text-h6">
+                                                <strong><q-chip class="text-weight-bold text-h6">{{props.row.clientEvent}}</q-chip></strong>
+                                            </div>
+                                            <!-- <strong class="row full-width text-center text-grey-8 text-h6 text-weight-bold">{{props.row.clientFName}} {{props.row.clientLName}}'s<q-chip class="text-weight-bold text-h6">{{props.row.clientEvent}}</q-chip></strong>
+                                            <q-strong class="text-center text-grey">{{props.row.clientReserveDate}}</q-strong>     -->
                                             </q-item>
-                                            <q-separator class="q-mt-sm"/>
-                                            <q-item class="q-mt-sm text-grey-8" v-show="props.row.clientFoodChoice">
-                                            <span class="full-width text-center text-weight-bold">FOOD CATEGORIES</span>
-                                            </q-item>
-                                            <q-item v-for="(i, index) in props.row.clientFoodChoice" :key="index" class="text-grey-8">
-                                                <q-item-section>
-                                                <q-item-label>{{ i.category }} - {{i.foodName}}</q-item-label>
-                                                </q-item-section>
-                                            </q-item>
-                                            <q-separator class="q-mt-sm"/>
-                                            <q-item class="q-mt-sm" v-show="props.row.clientSelectPackage.inclusions">
-                                            <span class="full-width text-center text-weight-bold text-grey-8" >INCLUSIONS</span>
-                                            </q-item>
-                                            <q-item v-for="(price, index) in props.row.clientSelectPackage.inclusions" :key="index" class="text-grey-8">
-                                                <q-item-section>
-                                                <q-item-label> {{ price.inclusion }}</q-item-label>
-                                                </q-item-section>
-                                            </q-item>
-                                            <q-separator class="q-mt-sm"/>
-                                            <q-item class="q-mt-sm" v-show="props.row.clientAddOns.lenght != 0">
-                                            <span class="full-width text-center text-weight-bold text-grey-8" >ADD-ONS</span>
-                                            </q-item>
-                                            <q-item v-for="(price, index) in props.row.clientAddOns" :key="index" class="text-grey-8">
-                                                <q-item-section>
-                                                <q-item-label>{{ price.addonsQuantities }} {{ price.addonsNames }}</q-item-label>
-                                                </q-item-section>
-                                            </q-item>
+                                            <div class="text-grey-8" align="center">
+                                                <strong class="q-pb-none q-mb-none text-h6">Name: {{props.row.clientFName}} {{props.row.clientLName}}</strong>
+                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Date of Event:</b> {{props.row.clientReserveDate}}</p>
+                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>From:</b> {{props.row.clientStartTime}} <b>To:</b> {{props.row.clientEndTime}}</p>
+                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Where:</b> {{props.row.clientPlace}} {{props.row.clientCity}}</p>
+                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Motif:</b> {{props.row.clientMotif}}</p>
+                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Guest:</b> {{props.row.clientPax}}</p>
+                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Email:</b>{{props.row.clientEmail}}</p>
+                                                <p class="q-pt-none q-mt-none"></p>
+                                            </div>
+                                            <q-separator/>
+                                            <q-slide-transition>
+                                                <div v-show="expanded">
+                                                <q-separator />
+                                                  <q-list dense>
+                                                    <q-item class="q-mt-sm text-grey-8" v-show="props.row.clientFoodChoice">
+                                                        <span class="full-width text-center text-weight-bold">FOOD CATEGORIES</span>
+                                                        </q-item>
+                                                        <q-item v-for="(i, index) in props.row.clientFoodChoice" :key="index" class="text-grey-8">
+                                                            <q-item-section>
+                                                            <q-item-label>{{ i.category }} - {{i.foodName}}</q-item-label>
+                                                            </q-item-section>
+                                                        </q-item>
+                                                        <q-separator class="q-mt-sm"/>
+                                                        <q-item class="q-mt-sm" v-show="props.row.clientSelectPackage.inclusions">
+                                                        <span class="full-width text-center text-weight-bold text-grey-8" >INCLUSIONS</span>
+                                                        </q-item>
+                                                        <q-item v-for="(price, index) in props.row.clientSelectPackage.inclusions" :key="index" class="text-grey-8">
+                                                            <q-item-section>
+                                                            <q-item-label> {{ price.inclusion }}</q-item-label>
+                                                            </q-item-section>
+                                                        </q-item>
+                                                        <q-separator class="q-mt-sm"/>
+                                                        <q-item class="q-mt-sm" v-show="props.row.clientAddOns.lenght != 0">
+                                                        <span class="full-width text-center text-weight-bold text-grey-8" >ADD-ONS</span>
+                                                        </q-item>
+                                                        <q-item v-for="(price, index) in props.row.clientAddOns" :key="index" class="text-grey-8">
+                                                            <q-item-section>
+                                                            <q-item-label>{{ price.addonsQuantities }} {{ price.addonsNames }}</q-item-label>
+                                                            </q-item-section>
+                                                    </q-item>
+                                                  </q-list>
+                                                </div>
+                                            </q-slide-transition>
                                         </q-list>
                                         </q-card-section>
+                                        <!-- color="expanded ? 'grey-8':'pink-3' " -->
+                                        <q-card-actions>
+                                            <q-space />
+                                            <q-btn :color="expanded ? 'grey-8':'pink-3'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
+                                        </q-card-actions>
                                     </q-card>
                                 </div>
                             </template>
@@ -75,6 +98,7 @@
 export default {
     data(){
         return {
+            expanded: false,    
             showCompleteBanner: false,
             checkerArray: [],
             filter: '',
@@ -124,6 +148,9 @@ export default {
             })
     },
     methods:{
+        expandeds(props){
+            this.expanded = !this.expanded
+        }
     }
 }
 </script>
