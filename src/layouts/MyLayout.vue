@@ -42,7 +42,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable @click="$router.push('/customreservation')" v-show="returnPermissions.walkIn">
+            <q-item clickable @click="$router.push('/customReservation')" v-show="returnPermissions.walkIn">
               <q-item-section avatar>
                 <q-icon name="category" />
               </q-item-section>

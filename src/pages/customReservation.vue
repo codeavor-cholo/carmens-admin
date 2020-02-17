@@ -1,48 +1,13 @@
 <template>
   <q-page>
-    <div v-show="showdateform" class="q-pa-md">
-        <div>
-            <q-card class="my-card fixed-center q-mt-lg" style="width: 700px; max-width: 80vw;height: 470px; max-height: 50vw">
-              <q-card-section>
-                <strong class="text-grey text-h6 q-pa-md">Select Date and Fill up Form</strong>
-                <div class="q-pa-md" style="float:left; width: 50%">
-                  <q-date v-model="dates" mask="YYYY/MM/DD" color="pink-3" today-btn/>
-                </div>
-                <div style="float: right;width:50%;">
-                  <p class="text-grey column items-center" style="height: 10px; margin-top: -5px; margin-bottom: 2px">+50php if pax is less than 50</p>
-                  <div class="row">
-                    <q-input class="q-pt-sm" color="pink-3" style="width: 163px" outlined dense v-model="clientFName" label="First Name"/>
-                    <q-input class="q-pt-sm q-ml-sm" color="pink-3" style="width: 163px" outlined dense v-model="clientLName" label="Last Name"/>
-                  </div>
-                  <q-input class="q-pt-sm" color="pink-3" outlined dense v-model="clientEmail" label="Email"/>
-                  <q-input class="q-pt-sm" color="pink-3" outlined dense v-model="clientAddress" label="Event Place"/>
-                  <q-select class="q-pt-sm" color="pink-3" dense outlined v-model="selectCity" :options="cityOpt" emit-value map-options label="Select City" />
-                  <q-input class="q-pt-sm" color="pink-3" outlined dense v-model="clientEvent" label="Event Name"/>
-                  <div class="row">
-                    <q-select class="q-pt-sm" color="pink-3" dense outlined style="width: 163px" v-model="selectMotif" :options="motifOpt" emit-value map-options label="Select Motif" />
-                    <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="pink-3" outlined dense v-model="clientPax" label="Pax"/>
-                  </div>
-                  <div class="row">
-                    <q-input type="time" @input="endtime" mask="YYYY-MM-DD HH:mm:ss" class="q-pt-sm" color="pink-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
-                    <q-input type="time" class="q-pt-sm q-ml-sm" mask="YYYY-MM-DD HH:mm:ss" dense style="width: 163px" color="pink-3" outlined v-model="endTime" hint="End Time"/>
-                  </div>
-                </div>
-              </q-card-section>
-
-              <q-card-actions align="right" class="bg-white text-teal fixed-bottom">
-                <q-btn flat label="Continue" color="pink-3" @click="dateformCheck" />
-              </q-card-actions>
-            </q-card>
-        </div>
-    </div>
-    <div v-show="showreserveform">
+    <div>
         <div class="row">
             <div class="col-8 q-pt-sm q-pl-xl q-pl-md">
                 <q-card class="my-card">
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
                       <q-space />
-                      <q-btn label="Back to Form" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
+                      <q-btn label="Select Package" :to="{ name: 'walkinreserve' }" color="pink-3" flat dense/>
                     </q-card-section>
                     <q-card-section>
                             <div class="row text-grey-8">
@@ -192,12 +157,10 @@
                         
                         <div class="q-pa-sm q-pt-md">
                         <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
-
-
                             <q-step :name="1" title="Select Food of Choice" icon="fastfood" :done="step > 1">
                                 <q-chip class="" color="secondary" text-color="white" icon="info" label="Please be informed that price per head will vary and prices will be based on your food choices and add-ons." />
                                 <div v-for="(food,i) in foodChoice" :key="i" v-show="selected != null">
-                                  <span class="q-mb-none q-mt-md text-subtitle2"> Select <span class="text-teal text-h6 text-weight-bolder">{{returnLimit(food.viandName)}}</span> Choice<span v-show="returnLimit(food.viandName) > 1">s</span> of {{food.viandName}}  </span>
+                                  <span class="q-mb-none q-mt-md text-subtitle2"> Select <span class="text-teal text-h6 text-weight-bolder"></span> Choice of {{food.viandName}}  </span>
                                   <div class="row">
                                     <q-img
                                       v-for="(choice,j) in food.foodChoices" :key="j"
@@ -206,20 +169,11 @@
                                       class="col-3 q-ma-md rounded-borders"
                                       :style="returnSelectedStatus(choice) ? 'transform: scale(0.95);border: 4px solid;border-color: pink;' : ''"
                                     >
-                                    <div class="absolute-bottom text-overline">
+                                    <div class="absolute-bottom text-overline text-center">
                                       <q-checkbox color="pink-3" v-model="choiceOfFood" :val="choice" :label="choice.foodName"/>
                                     </div>
                                     </q-img>
                                   </div>
-                                </div>
-                                <div class="row">
-                                  <div class="text-subtitle2 q-mb-sm full-width">Package Includes The Following:</div>
-                                  <q-card flat style="max-width: 150px" class="my-card bg-grey-3 col-3 q-ma-md" v-for="(inc,i) in returnSelectedPackageInclusion" :key="i">
-                                    <q-card-section>
-                                        <!-- <q-checkbox color="pink-3" dense v-model="choiceOfInclusions" :val="inc" :label="inc.inclusion" />-->
-                                        {{inc.inclusion}} 
-                                    </q-card-section>
-                                  </q-card>
                                 </div>
                                 <div>
                                     <span class="q-mb-none q-mt-md text-subtitle2">Add-Ons:</span>
@@ -268,25 +222,17 @@
                                   <p class="q-pt-none q-mt-none">09175057991 . 09772774030</p>
                               </div>
                               <div class="text-grey-8" style="float: left; width: 40%">
-                                <strong class="q-pa-md text-h6">Food Choices</strong>
+                                <strong class="text-h6">Food Choices</strong>
                                   <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
-                                    <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" :color="choice.foodChoices.length == returnLimit(choice.viandName) ? 'teal' : 'pink-6'" class="text-white" :label="choice.foodChoices.length+' / '+returnLimit(choice.viandName)" /></span>
+                                    <span class="text-weight-bold">{{choice.viandName}}</span>
                                     <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
                                       <div dense class="col q-mr-sm">{{pick.foodName}}</div>
                                       <div dense class="col-1 text-weight-bold">x 1</div>
                                     </div>
                                   </div>
                               </div>
-                              <div class="text-grey-8" style="float: right; width: 50%">
-                                  <div class="q-pa-sm text-h6"><strong>Inclusions: </strong></div>
-                                      <q-list v-for="(inc,i) in returnSelectedPackageInclusion" :key="i" dense>
-                                        <q-item>
-                                            <q-item-section>
-                                                <q-item-label lines="1">{{inc.inclusion}}</q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                      </q-list>
-                                  <div class="q-pa-sm text-h6"><strong>Add-Ons:</strong></div>
+                              <div v-show="addonsListNew.length != 0" class="text-grey-8" style="float: right; width: 50%">
+                                  <div class="text-h6"><strong>Add-Ons:</strong></div>
                                       <q-list v-for="(i, index) in addonsListNew" :key="index" dense>
                                           <q-item>
                                               <q-item-section>
@@ -362,8 +308,8 @@
                             <template v-slot:navigation>
                                 <q-stepper-navigation align="right">
                                 <!-- <q-btn v-if="step === 4 || this.selectPay === 'CARD'" v-show="step === 4" outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn> -->
-                                <q-btn flat @click="stepcheck" color="pink-3" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
-                                <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
+                                <q-btn flat @click="stepcheck" color="pink-3" :label="step === 3 ? 'Reserve Now' : 'Continue'" />
+                                <q-btn v-if="step > 1" flat color="grey-8" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>
                         </q-stepper>
@@ -384,49 +330,47 @@
                         <div> 
                         <q-separator inset class="black"/>
                         </div>
-                        <div class="q-pa-sm"><b>Items (Food Choices)</b></div>
-                        <q-scroll-area style="height:40vh" :visible="true">
+                        <div class="q-px-sm q-mb-sm row">
+                            <div class="col q-mr-sm"><b>Items (Food Choices)</b></div>
+                            <div dense class="col-3.5 q-ml-lg"><strong>Price Per Head</strong></div>
+                        </div>
+                        <q-scroll-area style="height:35vh" :visible="true">
                         <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
                           <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" color="teal" class="text-white" :label="choice.foodChoices.length" /></span>
                           <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
-                            <div dense class="col q-mr-sm">{{pick.foodName}}</div>
                             <div dense class="col-1 text-weight-bold">x 1</div>
+                            <div dense class="col q-mr-sm">{{pick.foodName}}</div>
+                            <div dense class="col-1 text-weight-bold">{{pick.foodPrice}}</div>
                           </div>
                         </div>
                         </q-scroll-area>
-
                         <div> 
                         <q-separator inset class="black"/>
                         </div>
-                        <div>
-                          <div style="float: left; width: 25%"> 
-                              <div class="q-pa-sm"><b>Inclusions: </b></div>
-                                <q-scroll-area style="height:25vh" :visible="true">
-                                  <q-list v-for="(inc,i) in returnSelectedPackageInclusion" :key="i" dense>
-                                    <q-item>
-                                        <q-item-section>
-                                            <q-item-label lines="1">{{inc.inclusion}}</q-item-label>
-                                        </q-item-section>
-                                    </q-item>
-                                  </q-list>
-                                </q-scroll-area>
+                          <div class="row"> 
+                              <div dense class="col q-ml-sm text-weight-bold">Total Customize Package Price per Head:</div>
+                              <div dense class="q-mr-lg col-1 text-weight-bold">{{custompackPrice}}</div>
                           </div>
-                          <div style="float: right; width: 65%;">
-                              <div class="q-pa-sm"><b>Add-Ons:</b></div>
+                        <div> 
+                        <q-separator inset class="black"/>
+                        </div>
+                        <div v-show="addonsListNew.length != 0">
+                              <div class="q-pt-sm q-pl-sm"><b>Add-Ons:</b></div>
                               <q-scroll-area style="height:25vh" :visible="true">
                                 <q-list v-for="(i, index) in addonsListNew" :key="index" dense>
                                     <q-item>
-                                        <q-item-section>
-                                            <q-item-label  avatar top>{{i.addonsQuantities}}x {{i.addonsNames}}</q-item-label>
-                                        </q-item-section>
-                                        <q-item-section>
-                                            <q-item-label  lines="1" side>{{i.addonsTotalPrices}}</q-item-label>
-                                        </q-item-section>
+                                            <div dense class="col q-ml-sm text-weight-bold">{{i.addonsQuantities}}x {{i.addonsNames}}</div>
+                                            <div class="q-mr-md col-1 text-weight-bold">{{i.addonsTotalPrices}}</div>
                                     </q-item>
                                 </q-list>
                               </q-scroll-area>
-                          </div>
-                        </div>
+                              <q-separator inset class="black"/>
+                                  <div class="row"> 
+                                      <div dense class="col q-ml-sm text-weight-bold">Total Add-Ons Price:</div>
+                                      <div dense class="q-mr-lg col-1 text-weight-bold">{{customaddonsPrice}}</div>
+                                  </div>
+                              <q-separator inset class="black"/>
+                       </div>
                     </q-card-section>
                 </q-card>
             </div>
@@ -442,11 +386,11 @@
                         <q-separator inset class="black"/>
                         </div>
                         <div class="text-grey-8">
-                          <div class="q-pa-sm column items-center text-h6">{{returnSelectedPackage}}</div>
+                          <div class="q-pa-sm column items-center text-h6">CUSTOMIZE PACKAGE</div>
                           <q-list dense>
                               <q-item >
                                   <q-item-section class="q-ml-lg"><strong><b>Package Price:</b></strong></q-item-section>
-                                  <q-item-section class="q-mr-lg" side><strong>{{returnSelectedPackagePrice}}php</strong></q-item-section>
+                                  <q-item-section class="q-mr-lg" side><strong>{{custompackPrice}}php</strong></q-item-section>
                               </q-item>
                               <q-item style="margin-top: -10px" >
                                   <q-item-section class="q-ml-lg"><strong><b>Pax:</b></strong></q-item-section>
@@ -468,29 +412,31 @@
                                   <q-item-section class="q-ml-lg"><strong><b>Total:</b></strong></q-item-section>
                                   <q-item-section class="q-mr-lg" side><strong>{{totalPackPricewithpax}}php</strong></q-item-section>
                               </q-item>
-                              <div style="margin-top: -10px" class="q-pt-sm text-grey-8"><b>Add-Ons:</b></div>
-                                  <q-scroll-area style="height:25vh" :visible="true">
-                                      <q-item v-for="(i, index) in addonsListNew" :key="index" dense>
-                                          <q-item-section class="q-ml-lg"><strong>{{i.addonsQuantities}}x {{i.addonsNames}}</strong></q-item-section>
-                                          <q-item-section class="q-mr-lg" side><strong>+{{i.addonsTotalPrices}}php</strong></q-item-section>
-                                      </q-item>
-                                  </q-scroll-area>
-                              <q-item>
-                                  <q-space />
-                                  <q-separator style="width: 10px" />
-                              </q-item>
-                              <q-item style="margin-top: -30px">
-                                  <q-item-section class="q-ml-lg"><strong><b>Total Payment:</b></strong></q-item-section>
-                                  <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
-                              </q-item>
-                              <q-item>
-                                  <q-item-section class="q-ml-lg"><strong><b>Reservation Fee:</b></strong></q-item-section>
-                                  <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
-                              </q-item>
-                              <q-item>
-                                  <q-item-section class="q-ml-lg"><strong><b>Downpayment(50%):</b></strong></q-item-section>
-                                  <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
-                              </q-item>
+                              <div dense v-show="addonsListNew.length != 0" >
+                                  <div style="margin-top: -10px" class="q-pt-sm text-grey-8"><b>Add-Ons:</b></div>
+                                      <q-scroll-area style="height:25vh" :visible="true">
+                                          <q-item v-for="(i, index) in addonsListNew" :key="index" dense>
+                                              <q-item-section class="q-ml-lg"><strong>{{i.addonsQuantities}}x {{i.addonsNames}}</strong></q-item-section>
+                                              <q-item-section class="q-mr-lg" side><strong>+{{i.addonsTotalPrices}}php</strong></q-item-section>
+                                          </q-item>
+                                      </q-scroll-area>
+                                  <q-item>
+                                      <q-space />
+                                      <q-separator style="width: 10px" />
+                                  </q-item>
+                                  <q-item style="margin-top: -40px">
+                                      <q-item-section class="q-ml-lg"><strong><b>Total Payment:</b></strong></q-item-section>
+                                      <q-item-section class="q-mr-lg" side><strong>{{totalPayment}}php</strong></q-item-section>
+                                  </q-item>
+                                  <q-item style="margin-top: -25px">
+                                      <q-item-section class="q-ml-lg"><strong><b>Reservation Fee:</b></strong></q-item-section>
+                                      <q-item-section class="q-mr-lg" side><strong>5000php</strong></q-item-section>
+                                  </q-item>
+                                  <q-item style="margin-top: -25px">
+                                      <q-item-section class="q-ml-lg"><strong><b>Downpayment(50%):</b></strong></q-item-section>
+                                      <q-item-section class="q-mr-lg" side><strong>{{discountedPayment}}php</strong></q-item-section>
+                                  </q-item>
+                              </div>
                           </q-list>
                         </div>
                     </q-card-section>
@@ -605,19 +551,43 @@ export default {
             })
   },
   computed: {
+    custompackPrice(){
+        if(this.choiceOfFood.length === 0){
+              return 0
+          }else{
+          // maindishTotalPrice = parseInt(this.saveMainDish.foodPrice) + parseInt(this.saveMainDish.foodPrice)
+          let sum = this.$lodash.sumBy(this.choiceOfFood, a => { 
+              return parseInt(a.foodPrice)
+              })  
+          // console.log(sum, 'sum')
+          return sum
+          }
+    },
+    customaddonsPrice(){
+        if(this.addonsList.length === 0){
+              return 0
+          }else{
+          // maindishTotalPrice = parseInt(this.saveMainDish.foodPrice) + parseInt(this.saveMainDish.foodPrice)
+          let sum = this.$lodash.sumBy(this.addonsList, a => { 
+              return parseInt(a.addonsTotalPrices)
+              })  
+          // console.log(sum, 'sum')
+          return sum
+          }
+    },
     toPayAmount(){
       if(this.paymentMode == 'fullPayment'){
         this.enterAmount = this.totalPayment
         this.amount = this.totalPayment
         return this.totalPayment
       } else if (this.paymentMode == 'downPayment'){
-        this.enterAmount = 5000
-        this.amount = 5000
-        return 5000
-      } else {
         this.enterAmount = this.discountedPayment
         this.amount = this.discountedPayment     
-        return this.discountedPayment  
+        return this.discountedPayment
+      } else {
+        this.enterAmount = 5000
+        this.amount = 5000
+        return 5000  
       }
 
     },
@@ -662,10 +632,10 @@ export default {
         }
     },
     totalPackPrice(){      
-        if(this.returnSelectedPackagePrice === 0 && this.clientPax === 0){
+        if(this.custompackPrice === 0 && this.clientPax === 0){
             return 0
         }else{
-        let sum = parseInt(this.clientPax) * parseInt(this.returnSelectedPackagePrice)
+        let sum = parseInt(this.clientPax) * parseInt(this.custompackPrice)
         return sum
         }
     },
@@ -716,7 +686,6 @@ export default {
           })
           return optionss
       },
-
       foodChoice(){
         try {
           let viands = this.FoodCategory
@@ -747,27 +716,6 @@ export default {
 
           console.log(map,'map')
           return map
-        } catch (err) {
-          return []
-        }
-      },
-      returnSelectedPackageInclusion(){
-        try {
-          return this.selected[0].inclusions
-        } catch (err) {
-          return []
-        }
-      },
-      returnSelectedPackage(){
-        try {
-          return this.selected[0].name
-        } catch (err) {
-          return []
-        }
-      },
-      returnSelectedPackagePrice(){
-        try {
-          return this.selected[0].price
         } catch (err) {
           return []
         }
@@ -818,20 +766,6 @@ export default {
     },
     stepcheck(){
           if(this.step === 1){
-              if(this.selected.length === 0){
-                   this.$q.dialog({
-                    title: `Enable To Continue`,
-                    message: 'Please Select Package',
-                    type: 'negative',
-                    color: 'pink-6',
-                    textColor: 'grey',
-                    icon: 'warning',
-                    ok: 'Ok'
-                })
-              }else{
-                this.$refs.stepper.next()
-              }
-          }else if(this.step === 2){
               if(this.choiceOfFood.length === 0){
                   this.$q.dialog({
                     title: `Enable To Continue`,
@@ -845,7 +779,7 @@ export default {
               }else{
                 this.$refs.stepper.next()
               }
-          }else if(this.step === 3){
+          }else if(this.step === 2){
                 this.$refs.stepper.next()
           }else{
               if(this.enterAmount === 0){
@@ -884,17 +818,20 @@ export default {
     reserveNowCard(){
         let reserveDetails = {
             clientReserveDate: this.dates,
-            clientFName: this.clientFName,
-            clientLName: this.clientLName,
+            // clientFName: this.clientFName,
+            // clientLName: this.clientLName,
+            clientFName: 'Joseph Nazarene',
+            clientLName: 'Buco',
             clientPlace: this.clientAddress,
             clientCity: this.selectCity,
-            clientEvent: this.clientEvent,
+            // clientEvent: this.clientEvent,
+            clientEvent: 'Wedding',
             clientMotif: this.selectMotif,
             clientPax: this.clientPax,
             clientEmail: this.clientEmail,
             clientStartTime: this.startTime,
             clientEndTime: this.endTime,
-            clientSelectPackage: this.selected[0],
+            clientSelectPackage: 'CUSTOMIZE PACKAGE',
             clientFoodChoice: this.choiceOfFood,
             clientAddOns: this.addonsList,
             clientTotalPayment: this.totalPayment,
@@ -930,17 +867,21 @@ export default {
     reserveNowCash(){
         let reserveDetails = {
             clientReserveDate: this.dates,
-            clientFName: this.clientFName,
-            clientLName: this.clientLName,
+            // clientFName: this.clientFName,
+            // clientLName: this.clientLName,
+            // static info
+            clientFName: 'Joseph Nazarene',
+            clientLName: 'Buco',
+            clientEvent: 'Wedding',
             clientPlace: this.clientAddress,
             clientCity: this.selectCity,
             clientEmail: this.clientEmail,
-            clientEvent: this.clientEvent,
+            // clientEvent: this.clientEvent,
             clientMotif: this.selectMotif,
             clientPax: this.clientPax,
             clientStartTime: this.startTime,
             clientEndTime: this.endTime,
-            clientSelectPackage: this.selected[0],
+            clientSelectPackage: 'CUSTOMIZE PACKAGE',
             clientFoodChoice: this.choiceOfFood,
             clientAddOns: this.addonsList,
             clientTotalPayment: this.totalPayment,
@@ -972,29 +913,6 @@ export default {
                 this.enterAmount = 0
                 this.amount = 0
                 this.clientEmail = ''
-    },
-    paymentSelect(){
-      if(this.fullPayment === false && this.reservationFee === false && this.downPayment === false){
-         this.enterAmount = 0
-         this.amount = 0
-      }else{
-          if(this.fullPayment === true){
-              this.reservationFee = false
-              this.downPayment = false
-              this.enterAmount = this.totalPayment
-              this.amount = this.totalPayment
-          }if(this.reservationFee === true){
-                this.fullPayment = false
-                this.downPayment = false
-                this.enterAmount = 5000
-                this.amount = 5000
-          }if(this.downPayment === true){
-                this.reservationFee = false
-                this.fullPayment = false
-                this.enterAmount = this.discountedPayment
-                this.amount = this.discountedPayment
-          }
-      }
     },
     //revisions for input checkbox payment select
 
@@ -1119,24 +1037,6 @@ export default {
       } else {
         return false
       }
-    },
-    backFunction(){
-      if(this.step === 2){
-        this.$q.dialog({
-            title: 'Moving back will remove all your Food Choices.',
-            message: 'Continue ?',
-            ok: 'Yes',
-            cancel: 'No',
-            persistent: true
-          }).onOk(() => {
-            this.choiceOfFood = []
-            this.addonsList = []
-            this.$refs.stepper.previous()
-          })
-      }else {
-          this.$refs.stepper.previous()
-      }
-      
     },
     //PAY
     submit () {

@@ -42,7 +42,8 @@
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
                       <q-space />
-                      <q-btn label="Back to Form" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
+                      <q-btn label="Customize Package" class="text-h6" :to="{ name: 'customReservation' }" color="pink-3" flat dense />
+                      <q-btn label="Back to Form" class="text-h6" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
                     </q-card-section>
                     <q-card-section>
                             <div class="row text-grey-8">
@@ -189,7 +190,6 @@
                             </q-card-section>
                           </q-card>                    
                         </div>
-                        
                         <div class="q-pa-sm q-pt-md">
                         <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
@@ -643,13 +643,13 @@ export default {
         this.amount = this.totalPayment
         return this.totalPayment
       } else if (this.paymentMode == 'downPayment'){
-        this.enterAmount = 5000
-        this.amount = 5000
-        return 5000
-      } else {
         this.enterAmount = this.discountedPayment
         this.amount = this.discountedPayment     
         return this.discountedPayment  
+      } else {
+        this.enterAmount = 5000
+        this.amount = 5000
+        return 5000
       }
 
     },
