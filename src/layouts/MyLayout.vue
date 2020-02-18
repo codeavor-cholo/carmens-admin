@@ -28,23 +28,23 @@
         show-if-above
         :width="280"
         :breakpoint="400"
-        class="text-pink-3"
+        class="text-grey-8"
         style="overflow: hidden;"
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding style="background-color: white; height: 500px;">
             <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnPermissions.walkIn">
               <q-item-section avatar>
-                <q-icon name="mdi-walk" />
+                <q-icon color="pink-3" name="mdi-walk" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Walk-In Reservation</q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item clickable @click="$router.push('/customreservation')" v-show="returnPermissions.walkIn">
+            <q-item clickable @click="$router.push('/customReservation')" v-show="returnPermissions.walkIn">
               <q-item-section avatar>
-                <q-icon name="category" />
+                <q-icon color="pink-3" name="category" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Custom Walk-In Reservation</q-item-label>
@@ -53,7 +53,7 @@
 
             <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering">
               <q-item-section avatar>
-                <q-icon name="mdi-cart-outline" />
+                <q-icon color="pink-3" name="mdi-cart-outline" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Party Tray Ordering</q-item-label>
@@ -62,7 +62,7 @@
             
             <q-item clickable :to="{ name: 'dashboard' }">
               <q-item-section avatar>
-                <q-icon name="mdi-view-dashboard" />
+                <q-icon color="pink-3" name="mdi-view-dashboard" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Dashboard</q-item-label>
@@ -71,7 +71,7 @@
             
             <q-item clickable :to="{ name: 'reservation' }">
               <q-item-section avatar>
-                <q-icon name="mdi-calendar-range" />
+                <q-icon color="pink-3" name="mdi-calendar-range" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Reservation</q-item-label>
@@ -87,7 +87,7 @@
             >
                   <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon name="fastfood" />
+                      <q-icon color="pink-3" name="fastfood" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Food Management</q-item-label>
@@ -96,7 +96,7 @@
 
                   <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon name="fastfood" />
+                      <q-icon color="pink-3" name="fastfood" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Party Trays Management</q-item-label>
@@ -105,7 +105,7 @@
 
                   <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon name="assignment" />
+                      <q-icon color="pink-3" name="assignment" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Package Management</q-item-label>
@@ -114,7 +114,7 @@
 
                   <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon name="mdi-table-chair" />
+                      <q-icon color="pink-3" name="mdi-table-chair" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Other Management</q-item-label>
@@ -124,7 +124,7 @@
             </q-expansion-item>
             <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users">
               <q-item-section avatar>
-                <q-icon name="people" />
+                <q-icon color="pink-3" name="people" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Users</q-item-label>

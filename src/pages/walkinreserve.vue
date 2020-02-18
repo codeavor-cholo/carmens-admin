@@ -42,7 +42,8 @@
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
                       <q-space />
-                      <q-btn label="Back to Form" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
+                      <q-btn label="Customize Package" class="text-h6" :to="{ name: 'customReservation' }" color="pink-3" flat dense />
+                      <q-btn label="Back to Form" class="text-h6" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
                     </q-card-section>
                     <q-card-section>
                             <div class="row text-grey-8">
@@ -189,7 +190,6 @@
                             </q-card-section>
                           </q-card>                    
                         </div>
-                        
                         <div class="q-pa-sm q-pt-md">
                         <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
@@ -549,6 +549,7 @@
 <script>
 import { date } from 'quasar'
 import { StripeElements } from 'vue-stripe-checkout';
+// import moment from 'moment'
 export default {
   components: {
       StripeElements
@@ -564,8 +565,8 @@ export default {
       fullPayment: false,
       reservationFee: false,
       downPayment: false,
-      startTime: date.formatDate(new Date(), 'hh:mmA'),
-      endTime: date.formatDate(new Date(), 'hh:mmA'),
+      startTime: '9:00',
+      endTime: '13:00',
       clientAddress: '',
       clientFName: '',
       clientLName: '',
@@ -643,13 +644,13 @@ export default {
         this.amount = this.totalPayment
         return this.totalPayment
       } else if (this.paymentMode == 'downPayment'){
-        this.enterAmount = 5000
-        this.amount = 5000
-        return 5000
-      } else {
         this.enterAmount = this.discountedPayment
         this.amount = this.discountedPayment     
         return this.discountedPayment  
+      } else {
+        this.enterAmount = 5000
+        this.amount = 5000
+        return 5000
       }
 
     },
@@ -825,6 +826,14 @@ export default {
       }
   },
   methods: {
+    formatTimeInput(time){
+      //get time to format for display
+      let baseDate = new Date(2020,1,1)
+      let arr = time.split(':')
+      let formatTime = date.addToDate(baseDate, {hours:arr[0],minutes:arr[1]})
+
+      return this.$moment(formatTime).format('LT')
+    },
     dateformCheck(){
         if(this.dates === date.formatDate(new Date(), 'YYYY-MM-DD') || this.clientFName === '' || this.clientLName === '' || this.clientEmail === '' || this.clientAddress === '' || this.selectCity === '' || this.clientEvent === '' || this.selectMotif === '' || this.pax === 0 || this.pax === '' || this.startTime === ''){
             this.$q.dialog({
@@ -900,13 +909,6 @@ export default {
                       cancel: 'Cancel'
                   }).onOk(()=>{
                       this.reserveNowCash()
-                      this.$q.notify({
-                          message: 'RESERVED!',
-                          icon: 'mdi-folder-plus-outline',
-                          color: 'teal',
-                          textColor: 'white',
-                          position: 'center'
-                  })
                   }).onCancel(() => {
 
                   })
@@ -924,8 +926,8 @@ export default {
             clientMotif: this.selectMotif,
             clientPax: this.clientPax,
             clientEmail: this.clientEmail,
-            clientStartTime: this.startTime,
-            clientEndTime: this.endTime,
+            clientStartTime: this.formatTimeInput(this.startTime),
+            clientEndTime: this.formatTimeInput(this.endTime),
             clientSelectPackage: this.selected[0],
             clientFoodChoice: this.choiceOfFood,
             clientAddOns: this.addonsList,
@@ -939,6 +941,25 @@ export default {
             clientDateofReserve: date.formatDate(new Date(), 'YYYY-MM-DD'),
         }
             this.$firestoreApp.collection('Reservation').add(reserveDetails)
+            .then((ref) =>{
+              let key = ref.id
+              let paymentDetails = {
+                  clientReservationKey: ref.id,
+                  clientPayDetails: this.paydetails,
+                  clientTokenID: this.token.id,
+                  clientPaymentType: 'CARD',
+              }
+                  this.$firestoreApp.collection('Payments').add(paymentDetails)
+                  .then(()=>{
+                      this.$q.notify({
+                        message: 'RESERVED!',
+                        icon: 'mdi-folder-plus-outline',
+                        color: 'pink-3',
+                        textColor: 'white',
+                        position: 'center'
+                      })
+                  })
+            })
                 this.showreserveform = false, //this is opposite
                 this.showdateform = true,
                 this.step = 1
@@ -970,8 +991,8 @@ export default {
             clientEvent: this.clientEvent,
             clientMotif: this.selectMotif,
             clientPax: this.clientPax,
-            clientStartTime: this.startTime,
-            clientEndTime: this.endTime,
+            clientStartTime: this.formatTimeInput(this.startTime),
+            clientEndTime: this.formatTimeInput(this.endTime),
             clientSelectPackage: this.selected[0],
             clientFoodChoice: this.choiceOfFood,
             clientAddOns: this.addonsList,
@@ -985,6 +1006,25 @@ export default {
             clientDateofReserve: date.formatDate(new Date(), 'YYYY-MM-DD'),
         } 
             this.$firestoreApp.collection('Reservation').add(reserveDetails)
+            .then((ref) =>{
+              let key = ref.id
+              let paymentDetails = {
+                  clientReservationKey: ref.id,
+                  clientPayDetails: this.paydetails,
+                  clientTokenID: this.token.id,
+                  clientPaymentType: 'CARD',
+              }
+                  this.$firestoreApp.collection('Payments').add(paymentDetails)
+                  .then(()=>{
+                      this.$q.notify({
+                        message: 'RESERVED!',
+                        icon: 'mdi-folder-plus-outline',
+                        color: 'pink-3',
+                        textColor: 'white',
+                        position: 'center'
+                      })
+                  })
+            })
                 this.showreserveform = false, //this is opposite
                 this.showdateform = true,
                 this.step = 1
@@ -1235,13 +1275,6 @@ export default {
       }else{
           this.paydetails = charge
           this.reserveNowCard()
-          this.$q.notify({
-                  message: 'RESERVED!',
-                  icon: 'mdi-folder-plus-outline',
-                  color: 'pink-3',
-                  textColor: 'white',
-                  position: 'center'
-          })
       }
     }
 
