@@ -112,10 +112,11 @@
                         </div>
                     </div>
 
-                </q-card-section> 
+                </q-card-section>
                 <q-card-section class="col container q-mt-xl q-pl-none q-mr-sm">
+                    <q-page-sticky position="top-right" :offset="[320, 0]"> 
                     <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: teal;">
-                        <div class="q-ma-sm text-weight-bold text-teal">
+                        <div class="q-ml-sm q-mr-sm text-weight-bold text-teal">
                             <span>
                             Package Pricing Guide
                             </span>
@@ -131,6 +132,7 @@
                                 </q-item-section>
                             </q-item>
                             <q-separator/>
+                            <q-scroll-area style="height:22vh" :visible="true">
                             <q-item dense v-for="(i, index) in this.selection" :key="index">
                                 <q-item-section class="text-caption">
                                     <q-item-label dense lines="1" v-if="i.min == undefined">{{i.category}}</q-item-label>
@@ -140,6 +142,7 @@
                                     {{viandsQty[i.category]}}
                                 </q-item-section>
                             </q-item>
+                            </q-scroll-area>
                             <q-separator/>
                             <q-item dense class="text-caption text-weight-bold">
                                 <q-item-section>
@@ -150,6 +153,7 @@
                                 </q-item-section>
                             </q-item>
                             <q-separator/>
+                            <q-scroll-area style="height:18vh" :visible="true">
                             <q-item dense v-for="(i, index) in this.selectedInclusions" :key="index">
                                 <q-item-section class="text-caption">
                                     <q-item-label dense lines="1">{{i.inclusion}}</q-item-label>
@@ -158,6 +162,7 @@
                                     FREE
                                 </q-item-section>
                             </q-item>
+                            </q-scroll-area>
                             <q-item class="text-caption text-weight-bold">
                                 <q-item-section>
                                     <q-item-label dense lines="1">Price per Pax</q-item-label>
@@ -169,20 +174,21 @@
                         </q-list>
                     </div>
                     <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: pink;">
-                        <div class="q-ma-sm text-weight-bold text-grey-8">
+                        <div class="q-ml-sm q-mr-sm text-weight-bold text-grey-8">
                             <span>
                             Package Pricing
                             </span>
                         </div>
-                    <q-input color="pink-3" outlined class="q-mt-md" type="number" v-model="packagePrice" label="Package Price"/>
+                    <q-input color="pink-3" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
                     <!-- <q-input color="pink-3" outlined class="q-mt-md" type="number" dense v-model="packagePrice" label="Inclusion Price"/> -->
                     </div>
+                </q-page-sticky>
                 </q-card-section>
                 </div>
 
-                <q-card-actions align="right" class="text-primary col-12 q-mr-md">
-                <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
+                <q-card-actions align="left" class="text-primary col-12 q-mr-md">
                 <q-btn flat label="Add Package" color="pink-3" v-close-popup @click="addPackage"/>
+                <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
             </q-card>
