@@ -89,7 +89,7 @@
                 </q-card>
         </q-dialog>
         <q-dialog v-model="viewFoodOrder">
-            <q-card>
+            <q-card style="width: 400px">
                 <q-card-section>
                 <div class="text-h6">Food Ordered List</div>
                 </q-card-section>
@@ -122,7 +122,7 @@
 
                             <q-item-section>
                             <q-item-label>{{food.foodNames}}</q-item-label>
-                            <q-item-label caption>{{food.partyTraySize}}</q-item-label>
+                            <q-item-label caption>{{food.partyTraySize[0].paxMin}}</q-item-label>
                             </q-item-section>
 
                             <q-item-section side top>
