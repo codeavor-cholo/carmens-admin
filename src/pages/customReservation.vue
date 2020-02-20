@@ -7,7 +7,7 @@
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
                       <q-space />
-                      <q-btn label="Select Package" :to="{ name: 'walkinreserve' }" color="pink-3" flat dense/>
+                      <q-btn label="Select Package" color="pink-3" flat dense disable=""/>
                     </q-card-section>
                     <q-card-section>
                             <div class="row text-grey-8">
@@ -513,12 +513,53 @@ export default {
       FoodCategory: [],
       step: 1,
       filter: '',
-            pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
-            columns: [
-                { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
-                { name: 'price', align: 'center', label: 'Package Per Head Price', field: 'price', sortable: true },
-            ]
+      pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
+      columns: [
+          { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
+          { name: 'price', align: 'center', label: 'Package Per Head Price', field: 'price', sortable: true },
+      ],
+      customizeReserve: {}
     }
+  },
+  created(){
+    try {
+      let value = this.$q.localStorage.getItem(this.$route.params.id)
+      console.log(value,'valuefromlocal')
+      
+      if(value == null){
+        this.$q.dialog({
+          title: `Unable To Continue`,
+          message: 'Local Data None',
+          type: 'negative',
+          color: 'pink-6',
+          textColor: 'grey',
+          icon: 'warning',
+          ok: 'Ok'
+        }).onOk(()=>{
+          this.$router.push('/walkinreserve')
+        })
+      }
+      
+      this.customizeReserve = value
+      console.log('this.customizeReserve',this.customizeReserve)
+      this.dates = date.formatDate(value.clientReserveDate, 'YYYY/MM/DD')
+      this.clientFName = value.clientFName
+      this.clientLName = value.clientLName
+      this.clientEvent = value.clientEvent
+      this.selectCity = value.clientCity
+      this.selectMotif = value.clientMotif
+      this.clientEmail = value.clientEmail
+      this.clientPax = value.clientPax
+      this.startTime = value.clientStartTime
+      this.endTime = value.clientEndTime
+      this.clientAddress = value.clientPlace
+
+
+    } catch (err) {
+      this.customizeReserve = {}
+      console.log(err,'err')
+    }
+
   },
   mounted(){
     this.$binding('Motif', this.$firestoreApp.collection('Motif'))
@@ -821,17 +862,14 @@ export default {
             clientReserveDate: this.dates,
             clientFName: this.clientFName,
             clientLName: this.clientLName,
-            // clientFName: 'Joseph Nazarene',
-            // clientLName: 'Buco',
             clientPlace: this.clientAddress,
             clientCity: this.selectCity,
-            // clientEvent: this.clientEvent,
-            clientEvent: 'Wedding',
+            clientEvent: this.clientEvent,
             clientMotif: this.selectMotif,
             clientPax: this.clientPax,
             clientEmail: this.clientEmail,
-            clientStartTime: this.formatTimeInput(this.startTime),
-            clientEndTime: this.formatTimeInput(this.endTime),
+            clientStartTime: this.startTime,
+            clientEndTime: this.endTime,
             clientSelectPackage: 'CUSTOMIZE PACKAGE',
             clientFoodChoice: this.choiceOfFood,
             clientAddOns: this.addonsList,
@@ -862,6 +900,8 @@ export default {
                         textColor: 'white',
                         position: 'center'
                       })
+                      this.$q.localStorage.clear()
+                      this.$router.push('/walkinreserve')
                   })
             })
                 this.showreserveform = false, //this is opposite
@@ -889,18 +929,14 @@ export default {
             clientReserveDate: this.dates,
             clientFName: this.clientFName,
             clientLName: this.clientLName,
-            // static info
-            // clientFName: 'Joseph Nazarene',
-            // clientLName: 'Buco',
-            // clientEvent: 'Wedding',
             clientPlace: this.clientAddress,
             clientCity: this.selectCity,
             clientEmail: this.clientEmail,
             clientEvent: this.clientEvent,
             clientMotif: this.selectMotif,
             clientPax: this.clientPax,
-            clientStartTime: this.formatTimeInput(this.startTime),
-            clientEndTime: this.formatTimeInput(this.endTime),
+            clientStartTime: this.startTime,
+            clientEndTime: this.endTime,
             clientSelectPackage: 'CUSTOMIZE PACKAGE',
             clientFoodChoice: this.choiceOfFood,
             clientAddOns: this.addonsList,
@@ -931,6 +967,8 @@ export default {
                         textColor: 'white',
                         position: 'center'
                       })
+                      this.$q.localStorage.clear()
+                      this.$router.push('/walkinreserve')
                   })
             })
                 this.showreserveform = false,
