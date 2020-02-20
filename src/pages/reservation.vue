@@ -81,6 +81,7 @@
                                         </q-card-section>
                                         <!-- color="expanded ? 'grey-8':'pink-3' " -->
                                         <q-card-actions>
+                                            <q-btn color="pink-3" @click="paybalance(props.row)" label="Pay Balance" flat dense icon="mdi-paypal" />
                                             <q-space />
                                             <q-btn :color="expanded ? 'grey-8':'pink-3'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
                                         </q-card-actions>
@@ -91,13 +92,93 @@
                     </div>
                 </template>
                 </q-splitter>
+                <q-dialog v-model="paymentDialog">
+                    <q-card style="min-width: 1000px">
+                        <q-card-section class="items-center">
+                            <q-select class="q-pa-md" color="pink-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
+                                <q-list bordered dense>
+                                    <q-item class="q-mt-none q-pt-none">
+                                        <q-item-section class="q-ml-lg"><strong><div>Total Payment:</div></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><strong>{{totalclientPayment}}php</strong></q-item-section>
+                                    </q-item>
+                                    <q-separator/>
+                                    <q-item class="q-mt-none q-pt-none">
+                                        <q-item-section class="q-ml-lg"><strong><div>Total Paid Amount:</div></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><strong>{{clientPaidAmounts}}php</strong></q-item-section>
+                                    </q-item>
+                                    <q-separator/>
+                                    <q-item class="q-mt-none q-pt-none">
+                                        <q-item-section class="q-ml-lg"><strong><div>Total Balance:</div></strong></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><strong>{{clientBalance}}php</strong></q-item-section>
+                                    </q-item>
+                                </q-list>
+                                <div v-show="this.selectPay === 'CASH'">
+                                    <q-list dense>
+                                        <q-item>
+                                            <q-item-section class="q-ml-lg"><strong><q-radio v-model="paymentMode" val="clientBalance" label="Full Balance" /></strong></q-item-section>
+                                            <q-item-section class="q-mr-lg" side><strong>{{clientBalance}}php</strong></q-item-section>
+                                        </q-item>
+                                        <q-item>
+                                            <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
+                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="pink-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </div>
+                                <div v-show="this.selectPay == 'CARD'">
+                                    <div>
+                                        <q-list dense>
+                                          <q-item>
+                                              <q-item-section class="q-ml-lg">
+                                              <strong>
+                                                <!-- <q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /> -->
+                                              <q-radio v-model="paymentMode" val="clientBalance" label="Total Balance" />
+                                              </strong>
+                                              </q-item-section>
+                                              <q-item-section class="q-mr-lg" side><strong>{{clientBalance}}php</strong></q-item-section>
+                                          </q-item>
+                                      </q-list>
+                                    </div>
+                                    <div class="container row q-mx-md">
+                                      <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline class="col-8 q-mr-md">
+                                      </stripe-elements>
+                                      <!-- <button @click="submit">Pay ${{amount / 100}}</button> -->
+                                    </div>
+                              </div>
+                        </q-card-section>
+
+                        <q-card-actions align="right">
+                        <q-btn v-show="this.selectPay == 'CASH'" label="Pay" color="teal" v-close-popup />
+                        <q-btn icon="mdi-paypal" v-show="this.selectPay == 'CARD'" outlined color="teal" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn>
+                        <q-btn label="Cancel" flat dense v-close-popup/>
+                        </q-card-actions>
+                    </q-card>
+                </q-dialog>
         </template>
     </q-page>
 </template>
 <script>
-export default {
-    data(){
+import { StripeElements } from 'vue-stripe-checkout';
+// import moment from 'moment'
+        export default {
+        components: {
+            StripeElements
+        },    
+        data(){
         return {
+            amount: 0,
+            publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
+            token: null,
+            charge: null,
+            enterAmount: 0,
+            paymentDialog: false,
+            paymentMode: 'clientBalance',
+            clientBalance: false,
+            client25balance: false,
+            selectPay: '',
+            payoptions: [
+                {label: 'CASH', value: 'CASH'},
+                {label: 'CARD', value: 'CARD'},
+            ],
             expanded: false,    
             showCompleteBanner: false,
             checkerArray: [],
@@ -116,6 +197,8 @@ export default {
             packageName: '',
             addPackageDialog: false,
             FoodCategory: [],
+            clientBalance: 0,
+            client25Balance: 0,
             filter: '',
             pagination: { sortBy: 'clientReserveDate', descending: false, page: 1, rowsPerPage: 10},
             columns: [
@@ -147,10 +230,65 @@ export default {
             console.log(Inclusion, 'Inclusion')
             })
     },
+    computed: {
+        // toPayAmount(){
+        //     if(this.paymentMode == 'clientBalance'){
+        //         this.enterAmount = this.clientBalance
+        //         this.amount = this.clientBalance
+        //         return this.clientBalance
+        //     }if(this.paymentMode == 'client25Balance') {
+        //         this.enterAmount = this.client25balance
+        //         this.amount = this.client25balance     
+        //         return this.client25balance  
+        //     }
+        // }
+    },
     methods:{
         expandeds(props){
             this.expanded = !this.expanded
+        },
+        paybalance(props){
+            this.reserveId = props['.key']
+            this.paymentDialog = true
+            this.totalclientPayment = props.clientTotalPayment
+            this.clientPaidAmounts = props.clientPaidAmount
+            this.clientBalance = parseInt(props.clientTotalPayment) - parseInt(props.clientPaidAmount)
+            this.client25balance = parseInt(props.clientTotalPayment) * 0.25
+            this.enterAmount = this.clientBalance
+            this.amount = this.clientBalance
+        },
+        //PAY
+        submit () {
+        this.$refs.elementsRef.submit();
+        },
+        tokenCreated (token) {
+        this.token = token;
+        console.log(token,'token')
+        // for additional charge objects go to https://stripe.com/docs/api/charges/object
+        this.charge = {
+            source: token.card,
+            amount: this.amount,
         }
+        this.sendTokenToServer(this.charge);
+        },
+        sendTokenToServer (charge) {
+        // Send to server
+        console.log(charge,'charge')
+        if(this.amount === 0){
+            this.$q.dialog({
+                title: `Unable to Continue??`,
+                message: 'Please Select Payment Type??',
+                color: 'pink-6',
+                textColor: 'grey',
+                icon: 'negative',
+                ok: 'Ok'
+            })
+        }else{
+            this.paydetails = charge
+        }
+        }
+
+  
     }
 }
 </script>
