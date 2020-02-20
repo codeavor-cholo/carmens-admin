@@ -42,7 +42,7 @@
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
                       <q-space />
-                      <q-btn label="Customize Package" class="text-h6" :to="{ name: 'customReservation' }" color="pink-3" flat dense />
+                      <q-btn label="Customize Package" class="text-h6" :to="{ name: 'customReservation', params: {id: currentReservation} }" color="pink-3" flat dense />
                       <q-btn label="Back to Form" class="text-h6" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
                     </q-card-section>
                     <q-card-section>
@@ -115,7 +115,7 @@
                                   </div>
                               <div class="q-mr-sm q-ml-md"><strong>Start Time: </strong></div>
                                 <div class=" cursor-pointer">
-                                        {{ startTime }}
+                                        {{ formatTimeInput(startTime) }}
                                         <q-icon class="q-ml-sm" name="mdi-pencil" color="teal" style="font-size: 1.5em">
                                           <q-tooltip>Edit</q-tooltip>
                                         </q-icon>
@@ -132,7 +132,7 @@
                                   </div>
                               <div class="q-mr-sm q-ml-md"><strong>End Time: </strong></div>
                                 <div class=" cursor-pointer">
-                                        {{ endTime }}
+                                        {{ formatTimeInput(endTime) }}
                                         <q-icon class="q-ml-sm" name="mdi-pencil" color="teal" style="font-size: 1.5em">
                                           <q-tooltip>Edit</q-tooltip>
                                         </q-icon>
@@ -565,7 +565,7 @@ export default {
       fullPayment: false,
       reservationFee: false,
       downPayment: false,
-      startTime: '9:00',
+      startTime: '09:00',
       endTime: '13:00',
       clientAddress: '',
       clientFName: '',
@@ -604,11 +604,12 @@ export default {
       addonsList: [],
       step: 1,
       filter: '',
-            pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
-            columns: [
-                { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
-                { name: 'price', align: 'center', label: 'Package Per Head Price', field: 'price', sortable: true },
-            ]
+      pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
+      columns: [
+          { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
+          { name: 'price', align: 'center', label: 'Package Per Head Price', field: 'price', sortable: true },
+      ],
+      currentReservation: ''
     }
   },
   mounted(){
@@ -846,6 +847,29 @@ export default {
               ok: 'Ok'
           })
         }else{
+          //save to sumthing
+          let saveLocally = {
+            clientReserveDate: this.dates,
+            clientFName: this.clientFName,
+            clientLName: this.clientLName,
+            clientPlace: this.clientAddress,
+            clientCity: this.selectCity,
+            clientEvent: this.clientEvent,
+            clientMotif: this.selectMotif,
+            clientPax: this.clientPax,
+            clientEmail: this.clientEmail,
+            clientStartTime: this.formatTimeInput(this.startTime),
+            clientEndTime: this.formatTimeInput(this.endTime),
+            clientReserveType: 'WALK-IN',
+            clientDateofReserve: date.formatDate(new Date(), 'YYYY-MM-DD'),
+          }
+          this.$q.localStorage.clear()
+          console.log(saveLocally,'save')
+          let sri = require('simple-random-id')
+          let random = sri(9)
+          this.$q.localStorage.set(random, saveLocally)
+          this.currentReservation = random
+
           this.showreserveform = true
           this.showdateform = false
         }
@@ -1276,6 +1300,9 @@ export default {
           this.paydetails = charge
           this.reserveNowCard()
       }
+    },
+    customizeSaveLocal(){
+
     }
 
   }
