@@ -22,7 +22,7 @@
                     <div class="q-mx-lg" >
                         <q-table grid :data="Reservation" :columns="columns" :filter="filter">
                             <template v-slot:item="props">
-                                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
+                                <div class="q-pa-md col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card class="my-card" style="border: 2px solid;border-color: grey;" >
                                         <q-card-section side>
                                             <q-list dense>
