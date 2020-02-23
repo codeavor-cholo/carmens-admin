@@ -4,10 +4,10 @@
             <div>
                 <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">
                 <template v-slot:before>
-                <q-tabs v-model="tab" vertical class="text-grey-8 bg-white full-height relative-position" :active-color="tab != 'WOPP' ? 'orange-3' : 'teal'" :active-bg-color="tab != 'WOPP' ? 'orange-1' : 'teal-1'">
+                <q-tabs v-model="tab" vertical class="text-grey-8 bg-grey-10 full-height relative-position" :active-color="tab != 'WOPP' ? 'deep-orange-4' : 'teal'" :active-bg-color="tab != 'WOPP' ? 'deep-orange-2' : 'teal-1'">
                 
-                    <div class="text-h6 text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FOOD CHOICES
-                        <q-btn-dropdown active-color="pink-3" active-bg-color="pink-1" flat dense dropdown-icon="more_vert" color="grey-8">
+                    <div class="text-h6 text-center text-white q-py-md" style="font-family: 'Roboto Slab', serif;">FOOD CHOICES
+                        <q-btn-dropdown active-color="deep-orange-4" active-bg-color="deep-orange-4" flat dense dropdown-icon="more_vert" color="white">
                             <q-list class="text-grey-8" dense>
                                 <q-item clickable v-close-popup @click="addCategory = true, editCateg = false, deleteCateg = false, isEdit = false">
                                     <q-item-section>
@@ -31,20 +31,20 @@
                 <q-btn color="teal" outline class="q-mb-md" icon="check" label="DONE EDITING" @click="editCateg = false" v-show="editCateg == true"/>
                 <q-btn color="teal" outline class="q-mb-md" icon="check" label="DONE DELETING" @click="deleteCateg = false" v-show="deleteCateg == true"/>
                 <q-scroll-area style="height:75vh" :visible="true">
-                <q-tab name="ALL" value="ALL" style="font-family: 'Roboto Slab', serif;" label="ALL"></q-tab>
+                <q-tab class="text-white" name="ALL" value="ALL" style="font-family: 'Roboto Slab', serif;" label="ALL"></q-tab>
                 <q-tab name="WOPP" value="WOPP" label="WITHOUT PACKAGE PRICE" class="text-teal"></q-tab>
                  <q-tab :name="i.category" :value="i.category" v-for="(i, index) in FoodCategory" :key="index" class="" v-show="tab != 'addInc'">
                     <div class="container row">
-                    <div style="font-family: 'Roboto Slab', serif;">{{i.category}}</div>
+                    <div class="text-white" style="font-family: 'Roboto Slab', serif;">{{i.category}}</div>
                     <q-btn v-show="editCateg" no-caps flat dense color="teal" @click="geteditCateg(i)" icon="mdi-pencil" size="sm" class="q-mx-sm"/>
                     <q-btn v-show="deleteCateg" no-caps flat icon="delete" dense @click="openDeleteDialog(i)" color="pink-6" size="sm" class="q-mx-sm"/>
                     </div>
                  </q-tab>
                  <br><br>
                 </q-scroll-area>
-                <q-btn style="font-family: 'Roboto Slab', serif;" label="SCROLL FOR MORE CATEGORIES" flat size="sm" class="bg-white absolute-bottom full-width" color="orange-6" v-show="tab != 'addInc'"></q-btn>
+                <q-btn style="font-family: 'Roboto Slab', serif;" label="SCROLL FOR MORE CATEGORIES" flat size="sm" class="bg-grey-10 absolute-bottom full-width" color="deep-orange-6" v-show="tab != 'addInc'"></q-btn>
                 </div>
-                <q-tab name="addInc" style="font-family: 'Roboto Slab', serif;"   class="absolute-bottom bg-white"  label="INCLUSIONS"></q-tab>
+                <q-tab name="addInc" style="font-family: 'Roboto Slab', serif;"   class="absolute-bottom bg-grey-10 text-white" label="INCLUSIONS"></q-tab>
 
                 </q-tabs>
                 </template>
@@ -53,19 +53,19 @@
                     <q-scroll-area style="height:100%" :visible="true">
                     <div class="q-px-md text-grey-8 full-width">
                         <div class="q-my-md">
-                                <q-btn fab icon="mdi-plus-thick" color="orange-3" v-show="tab != 'addInc' && tab != 'WOPP'" @click="addFoodDialog = true">
+                                <q-btn fab icon="mdi-plus-thick" color="deep-orange-4" v-show="tab != 'addInc' && tab != 'WOPP'" @click="addFoodDialog = true">
                                     <q-tooltip>
                                         Add Food
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn fab icon="mdi-plus-thick" color="orange-3" v-show="tab == 'addInc'" @click="addincDialog = true">
+                                <q-btn fab icon="mdi-plus-thick" color="deep-orange-4" v-show="tab == 'addInc'" @click="addincDialog = true">
                                     <q-tooltip>
                                         Add Inclusions
                                     </q-tooltip>
                                 </q-btn>
-                                <q-input v-model="filter" clearable dense type="text" :label="tab !='addInc' ? 'Search Food' : 'Search Inclusions'" color="orange-3" class="q-ma-md float-right" outlined icon="search" >
+                                <q-input v-model="filter" clearable dense type="text" :label="tab !='addInc' ? 'Search Food' : 'Search Inclusions'" color="deep-orange-4" class="q-ma-md float-right" outlined icon="search" >
                                     <template v-slot:prepend>
-                                        <q-icon name="search" />
+                                        <q-icon name="search" color="deep-orange-4"/>
                                     </template>
                                 </q-input>
                         </div>
@@ -75,7 +75,7 @@
                             <template v-slot:item="props">
                                 
                                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
-                                    <q-card class="my-card" style="border: 2px solid;border-color: #FFDAB9;" >
+                                    <q-card class="my-card" style="border: 2px solid;border-color: #ffdab9;" >
                                         <div v-if="tab != 'addInc'">
                                         <q-card-section>
                                             <q-img :src="props.row.foodPic" :ratio="4/3">
@@ -142,41 +142,41 @@
 
                 <q-card-section class="q-pa-md">
                 <div class="container row q-ma-md">
-                <q-input color="orange-3" outlined class="q-mr-md col" dense v-model="foodNames" label="Food Name"/>
-                <q-input color="orange-3" outlined class="col-3" type="number" dense v-model="foodPrice" label="Package Price"/>
+                <q-input color="deep-orange-4" outlined class="q-mr-md col" dense v-model="foodNames" label="Food Name"/>
+                <q-input color="deep-orange-4" outlined class="col-3" type="number" dense v-model="foodPrice" label="Package Price"/>
                 </div>
-                <q-select color="orange-3" class="q-ma-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
+                <q-select color="deep-orange-4" class="q-ma-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
 
-                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="orange-3" square flat bordered style="width: 500px; border-color: #FFDAB9" />
+                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" />
                 
-                <div class="my-card q-ma-md q-pa-sm q-py-md text-center text-overline" style="border: 1.5px solid;border-color: #FFDAB9;">
+                <div class="my-card q-ma-md q-pa-sm q-py-md text-center text-overline" style="border: 1.5px solid;border-color: #ffdab9;">
                     <q-checkbox left-label v-model="partyTrayShow" label="Add Party Tray Pricing" />
                 </div>
 
-                <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: #FFDAB9;" v-show="partyTrayShow == true">
+                <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: #ffdab9;" v-show="partyTrayShow == true">
                     <div class="q-mx-md text-weight-bold text-grey-8">
                         <span>
                         Party Tray Size
                         </span>
-                        <q-btn class="float-right" flat color="orange-3" size="sm" label="Add Party Tray Package" @click="showlabel = true; hidelabel = false">
-                            <q-icon name="mdi-plus-thick" flat fab color="orange-3" />
+                        <q-btn class="float-right" flat color="deep-orange-4" size="sm" label="Add Party Tray Package" @click="showlabel = true; hidelabel = false">
+                            <q-icon name="mdi-plus-thick" flat fab color="deep-orange-4" />
                         </q-btn>
                     </div>
                     <div class="q-gutter-xs">
-                        <q-checkbox v-model="selection" :val="i" :label="i.label +' ('+ i.paxMin +' - '+ i.paxMax +' PAX)'" color="orange-6" v-for="(i, index) in this.PartyTrayLabel" :key="index"/>
+                        <q-checkbox v-model="selection" :val="i" :label="i.label +' ('+ i.paxMin +' - '+ i.paxMax +' PAX)'" color="deep-orange-6" v-for="(i, index) in this.PartyTrayLabel" :key="index"/>
                     </div>
                 </div>
                 <div v-show="showlabel == true && partyTrayShow == true">
                     <q-card class="my-card q-pa-sm q-ma-md">
                         <span class="text-overline q-ml-md">ADD PARTY TRAY PACKAGE</span>
-                        <q-input color="orange-3" style="border-color: #FFDAB9" label-color="orange-3" class="q-mx-md" dense v-model="packageLabel" outlined label="Package Size Label"/>
+                        <q-input color="deep-orange-4" style="border-color: #ffdab9" label-color="deep-orange-4" class="q-mx-md" dense v-model="packageLabel" outlined label="Package Size Label"/>
                         <div class="row q-mx-md q-mt-md">
-                            <q-input color="orange-3" class="q-mr-md col" outlined="" type="number" style=" border-color: #FFDAB9" dense v-model="minpax" label="Min Pax"/>
-                            <q-input color="orange-3" class="col" outlined="" type="number" style=" border-color: #FFDAB9" dense v-model="maxpax" label="Max Pax"/>
+                            <q-input color="deep-orange-4" class="q-mr-md col" outlined="" type="number" style=" border-color: #ffdab9" dense v-model="minpax" label="Min Pax"/>
+                            <q-input color="deep-orange-4" class="col" outlined="" type="number" style=" border-color: #ffdab9" dense v-model="maxpax" label="Max Pax"/>
                         </div>
                         <q-card-actions align="right" class="text-primary">
                         <q-btn flat color="grey-8" @click="clear" label="Cancel"/>
-                        <q-btn flat color="teal" label-color="orange-3" label="Save Package" @click="addPTrayLabel" v-close-popup />
+                        <q-btn flat color="teal" label-color="deep-orange-4" label="Save Package" @click="addPTrayLabel" v-close-popup />
                         </q-card-actions>
                     </q-card>    
                 </div>
@@ -192,7 +192,7 @@
                                         <q-item-label dense lines="1">{{i.label}} {{i.paxMin}}-{{i.paxMax}}</q-item-label>
                                     </q-item-section>
                                     <q-item-section side>
-                                        <q-input color="orange-3" outlined="" class="q-ma-sm q-pr-xl" type="number" dense v-model="partyTrayPricing[index]" label="Party Tray Price"/>
+                                        <q-input color="deep-orange-4" outlined="" class="q-ma-sm q-pr-xl" type="number" dense v-model="partyTrayPricing[index]" label="Party Tray Price"/>
                                     </q-item-section>
                                 </q-item>
                             </q-list>
@@ -204,7 +204,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                 <q-btn flat label="Cancel" v-close-popup color="grey-8" />
-                <q-btn flat label="Add Food" @click="addFood" color="orange-3" v-close-popup />
+                <q-btn flat label="Add Food" @click="addFood" color="deep-orange-4" v-close-popup />
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
             </q-card>
@@ -221,8 +221,8 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat label="Cancel" v-close-popup @click="clears" color="grey-8"/>
-                    <q-btn v-if="!isEdit" flat label="Add Category" color="orange-6" v-close-popup v-on:click="addCateg"/>
-                    <q-btn v-if="isEdit" flat label="Update Category" color="orange-6" v-close-popup v-on:click="setTask"/>
+                    <q-btn v-if="!isEdit" flat label="Add Category" color="deep-orange-6" v-close-popup v-on:click="addCateg"/>
+                    <q-btn v-if="isEdit" flat label="Update Category" color="deep-orange-6" v-close-popup v-on:click="setTask"/>
                 </q-card-actions>
             </q-card>
         </q-dialog>

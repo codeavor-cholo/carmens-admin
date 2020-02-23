@@ -3,15 +3,15 @@
         <div>
             <div class="row q-gutter-md justify-center">
                 <div class="q-pa-sm">
-                    <q-input v-model="filter" dense style="width:400px" rounded standout="bg-white text-grey-8" clearable input-class="text-orange-3" label="Search Food" class="q-ma-md" outlined icon="search" >
+                    <q-input v-model="filter" dense style="width:400px" rounded standout="bg-white text-grey-8" clearable input-class="text-deep-orange-4" label="Search Food" class="q-ma-md" outlined icon="search" >
                         <template v-slot:prepend>
-                            <q-icon name="search" color="orange-3"/>
+                            <q-icon name="search" color="deep-orange-4"/>
                         </template>
                     </q-input>
                 </div>
                 <div>
                     <q-btn @click="viewFoodOrder = true" size="1.7rem" class="q-mt-sm" flat color="grey-8" icon="mdi-cart">
-                        <q-badge color="orange-3" v-show="this.cartList.length != 0" floating>{{cartLength}}</q-badge>
+                        <q-badge color="deep-orange-4" v-show="this.cartList.length != 0" floating>{{cartLength}}</q-badge>
                         <q-tooltip>
                             View Food Order
                         </q-tooltip>
@@ -23,7 +23,7 @@
             <q-table grid :data="returnWithPartyTrays" :columns="columns" :pagination="pagination" :filter="filter" class="row items-center q-pa-sm">
                 <template v-slot:item="props">            
                     <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-4 grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
-                        <q-card flat class="my-card" style="border: 2px solid;border-color: #FFDAB9" >
+                        <q-card flat class="my-card" style="border: 2px solid;border-color: orange" >
                             <div>
                             <q-card-section>
                                 <q-img :src="props.row.foodPic" :ratio="4/3"/>
@@ -61,7 +61,7 @@
                                 </q-item>
                                 <q-item>
                                     <q-item-section class="q-mb-none q-pb-none" side>
-                                        <q-btn style="color:#ffbb80" @click="addPorder = true, openPorder(props)" class="q-ml-lg" flat size="md" label="Add To Purchase Order"/>
+                                        <q-btn color="deep-orange-4" @click="addPorder = true, openPorder(props)" class="q-ml-lg" flat size="md" label="Add To Purchase Order"/>
                                     </q-item-section>
                                 </q-item>
                             </q-list>
@@ -85,7 +85,7 @@
                             <span class="text-center text-weight-bold text-h6" style="font-family: 'Roboto Slab', serif;">PARTY TRAY SIZE/s AND PRICES</span>
                                 <div class="q-pa-sm" v-for="(price, index) in this.selectedPorder.partyTrayPrice" :key="index">
                                     <div>
-                                        <q-checkbox @input="consolePorder" keep-color color="orange-3" dense :val="price" v-model="pOrderSelected" />
+                                        <q-checkbox @input="consolePorder" keep-color color="deep-orange-4" dense :val="price" v-model="pOrderSelected" />
                                         {{ price.label }}({{price.paxMin}} - {{price.paxMax}}) for {{ price.price }}php
                                         </div>
                                 </div>
@@ -94,7 +94,7 @@
 
                     <q-card-actions align="right" class="text-primary">
                         <q-btn flat color="grey-8" label="Cancel" v-close-popup />
-                        <q-btn flat style="color:#ffbb80" label="Add To Order" @click="addToCart" v-close-popup />
+                        <q-btn flat color="deep-orange-4" label="Add To Order" @click="addToCart" v-close-popup />
                     </q-card-actions>
                 </q-card>
         </q-dialog>

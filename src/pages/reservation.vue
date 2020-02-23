@@ -3,18 +3,18 @@
         <template>  
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
-                    <div class="bg-white fit">
-                        <div class="text-h6 text-center q-py-md">FILTER OPTIONS</div>
-                        <q-input v-model="filter" clearable type="text" label="Search Reservation" color="orange-2" class="q-ma-md" outlined icon="search">
+                    <div class="bg-grey-10 fit">
+                        <div class="text-h6 text-center text-white q-py-md">FILTER OPTIONS</div>
+                        <q-input v-model="filter" clearable type="text" label="Search Reservation" color="deep-orange-4" class="q-ma-md bg-white" outlined icon="search">
                             <template v-slot:prepend>
-                                <q-icon name="search" />
+                                <q-icon name="search" color="deep-orange-4"/>
                             </template>
                         </q-input>
                     </div>
                     
                 </template>    
                 <template v-slot:after>   
-                <q-btn label="ADD NEW RESERVATION" :to="{ name: 'walkinreserve' }" style="background-color:#ffd6b3;" class="q-my-md q-ml-md text-white">
+                <q-btn label="ADD NEW RESERVATION" :to="{ name: 'walkinreserve' }" class="bg-deep-orange-4 q-my-md q-ml-md text-white">
                     <q-tooltip>
                                         Add New Reservation
                     </q-tooltip>
@@ -23,12 +23,12 @@
                         <q-table grid :data="Reservation" :columns="columns" :filter="filter">
                             <template v-slot:item="props">
                                 <div class="q-pa-md col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
-                                    <q-card flat class="my-card" style="border: 2px solid;border-color: #FFDAB9" >
+                                    <q-card flat class="my-card" style="border: 2px solid;border-color: #ffdab9" >
                                         <q-card-section side>
                                             <q-list dense>
                                             <q-item>
                                             <div class="full-width text-center text-grey-8 text-h6">
-                                                <strong><q-chip class="text-weight-bold" color="orange-2" style="font-size:25px;font-family: 'Simonetta', serif;">{{props.row.clientEvent}}</q-chip></strong>
+                                                <strong><q-chip class="text-weight-bold" color="deep-orange-3" style="font-size:25px;font-family: 'Simonetta', serif;">{{props.row.clientEvent}}</q-chip></strong>
                                             </div>
                                             <!-- <strong class="row full-width text-center text-grey-8 text-h6 text-weight-bold">{{props.row.clientFName}} {{props.row.clientLName}}'s<q-chip class="text-weight-bold text-h6">{{props.row.clientEvent}}</q-chip></strong>
                                             <q-strong class="text-center text-grey">{{props.row.clientReserveDate}}</q-strong>     -->
@@ -86,9 +86,9 @@
                                         </q-card-section>
                                         <!-- color="expanded ? 'grey-8':'pink-3' " -->
                                         <q-card-actions>
-                                            <q-btn style="color:#ffbb80" @click="paybalance(props.row)" label="Pay Balance" flat dense icon="mdi-paypal" />
+                                            <q-btn color="deep-orange-4" @click="paybalance(props.row)" label="Pay Balance" flat dense icon="mdi-paypal" />
                                             <q-space />
-                                            <q-btn :color="expanded ? 'grey-8':'orange-3'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
+                                            <q-btn :color="expanded ? 'grey-8':'deep-orange-4'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
                                         </q-card-actions>
                                     </q-card>
                                 </div>
@@ -100,7 +100,7 @@
                 <q-dialog v-model="paymentDialog">
                     <q-card style="min-width: 1000px">
                         <q-card-section class="items-center">
-                            <q-select class="q-pa-md" color="orange-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
+                            <q-select class="q-pa-md" color="deep-orange-4" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
                                 <q-list bordered dense>
                                     <q-item class="q-mt-none q-pt-none">
                                         <q-item-section class="q-ml-lg"><strong><div>Total Payment:</div></strong></q-item-section>
@@ -125,7 +125,7 @@
                                         </q-item>
                                         <q-item>
                                             <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
-                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="orange-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
+                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="deep-orange-4" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
                                         </q-item>
                                     </q-list>
                                 </div>

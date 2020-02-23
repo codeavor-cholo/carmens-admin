@@ -3,11 +3,11 @@
         <template>  
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
-                    <div class="bg-white fit">
-                        <div class="text-h6 text-center q-py-md">FILTER OPTIONS</div>
-                        <q-input v-model="filter" clearable type="text" label="Search Users" color="pink-3" class="q-ma-md" outlined icon="search">
+                    <div class="bg-grey-10 fit">
+                        <div class="text-h6 text-white text-center q-py-md">FILTER OPTIONS</div>
+                        <q-input v-model="filter" clearable type="text" label="Search Users" color="deep-orange-4" class="q-ma-md bg-white" outlined icon="search">
                             <template v-slot:prepend>
-                                <q-icon name="search" />
+                                <q-icon name="search" color="deep-orange-4"/>
                             </template>
                         </q-input>
                     </div>
@@ -23,7 +23,7 @@
                     <q-table grid :data="returnNoAdmins" :columns="columns" class="q-px-sm full-width align-center ">
                         <template v-slot:item="props">
                                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
-                                    <q-card class="my-card" style="border: 2px solid;border-color: pink;" >
+                                    <q-card class="my-card" style="border: 2px solid;border-color: #ffdab9;" >
                                         <div>
                                         <q-card-section>
                                             <q-list dense>

@@ -1,23 +1,23 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-header class="bg-white" bordered style="border: 1px solid;border-color: #FFDAB9">
+    <q-header class="bg-deep-orange-4" bordered style="border: 1px solid;border-color: #FFDAB9">
       <q-toolbar>
-        <q-btn color="orange-3" flat dense round @click="drawer = !drawer" icon="menu" elevated aria-label="Menu"/>
-        <q-toolbar-title class="row" style="color:#ffbb80;">
-          <img style="height:80%;width:130px" src="statics/pics/carmen-logo.png" @click="$router.push('/')">
-          <div class="q-pl-md" style="font-family: 'Simonetta', serif;">
+        <q-btn color="white" flat dense round @click="drawer = !drawer" icon="menu" elevated aria-label="Menu"/>
+        <q-toolbar-title class="row">
+          <img style="height:80%;width:130px" src="statics/pics/logo.png" @click="$router.push('/')">
+          <div class="q-pl-xl" style="font-family: 'Simonetta', serif;">
             Carmen's Diner and Catering Services
           </div>  
         </q-toolbar-title>
       </q-toolbar>
       <div class="fixed-right q-pt-sm">
             <div>
-                <q-btn flat color="orange-3" icon="mdi-settings">
+                <q-btn flat color="white" icon="mdi-settings">
                   <q-menu>
                     <div class="row no-wrap q-pa-md">
                       <div class="column items-center">
                         <!-- <div class="text-subtitle1 q-mt-md q-mb-xs">{{email}}</div> -->
-                        <q-btn color="orange-3" label="Logout" @click="logout" push size="sm" v-close-popup/>
+                        <q-btn color="deep-orange-4" label="Logout" @click="logout" push size="sm" v-close-popup/>
                       </div>
                     </div>
                   </q-menu>
@@ -31,14 +31,14 @@
         show-if-above
         :width="280"
         :breakpoint="400"
-        class="text-grey-8"
+        content-class="bg-grey-10 text-white"
         style="overflow: hidden;"
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
-          <q-list padding style="background-color: white; height: 500px;">
+          <q-list padding style="height: 500px;">
             <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnPermissions.walkIn">
               <q-item-section avatar>
-                <q-icon color="orange-3" name="mdi-walk" />
+                <q-icon color="white" name="mdi-walk" />
               </q-item-section>
               <q-item-section>
                 <q-item-label >Walk-In Reservation</q-item-label>
@@ -47,7 +47,7 @@
 
             <q-item clickable @click="$router.push('/customReservation')" v-show="returnPermissions.walkIn" disable="">
               <q-item-section avatar>
-                <q-icon color="orange-3" name="category" />
+                <q-icon color="white" name="category" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Custom Walk-In Reservation</q-item-label>
@@ -56,7 +56,7 @@
 
             <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering">
               <q-item-section avatar>
-                <q-icon color="orange-3" name="mdi-cart-outline" />
+                <q-icon color="white" name="mdi-cart-outline" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Party Tray Ordering</q-item-label>
@@ -65,7 +65,7 @@
             
             <q-item clickable :to="{ name: 'dashboard' }">
               <q-item-section avatar>
-                <q-icon color="orange-3" name="mdi-view-dashboard" />
+                <q-icon color="white" name="mdi-view-dashboard" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Dashboard</q-item-label>
@@ -74,7 +74,7 @@
             
             <q-item clickable :to="{ name: 'reservation' }">
               <q-item-section avatar>
-                <q-icon color="orange-3" name="mdi-calendar-range" />
+                <q-icon color="white" name="mdi-calendar-range" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Reservation</q-item-label>
@@ -90,7 +90,7 @@
             >
                   <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon color="orange-3" name="fastfood" />
+                      <q-icon color="white" name="fastfood" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Food Management</q-item-label>
@@ -99,7 +99,7 @@
 
                   <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon color="orange-3" name="fastfood" />
+                      <q-icon color="white" name="fastfood" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Party Trays Management</q-item-label>
@@ -108,7 +108,7 @@
 
                   <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon color="orange-3" name="assignment" />
+                      <q-icon color="white" name="assignment" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Package Management</q-item-label>
@@ -117,7 +117,7 @@
 
                   <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others">
                     <q-item-section avatar class="q-pl-xl">
-                      <q-icon color="orange-3" name="mdi-table-chair" />
+                      <q-icon color="white" name="mdi-table-chair" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Other Management</q-item-label>
@@ -127,7 +127,7 @@
             </q-expansion-item>
             <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users">
               <q-item-section avatar>
-                <q-icon color="orange-3" name="people" />
+                <q-icon color="white" name="people" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Users</q-item-label>
@@ -138,7 +138,7 @@
 
         <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px;" >
           <div class="absolute-bottom bg-transparent" >
-            <q-avatar color="orange-3" size="56px" class="q-my-sm" text-color="white" style="filter: none;font-family: 'Simonetta', serif;">{{userEmail.charAt(0).toUpperCase()}}</q-avatar>
+            <q-avatar color="deep-orange-4" size="56px" class="q-my-sm" text-color="white" style="filter: none;font-family: 'Simonetta', serif;">{{userEmail.charAt(0).toUpperCase()}}</q-avatar>
             <!-- <q-avatar size="56px" class="q-mb-sm">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar> -->

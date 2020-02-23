@@ -3,46 +3,46 @@
         <div>
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">     
             <template v-slot:before>
-                <div class="text-h6 text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FILE MANAGEMENT</div>
-                <q-tabs v-model="tab" @click="clear" vertical class="text-grey-8 bg-white full-height relative-position" active-color="orange-3" active-bg-color="orange-1">
-                <q-tab name="motif" label="Motif" />
-                <q-tab name="city" label="City" />
-                <q-tab name="category" label="Category" />
-                <q-tab name="inclusion" label="Inclusions" />
-                <q-tab name="addons" label="Add-Ons" />
-                <q-tab name="position" label="Position" />
+                <div class="text-h6 bg-grey-10 text-white text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FILE MANAGEMENT</div>
+                <q-tabs v-model="tab" @click="clear" vertical class="text-grey-8 bg-grey-10 full-height relative-position" active-color="orange-3" active-bg-color="orange-1">
+                <q-tab name="motif" class="text-white" label="Motif" />
+                <q-tab name="city" class="text-white" label="City" />
+                <q-tab name="category" class="text-white" label="Category" />
+                <q-tab name="inclusion" class="text-white" label="Inclusions" />
+                <q-tab name="addons" class="text-white" label="Add-Ons" />
+                <q-tab name="position" class="text-white" label="Position" />
                 </q-tabs>
             </template>
             <template v-slot:after>
                 <q-scroll-area style="height:100%" :visible="true">
                     <div class="q-px-md text-grey-8 full-width">
                         <div class="q-my-md q-pt-xl">
-                                <q-btn label="Add Motif" style="background-color:#ffd6b3;" v-show="tab == 'motif'" @click="addmotifdialog = true, isEditMotif = false">
+                                <q-btn label="Add Motif" class="bg-deep-orange-4" v-show="tab == 'motif'" @click="addmotifdialog = true, isEditMotif = false">
                                     <q-tooltip>
                                         Add Motif 
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn style="background-color:#ffd6b3;" label="Add City" v-show="tab == 'city'" @click="addcitydialog = true, isEditCity = false">
+                                <q-btn class="bg-deep-orange-4" label="Add City" v-show="tab == 'city'" @click="addcitydialog = true, isEditCity = false">
                                     <q-tooltip>
                                         Add City
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn style="background-color:#ffd6b3;" label="Add Category" v-show="tab == 'category'" @click="addcategorydialog = true, isEditCateg = false">
+                                <q-btn class="bg-deep-orange-4" label="Add Category" v-show="tab == 'category'" @click="addcategorydialog = true, isEditCateg = false">
                                     <q-tooltip>
                                         Add Category
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn style="background-color:#ffd6b3;" label="Add Inclusion" v-show="tab == 'inclusion'" @click="addinclusiondialog = true, isEditInc = false">
+                                <q-btn class="bg-deep-orange-4" label="Add Inclusion" v-show="tab == 'inclusion'" @click="addinclusiondialog = true, isEditInc = false">
                                     <q-tooltip>
                                         Add Inclusions
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn style="background-color:#ffd6b3;" label="Add Add-Ons" v-show="tab == 'addons'" @click="addaddonsdialog = true, isEditAdd = false">
+                                <q-btn class="bg-deep-orange-4" label="Add Add-Ons" v-show="tab == 'addons'" @click="addaddonsdialog = true, isEditAdd = false">
                                     <q-tooltip>
                                         Add Add-Ons
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn style="background-color:#ffd6b3;" label="Add Positon" v-show="tab == 'position'" @click="addpositiondialog = true, isEditPos = false">
+                                <q-btn class="bg-deep-orange-4" label="Add Positon" v-show="tab == 'position'" @click="addpositiondialog = true, isEditPos = false">
                                     <q-tooltip>
                                         Add Position
                                     </q-tooltip>
@@ -70,7 +70,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="orange-6" @click="openDeleteDialogMotif(props.row)">
+                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogMotif(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -91,7 +91,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="orange-6" @click="openDeleteDialogCIty(props.row)">
+                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogCIty(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -112,7 +112,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="orange-6" @click="openDeleteDialogCateg(props.row)">
+                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogCateg(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -133,7 +133,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="orange-6" @click="openDeleteDialogPos(props.row)">
+                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogPos(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -155,7 +155,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="orange-6" @click="openDeleteDialogAdd(props.row)">
+                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogAdd(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -177,7 +177,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="orange-6" @click="openDeleteDialogInc(props.row)">
+                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogInc(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -211,7 +211,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
-                    <q-btn v-if="!isEditMotif" flat color="pink-3" label="Add Motif" v-close-popup @click="addMotif"/>
+                    <q-btn v-if="!isEditMotif" flat color="deep-orange-4" label="Add Motif" v-close-popup @click="addMotif"/>
                     <q-btn v-if="isEditMotif" flat label="Update Motif" color="teal" v-close-popup v-on:click="setTask"/>
                 </q-card-actions>
             </q-card>
@@ -229,7 +229,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
-                    <q-btn v-if="!isEditCity" flat color="pink-3" label="Add City" @click="addCity" v-close-popup/>
+                    <q-btn v-if="!isEditCity" flat color="deep-orange-4" label="Add City" @click="addCity" v-close-popup/>
                     <q-btn v-if="isEditCity" flat label="Update City" color="teal" v-close-popup v-on:click="setTaskCity"/>
                 </q-card-actions>
             </q-card>
@@ -247,7 +247,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
-                    <q-btn flat v-if="!isEditCateg" color="pink-3" label="Add Category" @click="addCateg" v-close-popup/>
+                    <q-btn flat v-if="!isEditCateg" color="deep-orange-4" label="Add Category" @click="addCateg" v-close-popup/>
                     <q-btn flat v-if="isEditCateg" label="Update Category" color="teal" v-close-popup v-on:click="setTaskCateg"/>
                 </q-card-actions>
             </q-card>
@@ -266,7 +266,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
-                    <q-btn flat v-if="!isEditInc" color="pink-3" label="Add Inclusion" @click="addInc" v-close-popup/>
+                    <q-btn flat v-if="!isEditInc" color="deep-orange-4" label="Add Inclusion" @click="addInc" v-close-popup/>
                     <q-btn flat v-if="isEditInc" label="Update Inclusion" color="teal" v-close-popup v-on:click="setTaskInc"/>
                 </q-card-actions>
             </q-card>
@@ -285,7 +285,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
-                    <q-btn flat v-if="!isEditAdd" color="pink-3" label="Add Add-Ons" @click="addaddOns" v-close-popup/>
+                    <q-btn flat v-if="!isEditAdd" color="deep-orange-4" label="Add Add-Ons" @click="addaddOns" v-close-popup/>
                     <q-btn flat v-if="isEditAdd" label="Update Add-Ons" color="teal" v-close-popup v-on:click="setTaskAdd"/>
                 </q-card-actions>
             </q-card>
@@ -303,7 +303,7 @@
 
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat color="grey-8" label="Cancel" @click="clear" v-close-popup/>
-                    <q-btn flat v-if="!isEditPos" color="pink-3" label="Add Position" @click="addposition" v-close-popup/>
+                    <q-btn flat v-if="!isEditPos" color="deep-orange-4" label="Add Position" @click="addposition" v-close-popup/>
                     <q-btn flat v-if="isEditPos" label="Update Position" color="teal" v-close-popup v-on:click="setTaskPos"/>
                 </q-card-actions>
             </q-card>

@@ -3,18 +3,18 @@
         <template>  
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
-                    <div class="bg-white fit">
-                        <div class="text-h6 text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FILTER OPTIONS</div>
-                        <q-input v-model="filter" clearable type="text" label="Search Packages" color="orange-3" class="q-ma-md" outlined icon="search">
+                    <div class="bg-grey-10 fit">
+                        <div class="text-h6 text-center text-white q-py-md" style="font-family: 'Roboto Slab', serif;">FILTER OPTIONS</div>
+                        <q-input v-model="filter" clearable type="text" label="Search Packages" color="orange-3" class="q-ma-md bg-white" outlined icon="search">
                             <template v-slot:prepend>
-                                <q-icon name="search" />
+                                <q-icon name="search" color="deep-orange-4" />
                             </template>
                         </q-input>
                     </div>
                     
                 </template>    
                 <template v-slot:after>   
-                <q-btn fab icon="mdi-plus-thick" color="orange-3" @click="addPackageDialog = true" class="q-my-md q-ml-md">
+                <q-btn fab icon="mdi-plus-thick" color="deep-orange-4" @click="addPackageDialog = true" class="q-my-md q-ml-md">
                     <q-tooltip>
                                         Add New Package
                     </q-tooltip>
@@ -69,7 +69,7 @@
                 <q-card-section class="q-pa-md col-8">
                     <div class="text-h6 q-pb-none q-ml-md" style="font-family: 'Roboto Slab', serif;">New Package</div>
                     <div class="container row q-ma-md">
-                    <q-input color="orange-3" outlined class="col-12" dense v-model="packageName" label="Package Name"/>
+                    <q-input color="deep-orange-4" outlined class="col-12" dense v-model="packageName" label="Package Name"/>
                     </div>
                     <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: #FFDAB9;">
                         <div class="q-mx-md text-weight-bold text-grey-8">
@@ -78,7 +78,7 @@
                             </span>
                         </div>
                         <div class="q-gutter-xs">
-                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="orange-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category)"/>
+                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="deep-orange-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category)"/>
                         </div>
                     </div>
                     <div v-show="this.selection.length != 0">
@@ -94,7 +94,7 @@
                                             <q-item-label dense class="q-pl-md" lines="1" v-else>{{i.category+' ('+ i.min +' - '+ i.max +' Pesos)'}}</q-item-label>
                                         </q-item-section>
                                         <q-item-section side>
-                                            <q-input color="orange-3" outlined="" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[i.category]" label="Viands Qty"/>
+                                            <q-input color="deep-orange-4" outlined="" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[i.category]" label="Viands Qty"/>
                                         </q-item-section>
                                     </q-item>
                                 </q-list>
@@ -108,7 +108,7 @@
                             </span>
                         </div>
                         <div class="q-gutter-xs">
-                            <q-checkbox v-model="selectedInclusions" :val="i" :label="i.inclusion" color="orange-6" v-for="(i, index) in this.Inclusion" :key="index"/>
+                            <q-checkbox v-model="selectedInclusions" :val="i" :label="i.inclusion" color="deep-orange-6" v-for="(i, index) in this.Inclusion" :key="index"/>
                         </div>
                     </div>
 
@@ -179,7 +179,7 @@
                             Package Pricing
                             </span>
                         </div>
-                    <q-input color="orange-3" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
+                    <q-input color="deep-orange-4" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
                     <!-- <q-input color="pink-3" outlined class="q-mt-md" type="number" dense v-model="packagePrice" label="Inclusion Price"/> -->
                     </div>
                 </q-page-sticky>
@@ -187,7 +187,7 @@
                 </div>
 
                 <q-card-actions align="left" class="text-primary col-12 q-mr-md">
-                <q-btn flat label="Add Package" color="orange-3" v-close-popup @click="addPackage"/>
+                <q-btn flat label="Add Package" color="deep-orange-4" v-close-popup @click="addPackage"/>
                 <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
