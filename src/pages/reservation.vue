@@ -5,7 +5,7 @@
                 <template v-slot:before>
                     <div class="bg-white fit">
                         <div class="text-h6 text-center q-py-md">FILTER OPTIONS</div>
-                        <q-input v-model="filter" clearable type="text" label="Search Reservation" color="pink-3" class="q-ma-md" outlined icon="search">
+                        <q-input v-model="filter" clearable type="text" label="Search Reservation" color="orange-2" class="q-ma-md" outlined icon="search">
                             <template v-slot:prepend>
                                 <q-icon name="search" />
                             </template>
@@ -14,7 +14,7 @@
                     
                 </template>    
                 <template v-slot:after>   
-                <q-btn label="ADD NEW RESERVATION" :to="{ name: 'walkinreserve' }" color="pink-3"  class="q-my-md q-ml-md">
+                <q-btn label="ADD NEW RESERVATION" :to="{ name: 'walkinreserve' }" style="background-color:#ffd6b3;" class="q-my-md q-ml-md text-white">
                     <q-tooltip>
                                         Add New Reservation
                     </q-tooltip>
@@ -23,42 +23,47 @@
                         <q-table grid :data="Reservation" :columns="columns" :filter="filter">
                             <template v-slot:item="props">
                                 <div class="q-pa-md col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
-                                    <q-card class="my-card" style="border: 2px solid;border-color: grey;" >
+                                    <q-card flat class="my-card" style="border: 2px solid;border-color: #FFDAB9" >
                                         <q-card-section side>
                                             <q-list dense>
                                             <q-item>
                                             <div class="full-width text-center text-grey-8 text-h6">
-                                                <strong><q-chip class="text-weight-bold text-h6">{{props.row.clientEvent}}</q-chip></strong>
+                                                <strong><q-chip class="text-weight-bold" color="orange-2" style="font-size:25px;font-family: 'Simonetta', serif;">{{props.row.clientEvent}}</q-chip></strong>
                                             </div>
                                             <!-- <strong class="row full-width text-center text-grey-8 text-h6 text-weight-bold">{{props.row.clientFName}} {{props.row.clientLName}}'s<q-chip class="text-weight-bold text-h6">{{props.row.clientEvent}}</q-chip></strong>
                                             <q-strong class="text-center text-grey">{{props.row.clientReserveDate}}</q-strong>     -->
                                             </q-item>
-                                            <div class="text-grey-8" align="center">
-                                                <strong class="q-pb-none q-mb-none text-h6">Name: {{props.row.clientFName}} {{props.row.clientLName}}</strong>
-                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Date of Event:</b> {{props.row.clientReserveDate}}</p>
-                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>From:</b> {{props.row.clientStartTime}} <b>To:</b> {{props.row.clientEndTime}}</p>
-                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Where:</b> {{props.row.clientPlace}} {{props.row.clientCity}}</p>
-                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Motif:</b> {{props.row.clientMotif}}</p>
-                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Guest:</b> {{props.row.clientPax}}</p>
-                                                <p class="q-pt-none q-mt-none q-pb-none q-mb-none"><b>Email:</b>{{props.row.clientEmail}}</p>
-                                                <p class="q-pt-none q-mt-none"></p>
+                                         
+                                            <div class="text-grey-8 column q-gutter-sm">
+                                                <div><strong class="q-pb-none q-mb-none text-h6" style="font-family: 'Roboto Slab', serif;">Name: {{props.row.clientFName}} {{props.row.clientLName}}</strong></div>
+                                                <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Date of Event:</b> {{props.row.clientReserveDate}}</p></div>
+                                                <div class="row justify-between">
+                                                    <p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>From:</b> {{props.row.clientStartTime}}</p>
+                                                    <p class="q-pt-none q-mt-none q-pb-none q-mb-none q-pr-xl" style="font-family: 'Roboto Slab', serif;"><b>To:</b> {{props.row.clientEndTime}}</p>
+                                                </div>
+                                                <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Where:</b> {{props.row.clientPlace}} {{props.row.clientCity}}</p></div>
+                                                <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Motif:</b> {{props.row.clientMotif}}</p></div>
+                                                <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Guest:</b> {{props.row.clientPax}}</p></div>
+                                                <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Email:</b> {{props.row.clientEmail}}</p></div>
+                                                <div><p class="q-pt-none q-mt-none"></p></div>
                                             </div>
+                                            
                                             <q-separator/>
                                             <q-slide-transition>
                                                 <div v-show="expanded">
                                                 <q-separator />
                                                   <q-list dense>
                                                     <q-item class="q-mt-sm text-grey-8" v-show="props.row.clientFoodChoice">
-                                                        <span class="full-width text-center text-weight-bold">FOOD CATEGORIES</span>
+                                                        <span class="full-width text-center text-weight-bold" style="font-family: 'Roboto Slab', serif;">FOOD CATEGORIES</span>
                                                         </q-item>
                                                         <q-item v-for="(i, index) in props.row.clientFoodChoice" :key="index" class="text-grey-8">
                                                             <q-item-section>
-                                                            <q-item-label>{{ i.category }} - {{i.foodName}}</q-item-label>
+                                                            <q-item-label><b>{{ i.category }}</b> - {{i.foodName}}</q-item-label>
                                                             </q-item-section>
                                                         </q-item>
                                                         <q-separator class="q-mt-sm"/>
                                                         <q-item class="q-mt-sm" v-show="props.row.clientSelectPackage.inclusions">
-                                                        <span class="full-width text-center text-weight-bold text-grey-8" >INCLUSIONS</span>
+                                                        <span class="full-width text-center text-weight-bold text-grey-8" style="font-family: 'Roboto Slab', serif;">INCLUSIONS</span>
                                                         </q-item>
                                                         <q-item v-for="(price, index) in props.row.clientSelectPackage.inclusions" :key="index" class="text-grey-8">
                                                             <q-item-section>
@@ -67,7 +72,7 @@
                                                         </q-item>
                                                         <q-separator class="q-mt-sm"/>
                                                         <q-item class="q-mt-sm" v-show="props.row.clientAddOns.lenght != 0">
-                                                        <span class="full-width text-center text-weight-bold text-grey-8" >ADD-ONS</span>
+                                                        <span class="full-width text-center text-weight-bold text-grey-8" style="font-family: 'Roboto Slab', serif;">ADD-ONS</span>
                                                         </q-item>
                                                         <q-item v-for="(price, index) in props.row.clientAddOns" :key="index" class="text-grey-8">
                                                             <q-item-section>
@@ -81,9 +86,9 @@
                                         </q-card-section>
                                         <!-- color="expanded ? 'grey-8':'pink-3' " -->
                                         <q-card-actions>
-                                            <q-btn color="pink-3" @click="paybalance(props.row)" label="Pay Balance" flat dense icon="mdi-paypal" />
+                                            <q-btn style="color:#ffbb80" @click="paybalance(props.row)" label="Pay Balance" flat dense icon="mdi-paypal" />
                                             <q-space />
-                                            <q-btn :color="expanded ? 'grey-8':'pink-3'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
+                                            <q-btn :color="expanded ? 'grey-8':'orange-3'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
                                         </q-card-actions>
                                     </q-card>
                                 </div>
@@ -95,7 +100,7 @@
                 <q-dialog v-model="paymentDialog">
                     <q-card style="min-width: 1000px">
                         <q-card-section class="items-center">
-                            <q-select class="q-pa-md" color="pink-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
+                            <q-select class="q-pa-md" color="orange-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
                                 <q-list bordered dense>
                                     <q-item class="q-mt-none q-pt-none">
                                         <q-item-section class="q-ml-lg"><strong><div>Total Payment:</div></strong></q-item-section>
@@ -120,7 +125,7 @@
                                         </q-item>
                                         <q-item>
                                             <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
-                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="pink-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
+                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="orange-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
                                         </q-item>
                                     </q-list>
                                 </div>

@@ -2,35 +2,40 @@
   <q-page>
     <div v-show="showdateform" class="q-pa-md">
         <div>
-            <q-card class="my-card fixed-center q-mt-lg" style="width: 700px; max-width: 80vw;height: 470px; max-height: 50vw">
+            <q-card class="my-card fixed-center q-mt-lg" style="width: 700px; max-width: 80vw;height: 500px; max-height: 70vw">
               <q-card-section>
-                <strong class="text-grey text-h6 q-pa-md">Select Date and Fill up Form</strong>
-                <div class="q-pa-md" style="float:left; width: 50%">
-                  <q-date v-model="dates" mask="YYYY/MM/DD" color="pink-3" today-btn/>
-                </div>
-                <div style="float: right;width:50%;">
-                  <p class="text-grey column items-center" style="height: 10px; margin-top: -5px; margin-bottom: 2px">+50php if pax is less than 50</p>
-                  <div class="row">
-                    <q-input class="q-pt-sm" color="pink-3" style="width: 163px" outlined dense v-model="clientFName" label="First Name"/>
-                    <q-input class="q-pt-sm q-ml-sm" color="pink-3" style="width: 163px" outlined dense v-model="clientLName" label="Last Name"/>
-                  </div>
-                  <q-input class="q-pt-sm" color="pink-3" outlined dense v-model="clientEmail" label="Email"/>
-                  <q-input class="q-pt-sm" color="pink-3" outlined dense v-model="clientAddress" label="Event Place"/>
-                  <q-select class="q-pt-sm" color="pink-3" dense outlined v-model="selectCity" :options="cityOpt" emit-value map-options label="Select City" />
-                  <q-input class="q-pt-sm" color="pink-3" outlined dense v-model="clientEvent" label="Event Name"/>
-                  <div class="row">
-                    <q-select class="q-pt-sm" color="pink-3" dense outlined style="width: 163px" v-model="selectMotif" :options="motifOpt" emit-value map-options label="Select Motif" />
-                    <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="pink-3" outlined dense v-model="clientPax" label="Pax"/>
-                  </div>
-                  <div class="row">
-                    <q-input type="time" @input="endtime" mask="YYYY-MM-DD HH:mm:ss" class="q-pt-sm" color="pink-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
-                    <q-input type="time" class="q-pt-sm q-ml-sm" mask="YYYY-MM-DD HH:mm:ss" dense style="width: 163px" color="pink-3" outlined v-model="endTime" hint="End Time"/>
-                  </div>
-                </div>
+                <div class="text-grey text-h5 row justify-center" style="font-family: 'Simonetta', serif;">Select Date and Fill up Form</div>
+                <p class="text-grey column items-center">+50php if pax is less than 50</p>
+                <div class="row justify-between">    
+                    
+                    <div>
+                      <q-date v-model="dates" mask="YYYY/MM/DD" color="orange-3" today-btn/>
+                    </div>
+
+                    <div>
+                      <div class="row">
+                        <q-input class="q-pt-sm" color="orange-3" style="width: 163px" outlined dense v-model="clientFName" label="First Name"/>
+                        <q-input class="q-pt-sm q-ml-sm" color="orange-3" style="width: 163px" outlined dense v-model="clientLName" label="Last Name"/>
+                      </div>
+                      <q-input class="q-pt-sm" color="orange-3" outlined dense v-model="clientEmail" label="Email"/>
+                      <q-input class="q-pt-sm" color="orange-3" outlined dense v-model="clientAddress" label="Event Place"/>
+                      <q-select class="q-pt-sm" color="orange-3" dense outlined v-model="selectCity" :options="cityOpt" emit-value map-options label="Select City" />
+                      <q-input class="q-pt-sm" color="orange-3" outlined dense v-model="clientEvent" label="Event Name"/>
+                      <div class="row">
+                        <q-select class="q-pt-sm" color="orange-3" dense outlined style="width: 163px" v-model="selectMotif" :options="motifOpt" emit-value map-options label="Select Motif" />
+                        <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="orange-3" outlined dense v-model="clientPax" label="Pax"/>
+                      </div>
+                      <div class="row">
+                        <q-input type="time" @input="endtime" mask="YYYY-MM-DD HH:mm:ss" class="q-pt-sm" color="orange-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
+                        <q-input type="time" class="q-pt-sm q-ml-sm" mask="YYYY-MM-DD HH:mm:ss" dense style="width: 163px" color="orange-3" outlined v-model="endTime" hint="End Time"/>
+                      </div>
+                    </div>
+
+              </div>
               </q-card-section>
 
               <q-card-actions align="right" class="bg-white text-teal fixed-bottom">
-                <q-btn flat label="Continue" color="pink-3" @click="dateformCheck" />
+                <q-btn flat label="Continue" color="orange-3" @click="dateformCheck" />
               </q-card-actions>
             </q-card>
         </div>
@@ -42,8 +47,10 @@
                     <q-card-section class="row items-center q-pb-none">
                       <div class="q-px-md" style="font-size:30px;font-family: 'Noto Serif SC', serif;"><b>{{clientFName}} {{clientLName}}'s {{clientEvent}}</b></div> 
                       <q-space />
-                      <q-btn label="Customize Package" class="text-h6" :to="{ name: 'customReservation', params: {id: currentReservation} }" color="pink-3" flat dense />
-                      <q-btn label="Back to Form" class="text-h6" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
+                      <div class="q-pr-md">
+                        <q-btn label="Customize Package" :to="{ name: 'customReservation', params: {id: currentReservation} }" color="orange-3" flat dense />
+                      </div>
+                      <q-btn label="Back to Form" color="grey-8" flat dense @click="showreserveform = false, showdateform = true" />
                     </q-card-section>
                     <q-card-section>
                             <div class="row text-grey-8">
@@ -54,7 +61,7 @@
                                     <q-icon name="mdi-pencil" color="teal" class="cursor-pointer">
                                       <q-tooltip>Edit</q-tooltip>
                                       <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                        <q-date v-model="dates" color="pink-3" mask="YYYY/MM/DD" @input="() => $refs.qDateProxy.hide()" />
+                                        <q-date v-model="dates" color="orange-3" mask="YYYY/MM/DD" @input="() => $refs.qDateProxy.hide()" />
                                       </q-popup-proxy>
                                     </q-icon>
                                   </template>
@@ -71,7 +78,7 @@
                                             <q-input style="width: 400px" class="relative position" autofocus dense :value="clientEmail" hint="Enter Email" @input="emitValue">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set" />
                                               </template>
                                             </q-input>
                                           </template>
@@ -88,7 +95,7 @@
                                             <q-input type="number" style="width: 200px" class="relative position" autofocus dense :value="clientPax" hint="Enter Pax" @input="emitValue">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set" />
                                               </template>
                                             </q-input>
                                           </template>
@@ -107,7 +114,7 @@
                                             <q-select class="q-ml-sm" style="width: 300px" color="pink-3" dense outlined v-model="selectMotif" :options="motifOpt" emit-value map-options label="Select Motif">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set" />
                                               </template>
                                             </q-select>
                                           </template>
@@ -124,7 +131,7 @@
                                             <q-input type="time" class="q-pt-sm" style="width: 200px" color="pink-3" dense outlined v-model="startTime" hint="Start Time">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set" />
                                               </template>
                                             </q-input>
                                           </template>
@@ -141,7 +148,7 @@
                                             <q-input type="time" class="q-pt-sm" style="width: 200px" color="pink-3" dense outlined v-model="endTime" readonly hint="End Time">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set" />
                                               </template>
                                             </q-input>
                                           </template>
@@ -164,7 +171,7 @@
                                         <q-input style="width: 500px" class="relative position" autofocus dense :value="clientAddress" hint="Enter Address" @input="emitValue">
                                           <template v-slot:after>
                                             <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                            <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set"/>
+                                            <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set"/>
                                           </template>
                                         </q-input>
                                     </template>
@@ -180,7 +187,7 @@
                                             <q-select class="q-ml-sm" style="width: 300px" color="pink-3" dense outlined v-model="selectCity" :options="cityOpt" emit-value map-options label="Select City">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="pink-3" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="orange-3" icon="check_circle" @click.stop="set" />
                                               </template>
                                             </q-select>
                                           </template>
@@ -191,7 +198,7 @@
                           </q-card>                    
                         </div>
                         <div class="q-pa-sm q-pt-md">
-                        <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="pink-3" inactive-color="grey-8">
+                        <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="orange-3" inactive-color="grey-8">
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
                                 <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" selection="single" :selected.sync="selected">
                                     <template v-slot:item="props">
@@ -201,7 +208,7 @@
                                                     <q-list dense>
                                                     <q-item class="q-mt-sm">
                                                     <span class="full-width text-center text-teal text-h6 text-weight-bold">
-                                                        <q-checkbox @input="consoleselected" color="pink-3" dense v-model="props.selected" :label="props.row.name" />
+                                                        <q-checkbox @input="consoleselected" color="orange-3" dense v-model="props.selected" :label="props.row.name" />
                                                         <br>
                                                         <q-chip class="text-center">{{props.row.price}}php per pax</q-chip>
                                                     </span>
@@ -241,10 +248,10 @@
                                       :src="choice.foodPic"
                                       :ratio="1"
                                       class="col-3 q-ma-md rounded-borders"
-                                      :style="returnSelectedStatus(choice) ? 'transform: scale(0.95);border: 4px solid;border-color: pink;' : ''"
+                                      :style="returnSelectedStatus(choice) ? 'transform: scale(0.95);border: 4px solid;border-color: #FFDAB9;' : ''"
                                     >
                                     <div class="absolute-bottom text-overline">
-                                      <q-checkbox color="pink-3" v-model="choiceOfFood" :val="choice" :label="choice.foodName" @input="consoleChoice,checkQty(choice,returnLimit(food.viandName),food.viandName)"/>
+                                      <q-checkbox color="orange-3" v-model="choiceOfFood" :val="choice" :label="choice.foodName" @input="consoleChoice,checkQty(choice,returnLimit(food.viandName),food.viandName)"/>
                                     </div>
                                     </q-img>
                                   </div>
@@ -261,11 +268,11 @@
                                 <div>
                                     <span class="q-mb-none q-mt-md text-subtitle2">Add-Ons:</span>
                                     <div class="q-mt-none row">
-                                      <q-select color="pink-3" class="q-ma-sm" v-model="addons" @input="addonsPriceOptions" emit-value map-options :options="addonsOpt" style="width: 200px" filled label="Add-Ons"/>
-                                      <q-input color="pink-3" readonly class="q-ma-sm" type="number" style="width: 100px" label="Price" v-model="addonsPrice"/>
-                                      <q-input color="pink-3" class="q-ma-sm" @input="totalAddonsPrice" type="number"  style="width: 100px" label="Quantity" v-model="addonsQuantity"/>
-                                      <q-input color="pink-3" readonly class="q-ma-sm q-mr-none" type="number" style="width: 100px" label="Total Price" v-model="addonsTotalPrice"/>  
-                                      <q-btn class="q-ma-sm" style="height: 55px;margin-top: 35px" color="pink-3" label="ADD" @click="addAdditionalList"/>
+                                      <q-select color="orange-3" class="q-ma-sm" v-model="addons" @input="addonsPriceOptions" emit-value map-options :options="addonsOpt" style="width: 200px" filled label="Add-Ons"/>
+                                      <q-input color="orange-3" readonly class="q-ma-sm" type="number" style="width: 100px" label="Price" v-model="addonsPrice"/>
+                                      <q-input color="orange-3" class="q-ma-sm" @input="totalAddonsPrice" type="number"  style="width: 100px" label="Quantity" v-model="addonsQuantity"/>
+                                      <q-input color="orange-3" readonly class="q-ma-sm q-mr-none" type="number" style="width: 100px" label="Total Price" v-model="addonsTotalPrice"/>  
+                                      <q-btn class="q-ma-sm" style="height: 55px;margin-top: 35px" color="orange-3" label="ADD" @click="addAdditionalList"/>
                                       <h6 class="text-teal">{{additionalPrice}}</h6>
                                     </div>
                                     <div>
@@ -337,7 +344,7 @@
                               </div>
                             </q-step>
                             <q-step :name="4" title="Payment" icon="mdi-paypal">
-                              <q-select class="q-pa-md" color="pink-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
+                              <q-select class="q-pa-md" color="orange-3" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
                               <div v-show="this.selectPay === 'CASH'">
                                   <q-list dense>
                                     <q-item>
@@ -354,7 +361,7 @@
                                     </q-item>
                                     <q-item>
                                         <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
-                                        <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="pink-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
+                                        <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="orange-3" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
                                     </q-item>
                                 </q-list>
                               </div>
@@ -399,7 +406,7 @@
                             <template v-slot:navigation>
                                 <q-stepper-navigation align="right">
                                 <!-- <q-btn v-if="step === 4 || this.selectPay === 'CARD'" v-show="step === 4" outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn> -->
-                                <q-btn flat @click="stepcheck" color="pink-3" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
+                                <q-btn flat @click="stepcheck" color="orange-3" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
                                 <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>

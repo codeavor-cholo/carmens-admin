@@ -4,8 +4,8 @@
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
                     <div class="bg-white fit">
-                        <div class="text-h6 text-center q-py-md">FILTER OPTIONS</div>
-                        <q-input v-model="filter" clearable type="text" label="Search Packages" color="pink-3" class="q-ma-md" outlined icon="search">
+                        <div class="text-h6 text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FILTER OPTIONS</div>
+                        <q-input v-model="filter" clearable type="text" label="Search Packages" color="orange-3" class="q-ma-md" outlined icon="search">
                             <template v-slot:prepend>
                                 <q-icon name="search" />
                             </template>
@@ -14,7 +14,7 @@
                     
                 </template>    
                 <template v-slot:after>   
-                <q-btn fab icon="mdi-plus-thick" color="pink-3" @click="addPackageDialog = true" class="q-my-md q-ml-md">
+                <q-btn fab icon="mdi-plus-thick" color="orange-3" @click="addPackageDialog = true" class="q-my-md q-ml-md">
                     <q-tooltip>
                                         Add New Package
                     </q-tooltip>
@@ -27,7 +27,7 @@
                                         <q-card-section side>
                                             <q-list dense>
                                             <q-item class="q-mt-sm">
-                                            <span class="full-width text-center text-teal text-h6 text-weight-bold">{{props.row.name}}
+                                            <span style="font-family: 'Simonetta', serif;" class="full-width text-center text-teal text-h6 text-weight-bold">{{props.row.name}}
                                                 <br>
                                                 <q-chip class="text-center">{{props.row.price}} per pax</q-chip>
                                             </span>
@@ -67,24 +67,24 @@
                 </q-banner>
                 <div class="container row" >
                 <q-card-section class="q-pa-md col-8">
-                    <div class="text-h6 q-pb-none q-ml-md">New Package</div>
+                    <div class="text-h6 q-pb-none q-ml-md" style="font-family: 'Roboto Slab', serif;">New Package</div>
                     <div class="container row q-ma-md">
-                    <q-input color="pink-3" outlined class="col-12" dense v-model="packageName" label="Package Name"/>
+                    <q-input color="orange-3" outlined class="col-12" dense v-model="packageName" label="Package Name"/>
                     </div>
-                    <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: pink;">
+                    <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: #FFDAB9;">
                         <div class="q-mx-md text-weight-bold text-grey-8">
-                            <span>
+                            <span style="font-family: 'Roboto Slab', serif;"> 
                             Select Category
                             </span>
                         </div>
                         <div class="q-gutter-xs">
-                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="pink-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category)"/>
+                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="orange-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category)"/>
                         </div>
                     </div>
                     <div v-show="this.selection.length != 0">
-                        <div class="my-card q-ma-md q-pa-md" style="border: 1.5px solid;border-color: pink;">
+                        <div class="my-card q-ma-md q-pa-md" style="border: 1.5px solid;border-color: #FFDAB9;">
                             <div>
-                                <div class="q-ml-md text-weight-bold text-grey-8">
+                                <div class="q-ml-md text-weight-bold text-grey-8" style="font-family: 'Roboto Slab', serif;">
                                 Food Choices
                                 </div>
                                 <q-list dense class="text-left text-grey-8 bg-white" >
@@ -94,21 +94,21 @@
                                             <q-item-label dense class="q-pl-md" lines="1" v-else>{{i.category+' ('+ i.min +' - '+ i.max +' Pesos)'}}</q-item-label>
                                         </q-item-section>
                                         <q-item-section side>
-                                            <q-input color="pink-3" outlined="" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[i.category]" label="Viands Qty"/>
+                                            <q-input color="orange-3" outlined="" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[i.category]" label="Viands Qty"/>
                                         </q-item-section>
                                     </q-item>
                                 </q-list>
                             </div>
                         </div>
                     </div>
-                    <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: pink;">
+                    <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color:  #FFDAB9;">
                         <div class="q-mx-md text-weight-bold text-grey-8">
-                            <span>
+                            <span style="font-family: 'Roboto Slab', serif;">
                             Select Inclusions
                             </span>
                         </div>
                         <div class="q-gutter-xs">
-                            <q-checkbox v-model="selectedInclusions" :val="i" :label="i.inclusion" color="pink-6" v-for="(i, index) in this.Inclusion" :key="index"/>
+                            <q-checkbox v-model="selectedInclusions" :val="i" :label="i.inclusion" color="orange-6" v-for="(i, index) in this.Inclusion" :key="index"/>
                         </div>
                     </div>
 
@@ -117,7 +117,7 @@
                     <q-page-sticky position="top-right" :offset="[320, 0]"> 
                     <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: teal;">
                         <div class="q-ml-sm q-mr-sm text-weight-bold text-teal">
-                            <span>
+                            <span style="font-family: 'Roboto Slab', serif;">
                             Package Pricing Guide
                             </span>
                         </div>
@@ -125,9 +125,9 @@
                         <q-list dense class="text-left text-grey-8 bg-white">
                             <q-item dense class="text-caption text-weight-bold">
                                 <q-item-section>
-                                    <q-item-label dense lines="1">Selected Food</q-item-label>
+                                    <q-item-label dense lines="1" style="font-family: 'Roboto Slab', serif;">Selected Food</q-item-label>
                                 </q-item-section>
-                                <q-item-section side>
+                                <q-item-section side style="font-family: 'Roboto Slab', serif;">
                                     Viands Qty
                                 </q-item-section>
                             </q-item>
@@ -146,7 +146,7 @@
                             <q-separator/>
                             <q-item dense class="text-caption text-weight-bold">
                                 <q-item-section>
-                                    <q-item-label dense lines="1">Selected Inclusion</q-item-label>
+                                    <q-item-label dense lines="1" style="font-family: 'Roboto Slab', serif;">Selected Inclusion</q-item-label>
                                 </q-item-section>
                                 <q-item-section side class="">
                                     x {{selectedInclusions.length}}
@@ -165,7 +165,7 @@
                             </q-scroll-area>
                             <q-item class="text-caption text-weight-bold">
                                 <q-item-section>
-                                    <q-item-label dense lines="1">Price per Pax</q-item-label>
+                                    <q-item-label dense lines="1" style="font-family: 'Roboto Slab', serif;">Price per Pax</q-item-label>
                                 </q-item-section>
                                 <q-item-section side>
                                     {{returnSelectedMinMax}}
@@ -173,13 +173,13 @@
                             </q-item>
                         </q-list>
                     </div>
-                    <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: pink;">
+                    <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: #FFDAB9;">
                         <div class="q-ml-sm q-mr-sm text-weight-bold text-grey-8">
-                            <span>
+                            <span style="font-family: 'Roboto Slab', serif;">
                             Package Pricing
                             </span>
                         </div>
-                    <q-input color="pink-3" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
+                    <q-input color="orange-3" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
                     <!-- <q-input color="pink-3" outlined class="q-mt-md" type="number" dense v-model="packagePrice" label="Inclusion Price"/> -->
                     </div>
                 </q-page-sticky>
@@ -187,7 +187,7 @@
                 </div>
 
                 <q-card-actions align="left" class="text-primary col-12 q-mr-md">
-                <q-btn flat label="Add Package" color="pink-3" v-close-popup @click="addPackage"/>
+                <q-btn flat label="Add Package" color="orange-3" v-close-popup @click="addPackage"/>
                 <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
