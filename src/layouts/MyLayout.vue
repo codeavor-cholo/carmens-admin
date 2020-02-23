@@ -29,9 +29,9 @@
         v-model="drawer"
         overlay
         show-if-above
-        :width="280"
+        :width="300"
         :breakpoint="400"
-        content-class="bg-grey-10 text-white"
+        content-class="bg-grey-9 text-white"
         style="overflow: hidden;"
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
@@ -54,7 +54,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering">
+            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering" active-class="text-white bg-deep-orange-4">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-cart-outline" />
               </q-item-section>
@@ -63,7 +63,7 @@
               </q-item-section>
             </q-item>
             
-            <q-item clickable :to="{ name: 'dashboard' }">
+            <q-item clickable :to="{ name: 'dashboard' }" active-class="text-white bg-deep-orange-4">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-view-dashboard" />
               </q-item-section>
@@ -72,7 +72,7 @@
               </q-item-section>
             </q-item>
             
-            <q-item clickable :to="{ name: 'reservation' }">
+            <q-item clickable :to="{ name: 'reservation' }" active-class="text-white bg-deep-orange-4">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-calendar-range" />
               </q-item-section>
@@ -86,9 +86,10 @@
               icon="mdi-settings-outline"
               label="File Management"
               default-opened
+              
               v-show="returnPermissions.food || returnPermissions.partyTray || returnPermissions.packages || returnPermissions.others"
             >
-                  <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food">
+                  <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="fastfood" />
                     </q-item-section>
@@ -97,7 +98,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray">
+                  <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="fastfood" />
                     </q-item-section>
@@ -106,7 +107,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages">
+                  <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="assignment" />
                     </q-item-section>
@@ -115,7 +116,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others">
+                  <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="mdi-table-chair" />
                     </q-item-section>
@@ -125,7 +126,7 @@
                   </q-item>
 
             </q-expansion-item>
-            <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users">
+            <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users" active-class="text-white bg-deep-orange-4">
               <q-item-section avatar>
                 <q-icon color="white" name="people" />
               </q-item-section>
@@ -138,12 +139,12 @@
 
         <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px;" >
           <div class="absolute-bottom bg-transparent" >
-            <q-avatar color="deep-orange-4" size="56px" class="q-my-sm" text-color="white" style="filter: none;font-family: 'Simonetta', serif;">{{userEmail.charAt(0).toUpperCase()}}</q-avatar>
+            <q-avatar color="deep-orange-4" size="56px" class="q-my-sm" text-color="white" style="filter: none;">{{userEmail.charAt(0).toUpperCase()}}</q-avatar>
             <!-- <q-avatar size="56px" class="q-mb-sm">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
             </q-avatar> -->
             <!-- <div class="text-weight-bold">STYX SALCEDO</div> -->
-            <div style="font-size:25px;font-family: 'Simonetta', serif;">{{userEmail.toUpperCase()}}</div>
+            <div style="font-size:25px;">{{userEmail.toUpperCase()}}</div>
           </div>
         </q-img>
       </q-drawer>

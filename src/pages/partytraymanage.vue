@@ -4,10 +4,10 @@
             <div>
                 <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">
                 <template v-slot:before>
-                <q-tabs v-model="tab" vertical class="text-grey-8 bg-grey-10 full-height relative-position" :active-color="tab != 'WOPP' ? 'deep-orange-4' : 'teal'" :active-bg-color="tab != 'WOPP' ? 'deep-orange-2' : 'teal-1'">
+                <q-tabs v-model="tab" vertical class="text-grey-8 bg-grey-9 full-height relative-position" :active-color="tab != 'WOPP' ? 'white' : 'teal'" :active-bg-color="tab != 'WOPP' ? 'deep-orange-4' : 'teal-1'">
                 
                     <div class="text-h6 text-center text-white q-py-md" style="font-family: 'Roboto Slab', serif;">PARTY TRAYS
-                        <q-btn-dropdown active-color="deep-orange-4" active-bg-color="deep-orange-1" flat dense dropdown-icon="more_vert" color="white">
+                        <q-btn-dropdown active-color="white" active-bg-color="deep-orange-4" flat dense dropdown-icon="more_vert" color="white">
                             <q-list class="text-grey-8" dense>
                                 <q-item clickable v-close-popup @click="addCategory = true, editCateg = false, deleteCateg = false, isEdit = false">
                                     <q-item-section>
@@ -42,7 +42,7 @@
                  </q-tab>
                  <br><br>
                 </q-scroll-area>
-                <q-btn style="font-family: 'Roboto Slab', serif;" label="SCROLL FOR MORE CATEGORIES" flat size="sm" class="bg-grey-10 absolute-bottom full-width" color="deep-orange-6" v-show="tab != 'addInc'"></q-btn>
+                <q-btn style="font-family: 'Roboto Slab', serif;" label="SCROLL FOR MORE CATEGORIES" flat size="sm" class="bg-grey-9 absolute-bottom full-width" color="deep-orange-6" v-show="tab != 'addInc'"></q-btn>
                 </div>
 
                 </q-tabs>

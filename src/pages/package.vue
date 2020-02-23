@@ -3,7 +3,7 @@
         <template>  
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
-                    <div class="bg-grey-10 fit">
+                    <div class="bg-grey-9 fit">
                         <div class="text-h6 text-center text-white q-py-md" style="font-family: 'Roboto Slab', serif;">FILTER OPTIONS</div>
                         <q-input v-model="filter" clearable type="text" label="Search Packages" color="orange-3" class="q-ma-md bg-white" outlined icon="search">
                             <template v-slot:prepend>

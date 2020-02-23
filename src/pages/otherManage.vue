@@ -3,8 +3,8 @@
         <div>
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">     
             <template v-slot:before>
-                <div class="text-h6 bg-grey-10 text-white text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FILE MANAGEMENT</div>
-                <q-tabs v-model="tab" @click="clear" vertical class="text-grey-8 bg-grey-10 full-height relative-position" active-color="orange-3" active-bg-color="orange-1">
+                <div class="text-h6 bg-grey-9 text-white text-center q-py-md" style="font-family: 'Roboto Slab', serif;">FILE MANAGEMENT</div>
+                <q-tabs v-model="tab" @click="clear" vertical class="text-grey-8 bg-grey-9 full-height relative-position" active-color="white" active-bg-color="deep-orange-4">
                 <q-tab name="motif" class="text-white" label="Motif" />
                 <q-tab name="city" class="text-white" label="City" />
                 <q-tab name="category" class="text-white" label="Category" />
@@ -17,32 +17,32 @@
                 <q-scroll-area style="height:100%" :visible="true">
                     <div class="q-px-md text-grey-8 full-width">
                         <div class="q-my-md q-pt-xl">
-                                <q-btn label="Add Motif" class="bg-deep-orange-4" v-show="tab == 'motif'" @click="addmotifdialog = true, isEditMotif = false">
+                                <q-btn label="Add Motif" class="bg-deep-orange-4 text-white" v-show="tab == 'motif'" @click="addmotifdialog = true, isEditMotif = false">
                                     <q-tooltip>
                                         Add Motif 
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn class="bg-deep-orange-4" label="Add City" v-show="tab == 'city'" @click="addcitydialog = true, isEditCity = false">
+                                <q-btn class="bg-deep-orange-4 text-white" label="Add City" v-show="tab == 'city'" @click="addcitydialog = true, isEditCity = false">
                                     <q-tooltip>
                                         Add City
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn class="bg-deep-orange-4" label="Add Category" v-show="tab == 'category'" @click="addcategorydialog = true, isEditCateg = false">
+                                <q-btn class="bg-deep-orange-4 text-white" label="Add Category" v-show="tab == 'category'" @click="addcategorydialog = true, isEditCateg = false">
                                     <q-tooltip>
                                         Add Category
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn class="bg-deep-orange-4" label="Add Inclusion" v-show="tab == 'inclusion'" @click="addinclusiondialog = true, isEditInc = false">
+                                <q-btn class="bg-deep-orange-4 text-white" label="Add Inclusion" v-show="tab == 'inclusion'" @click="addinclusiondialog = true, isEditInc = false">
                                     <q-tooltip>
                                         Add Inclusions
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn class="bg-deep-orange-4" label="Add Add-Ons" v-show="tab == 'addons'" @click="addaddonsdialog = true, isEditAdd = false">
+                                <q-btn class="bg-deep-orange-4 text-white" label="Add Add-Ons" v-show="tab == 'addons'" @click="addaddonsdialog = true, isEditAdd = false">
                                     <q-tooltip>
                                         Add Add-Ons
                                     </q-tooltip>
                                 </q-btn>
-                                <q-btn class="bg-deep-orange-4" label="Add Positon" v-show="tab == 'position'" @click="addpositiondialog = true, isEditPos = false">
+                                <q-btn class="bg-deep-orange-4 text-white" label="Add Positon" v-show="tab == 'position'" @click="addpositiondialog = true, isEditPos = false">
                                     <q-tooltip>
                                         Add Position
                                     </q-tooltip>
@@ -70,7 +70,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogMotif(props.row)">
+                                                        <q-btn flat icon="delete" dense color="grey-8" @click="openDeleteDialogMotif(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -91,7 +91,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogCIty(props.row)">
+                                                        <q-btn flat icon="delete" dense color="grey-8" @click="openDeleteDialogCIty(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -112,7 +112,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogCateg(props.row)">
+                                                        <q-btn flat icon="delete" dense color="grey-8" @click="openDeleteDialogCateg(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -133,7 +133,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogPos(props.row)">
+                                                        <q-btn flat icon="delete" dense color="grey-8" @click="openDeleteDialogPos(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -155,7 +155,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogAdd(props.row)">
+                                                        <q-btn flat icon="delete" dense color="grey-8" @click="openDeleteDialogAdd(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
@@ -177,7 +177,7 @@
                                                                 Edit
                                                             </q-tooltip>
                                                         </q-btn>
-                                                        <q-btn flat icon="delete" dense color="deep-orange-6" @click="openDeleteDialogInc(props.row)">
+                                                        <q-btn flat icon="delete" dense color="grey-8" @click="openDeleteDialogInc(props.row)">
                                                             <q-tooltip>
                                                                 Delete
                                                             </q-tooltip>
