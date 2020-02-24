@@ -10,7 +10,7 @@
           </div>  
         </q-toolbar-title>
       </q-toolbar>
-      <div class="fixed-right q-pt-sm">
+      <div class="absolute-right q-pt-sm">
             <div>
                 <q-btn flat color="white" icon="mdi-settings">
                   <q-menu>

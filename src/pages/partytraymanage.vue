@@ -66,14 +66,20 @@
                         </div>
                     </div>
                     <div>
-                        <q-table grid :data="returnWithPartyTrays" :columns="tab !='addInc' ? columns : incColumns" :pagination="pagination" :filter="filter" class="q-px-sm full-width align-center ">
+                        <q-table grid :data="returnWithPartyTrays" :columns="tab !='addInc' ? columns : incColumns" :pagination.sync="pagination" row-key=".key" :filter="filter" class="q-px-sm full-width align-center ">
                             <template v-slot:item="props">
                                 
                                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card class="my-card" style="border: 2px solid;border-color: #ffdab9;" >
                                         <div v-if="tab != 'addInc'">
                                         <q-card-section>
-                                            <q-img :src="props.row.foodPic" :ratio="4/3"/>
+                                            <q-img :src="props.row.foodPic" :ratio="4/3">
+                                                <q-btn round color="teal" icon="mdi-pencil" @click="openEditDialog(props.row)">
+                                                    <q-tooltip>
+                                                        Edit Food
+                                                    </q-tooltip>  
+                                                </q-btn> 
+                                            </q-img>
                                         </q-card-section>
                                         <q-card-section side>
                                             <q-list dense>
@@ -114,10 +120,11 @@
         <q-dialog v-model="addFoodDialog" persistent>
             <q-card style="min-width: 400px" >
                 <q-card-section class="q-pb-none">
-                <div class="text-h6" style="font-family: 'Roboto Slab', serif;">New Food</div>
+                <div class="text-h6" style="font-family: 'Roboto Slab', serif;" v-show="editMode == false">New Food</div>
+                <div class="text-h6" style="font-family: 'Roboto Slab', serif; " v-show="editMode == true">Update Food</div>
                 </q-card-section>
 
-                <q-card-section class="q-pa-md">
+                <q-card-section class="q-pa-md" v-show="editMode == false">
                 <div class="container row q-ma-md">
                 <q-input color="deep-orange-4" outlined class="col-12" dense v-model="foodNames" label="Party Tray Name"/>
                 <q-select color="deep-orange-4" class="col-12 q-mt-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
@@ -176,9 +183,79 @@
                 </div>
                 </q-card-section> 
 
+                <q-card-section class="q-pa-md" v-show="editMode == true">
+                <div class="container row q-ma-md">
+                <q-input color="deep-orange-4" outlined class="col-12" dense v-model="selectedFood.foodName" label="Party Tray Name"/>
+                <q-select color="deep-orange-4" class="col-12 q-mt-md" dense outlined v-model="selectedFood.category" :options="categoryOpt" emit-value map-options label="Dish Type" />
+                <q-img
+                    :src="selectedFood.foodPic"
+                    :ratio="16/9"
+                    v-show="showUpload == false"
+                    class="q-mt-md"
+                >    
+                <q-btn color="teal" icon="edit" label="change picture" size="sm" class="float-right q-ma-md" @click="showUpload = true" disabled="true"/>
+                </q-img>
+                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" v-show="showUpload == true"/>
+                <q-btn color="grey-8" label="cancel" @click="showUpload = false,picFood = selectedFood.foodPic" v-show="showUpload == true" class="q-ma-md"/>
+                
+                </div>
+
+                <!-- <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: #ffdab9;">
+                    <div class="q-mx-md text-weight-bold text-grey-8">
+                        <span>
+                        Party Tray Size
+                        </span>
+                        <q-btn class="float-right" flat color="deep-orange-4" size="sm" label="Add Party Tray Package" @click="showlabel = true; hidelabel = false">
+                            <q-icon name="mdi-plus-thick" flat fab color="deep-orange-4" />
+                        </q-btn>
+                    </div>
+                    <div class="q-gutter-xs">
+                        <q-checkbox v-model="selection" :val="i" :label="i.label +' ('+ i.paxMin +' - '+ i.paxMax +' PAX)'" color="deep-orange-6" v-for="(i, index) in this.PartyTrayLabel" :key="index"/>
+                    </div>
+                </div> -->
+                <div v-show="showlabel == true">
+                    <q-card class="my-card q-pa-sm q-ma-md">
+                        <span class="text-overline q-ml-md">ADD PARTY TRAY PACKAGE</span>
+                        <q-input color="deep-orange-4" style="border-color: #ffdab9" label-color="deep-orange-4" class="q-mx-md" dense v-model="packageLabel" outlined label="Package Size Label"/>
+                        <div class="row q-mx-md q-mt-md">
+                            <q-input color="deep-orange-4" class="q-mr-md col" outlined="" type="number" style=" border-color: pink" dense v-model="minpax" label="Min Pax"/>
+                            <q-input color="deep-orange-4" class="col" outlined="" type="number" style=" border-color: #FFDAB9" dense v-model="maxpax" label="Max Pax"/>
+                        </div>
+                        <q-card-actions align="right" class="text-primary">
+                        <q-btn flat color="grey-8" @click="clear" label="Cancel"/>
+                        <q-btn flat color="teal" label-color="deep-orange-4" label="Save Package" @click="addPTrayLabel" v-close-popup />
+                        </q-card-actions>
+                    </q-card>    
+                </div>
+                <div v-show="this.selection.length != 0">
+                    <div class="my-card q-ma-md q-pa-md" style="border: 1.5px solid;border-color: #FFDAB9;">
+                        <div>
+                            <div class="q-ml-md text-weight-bold text-grey-8">
+                            Party Tray Pricing
+                            </div>
+                            <q-list dense class="text-left text-grey-8 bg-white" v-for="(i, index) in selection" :key="index">
+                                <q-item dense>
+                                    <q-item-section>
+                                        <q-item-label dense lines="1">{{i.label}} {{i.paxMin}}-{{i.paxMax}}</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section side>
+                                        <q-input color="deep-orange-4" outlined="" class="q-ma-sm q-pr-xl" type="number" dense v-model="partyTrayPricing[index]" label="Party Tray Price"/>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-card q-ma-md q-pa-sm q-py-md text-overline row" style="border: 1.5px solid;border-color: #FFDAB9;">
+                    <q-checkbox left-label v-model="partyTrayShow" label="Add Package Price" class="col-6 q-mr-md"/>
+                    <q-input color="deep-orange-4" outlined class="col q-mr-md" type="number" dense v-model="foodPrice" label="Package Price" v-show="partyTrayShow == true"/>
+                </div>
+                </q-card-section> 
+
                 <q-card-actions align="right" class="text-primary">
                 <q-btn flat label="Cancel" v-close-popup color="grey-8" />
-                <q-btn flat label="Add Food" @click="addFood" color="deep-orange-4" v-close-popup />
+                <q-btn flat label="Add Food" @click="addFood" color="deep-orange-4" v-close-popup v-show="editMode == false"/>
+                <q-btn flat label="Update Food" @click="updateFood" color="deep-orange-4" v-close-popup v-show="editMode == true"/>
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
             </q-card>
@@ -208,6 +285,11 @@ let sri = require('simple-random-id')
 export default {
     data(){
         return {
+            showUpload: false,
+            selectedFood: [],
+            editMode: false,
+            pictureToEdit: '',
+            picFood: '',
             filter: '',
             partyTrayShow: false,
             partyTrayPricing: [],
@@ -655,6 +737,153 @@ export default {
                 })
 
             },
+            openEditDialog(food){
+                this.addFoodDialog = true
+                this.selectedFood = food
+                this.editMode = true
+                this.pictureToEdit = food.foodPic
+                this.picFood = food.foodPic
+                let removeData = this.$lodash.map(this.selectedFood.partyTrayPrice,a=>{
+                    let data = {...a}
+                    delete data.price
+                    data['.key'] = data.sizeKey
+                    delete data.sizeKey
+                    return data
+                })
+                this.selection = removeData
+
+                for(var x=0; x < removeData.length; x++){
+                    console.log(x,'x')
+                    this.partyTrayPricing[x] = this.selectedFood.partyTrayPrice[x].price
+                }
+
+
+                console.log(food,'foodselectedforedit')
+                console.log(removeData,'removed key and price')
+                console.log(this.selection,'selection')
+
+                console.log(this.partyTrayPricing,'partyTray')
+                console.log(this.mergePricing,'merged')
+            },
+            updateFood(){
+                
+            let vm = this
+            console.log(vm.mergePricing,'pricing')
+                let optionss = this.$lodash.filter(this.Food, m => {
+                    if(m.foodName === this.selectedFood.foodName){
+                        return m
+                    }
+                })   
+                    if(this.selectedFood.category === '' || this.selectedFood.foodName === ''){
+                    this.$q.dialog({
+                    title: 'Field Required!',
+                    message: 'Fill all Requirements?',
+                    ok: 'Ok',
+                    persistent: true
+                    }).onOk(()=>{
+                        this.addFoodDialog = true
+                    })
+                    }else{
+                        if(optionss.length > 0){
+                        this.$q.dialog({
+                        title: 'Update Food',
+                        message: 'Update This Food?',
+                        ok: 'Yes',
+                        cancel: 'Cancel',
+                        persistent: true
+                    }).onOk(() => {
+                        // vm.uploadFoodPhoto()
+
+                            let picture = ''
+                            if(vm.picFood != vm.pictureToEdit){
+
+                                vm.uploadFoodPhoto()
+                                .then(() =>{
+                                picture = vm.newFoodPic
+                                console.log('new picture',picture)
+                                
+
+                                let food
+                                if(this.partyTrayShow == true && this.foodPrice != 0){
+                                    let partyTrays = vm.mergePricing
+                                    food = {
+                                        category: vm.selectedFood.category,
+                                        foodName: vm.selectedFood.foodName,
+                                        foodPic: picture, //on progress
+                                        foodPrice: vm.selectedFood.foodPrice,
+                                        partyTrayPrice: partyTrays
+                                    }   
+                                } else {
+                                    let partyTrays = vm.mergePricing
+                                    food = {
+                                        category: vm.selectedFood.category,
+                                        foodName: vm.selectedFood.foodName,
+                                        foodPic: picture, //on progress
+                                        // foodPrice: vm.selectedFood.foodPrice,
+                                        partyTrayPrice: partyTrays
+                                    }
+                                }
+                                    console.log(food,'food to save')
+                                    vm.$firestoreApp.collection('Food').doc(vm.selectedFood['.key']).set(food)
+                                    vm.$q.notify({
+                                        message: 'Food Updated!',
+                                        icon: 'mdi-folder-plus-outline',
+                                        color: 'pink-3',
+                                        textColor: 'white',
+                                        position: 'center'
+                                    })
+                                })
+
+                            } else {
+                                let food
+                                picture = vm.pictureToEdit
+                                if(this.partyTrayShow == true && this.foodPrice != 0){
+                                    let partyTrays = vm.mergePricing
+                                    food = {
+                                        category: vm.selectedFood.category,
+                                        foodName: vm.selectedFood.foodName,
+                                        foodPic: picture, //on progress
+                                        foodPrice: vm.selectedFood.foodPrice,
+                                        partyTrayPrice: partyTrays
+                                    }   
+                                } else {
+                                    let partyTrays = vm.mergePricing
+                                    food = {
+                                        category: vm.selectedFood.category,
+                                        foodName: vm.selectedFood.foodName,
+                                        foodPic: picture, //on progress
+                                        // foodPrice: vm.selectedFood.foodPrice,
+                                        partyTrayPrice: partyTrays
+                                    }
+                                }
+                                    console.log(food,'food to save')
+                                    vm.$firestoreApp.collection('Food').doc(vm.selectedFood['.key']).set(food)
+                                    vm.$q.notify({
+                                        message: 'Food Updated!',
+                                        icon: 'mdi-folder-plus-outline',
+                                        color: 'pink-3',
+                                        textColor: 'white',
+                                        position: 'center'
+                                    })
+                            }
+
+                                    vm.additionalPrice = 0
+                                    vm.selectCategory = ''
+                                    vm.foodNames = ''
+                                    vm.foodPrice = 0
+                                    vm.selection = []
+                                    vm.partyTrayPricing = []
+                                    vm.editMode= false
+                                    vm.showUpload = false
+                            
+                        }).onCancel(()=>{
+                                console.log(this.selectCategory)
+                                this.addFoodDialog = true
+                        })
+                    }
+                }               
+               
+            }
 
     }
 }
