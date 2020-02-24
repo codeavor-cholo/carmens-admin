@@ -1,5 +1,5 @@
 <template>
-    <q-page padding>
+    <q-page padding class="q-mx-xl q-mb-lg">
       <div class="desktop-only">
       <q-chip square color="deep-orange-4" class="q-ma-md q-pa-md full-width" style="height: 50px" text-color="white" icon="event">
         CALENDAR OF EVENTS
