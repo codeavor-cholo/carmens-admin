@@ -20,7 +20,7 @@
             </div>          
         </div>
         <div>
-            <q-table grid :data="returnWithPartyTrays" :columns="columns" :pagination="pagination" :filter="filter" class="row items-center q-pa-sm">
+            <q-table grid :data="returnWithPartyTrays" :columns="columns" :pagination="pagination" :filter="filter" class="row items-center q-pa-lg q-ma-lg">
                 <template v-slot:item="props">            
                     <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-4 grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
                         <q-card flat class="my-card" style="border: 2px solid;border-color: orange" >
@@ -125,35 +125,51 @@
 
                         <q-separator spaced /> -->
 
-                        <q-item v-for="(food, index) in this.cartList" :key="index">
+                        <q-item v-for="(food, index) in this.returnCart" :key="index">
                             <q-item-section top thumbnail class="q-ml-none">
                             <img :src="food.foodpic" style="height: 80px; max-width: 150px">
                             </q-item-section>
 
                             <q-item-section>
-                            <q-item-label>{{food.foodNames}}</q-item-label>
-                            <q-item-label caption>{{food.partyTraySize[0].paxMin}}</q-item-label>
+                            <q-item-label>{{food.foodName}} &nbsp;&nbsp;&nbsp;x {{food.qty}}</q-item-label>
+                            <q-item-label class="text-teal text-h6">{{food.size}} - P {{food.totalPrice}}</q-item-label>
                             </q-item-section>
 
                             <q-item-section side top>
-                            <q-item-label caption>meta</q-item-label>
+                            <q-item-label caption><q-btn color="red" icon="close" flat round @click="removeItem(food)"/></q-item-label>
                             </q-item-section>
                         </q-item>
                         <q-separator spaced />
                         </q-list>
                 </q-card-section>
-
+                <q-card-section class="q-mt-none" v-show="checkOutDialog == true">
+                    <h6 class="q-my-sm">PAYMENT SECTION: <span class="float-right text-teal">P {{returnSum}}.00</span> </h6>
+                    <q-input v-model="clientName" type="text" label="Client Name" size="sm" outlined="" />
+                    <q-input v-model="clientAddress" type="text" label="Client Address" size="sm" outlined="" class="q-mt-md"/>
+                    <q-input v-model="clientNumber" type="number" label="Client Number" size="sm" outlined="" class="q-mt-md"/>
+                    <h6 class="q-my-sm">CASH PAYMENT</h6>
+                    <q-input v-model="paymentCheckout" type="number" size="lg" outlined="" class="q-mt-md" readonly=""/>
+                </q-card-section>
                 <q-card-actions align="right">
-                <q-btn flat label="Checkout" style="color:#ffbb80" v-close-popup />
+                <q-btn flat label="proceed to payment" style="color:#ffbb80" v-show="checkOutDialog == false" @click="checkOutDialog = true,paymentCheckout = returnSum"/>
+                 <q-btn flat label="Cancel" color="grey-8"  v-show="checkOutDialog == true" @click="checkOutDialog = false" />
+                <q-btn flat label="Check Out" style="color:#ffbb80"  v-close-popup v-show="checkOutDialog == true" @click="checkOutTrays"/>
+               
                 </q-card-actions>
             </q-card>
         </q-dialog>
+
     </q-page>
 </template>
 <script>
 export default {
     data(){
         return{
+            clientName: '',
+            clientAddress: '',
+            clientNumber: '',
+            paymentCheckout: 0,
+            checkOutDialog: false,
             viewFoodOrder: false,
             cartList: [],
             pOrderSelected: [],
@@ -221,15 +237,47 @@ export default {
                 return this.cartList.length
             }
         },
+        returnCart(){
+            if(this.cartList.length === 0){
+                return 0
+            } else {
+                let maps = this.cartList.map(a=>{
+                    let data = {...a}
+                    let size = data.partyTraySize[0]
+                    data.size = size.label
+                    data.price = size.price
+                    data.totalPrice = size.price * data.qty
+                    data.max = size.paxMax
+                    data.min = size.paxMin
+                    delete data.partyTraySize
+
+                    return data
+                })
+                console.log(maps,'maps')
+                return maps
+            }
+        },
+        returnSum(){
+            let sum = this.$lodash.sumBy(this.returnCart,'totalPrice')
+            return sum
+        }
     },
     methods: {
         addToCart(){
             var foodDetails = {
                 foodpic: this.selectedPorder.foodPic,
-                foodNames: this.selectedPorder.foodName,
+                foodName: this.selectedPorder.foodName,
                 category: this.selectedPorder.category,
-                partyTraySize: this.pOrderSelected
+                partyTraySize: this.pOrderSelected,
+                qty: 1
             }
+
+            let index= this.$lodash.findIndex(this.cartList,a=>{
+                return foodDetails.foodName == a.foodName && foodDetails.partyTraySize[0].label == a.partyTraySize[0].label
+            })
+
+
+
             if(this.pOrderSelected.length === 0){
                 this.$q.dialog({
                 title: 'Please Select Party Tray Size   !',
@@ -240,8 +288,15 @@ export default {
                     this.addPorder = true
                 })
             }else{
-                this.cartList.push(foodDetails)
-                console.log(this.cartList, 'cartList')
+                if(index > -1){
+                    this.cartList[index].qty = this.cartList[index].qty + 1
+                    this.pOrderSelected = []
+                } else {
+                    this.cartList.push(foodDetails)
+
+                    this.pOrderSelected = []
+                }
+                    console.log(this.cartList, 'cartList')
             }
         },
         consolePorder(){
@@ -249,6 +304,52 @@ export default {
         },
         openPorder (props) {
             this.selectedPorder = props.row
+        },
+        removeItem(food){
+            let index = this.$lodash.findIndex(this.returnCart,a=>{
+                return food.foodName == a.foodName
+            })
+
+            if(index > -1){
+                this.cartList.splice(index,1)
+            }
+        },
+        checkOutTrays(){
+            let list = this.returnCart
+            let details = {
+                clientName: this.clientName,
+                clientAddress: this.clientAddress,
+                clientNumber: this.clientNumber,
+                payment: this.paymentCheckout,
+                orders: list
+            }
+            console.log(details)
+                this.$q.dialog({
+                title: 'Checkout Items?',
+                message: 'Are you sure you want to checkout?',
+                ok: 'Ok',
+                persistent: true
+                }).onOk(()=>{
+                    
+                    this.$firestoreApp.collection('partyTrayOrders').add(details)
+                    .then(()=>{
+                            this.$q.notify({
+                                    message: 'Orders Complete!',
+                                    icon: 'mdi-folder-plus-outline',
+                                    color: 'pink-3',
+                                    textColor: 'white',
+                                    position: 'center'
+                            })
+                            this.clientName = ''
+                            this.clientAddress = ''
+                            this.clientNumber = ''
+                            this.paymentCheckout = 0
+                            this.cartList = []
+                    })
+                })
+            // 
+            //add sa database 
+
         }
     }
 }   
