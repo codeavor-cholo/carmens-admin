@@ -61,7 +61,7 @@
                 </q-splitter>
         </template>
         <q-dialog v-model="addPackageDialog" persistent>
-            <q-card style="min-width: 800px">
+            <q-card style="min-width: 1000px">
                 <q-banner inline-actions class="text-white bg-warning" v-show="showCompleteBanner">
                     <q-icon name="warning"/>&nbsp;Complete the <b>Viand Qty Input</b> to show <b>Price per Pax</b>
                 </q-banner>
@@ -113,8 +113,9 @@
                     </div>
 
                 </q-card-section>
+                
                 <q-card-section class="col container q-mt-xl q-pl-none q-mr-sm">
-                    <q-page-sticky position="top-right" :offset="[320, 0]"> 
+                    <!-- <q-page-sticky position="top-right" :offset="[200, 0]">  -->
                     <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: teal;">
                         <div class="q-ml-sm q-mr-sm text-weight-bold text-teal">
                             <span style="font-family: 'Roboto Slab', serif;">
@@ -182,13 +183,14 @@
                     <q-input color="deep-orange-4" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
                     <!-- <q-input color="pink-3" outlined class="q-mt-md" type="number" dense v-model="packagePrice" label="Inclusion Price"/> -->
                     </div>
-                </q-page-sticky>
+                <!-- </q-page-sticky> -->
                 </q-card-section>
                 </div>
 
-                <q-card-actions align="left" class="text-primary col-12 q-mr-md">
+                <q-card-actions align="right" class="text-primary col-12 q-mr-md">
+                    <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
                 <q-btn flat label="Add Package" color="deep-orange-4" v-close-popup @click="addPackage"/>
-                <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
+                
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
             </q-card>
