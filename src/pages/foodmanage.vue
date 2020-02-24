@@ -148,7 +148,7 @@
                 </div>
                 <q-select color="deep-orange-4" class="q-ma-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
 
-                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" />
+                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded2" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" v-if="showUpload == false && editMode == false"/>
                 
                 <div class="my-card q-ma-md q-pa-sm q-py-md text-center text-overline" style="border: 1.5px solid;border-color: #ffdab9;">
                     <q-checkbox left-label v-model="partyTrayShow" label="Add Party Tray Pricing" />
@@ -217,7 +217,7 @@
                 >    
                 <q-btn color="teal" icon="edit" label="change picture" size="sm" class="float-right q-ma-md" @click="showUpload = true"/>
                 </q-img>
-                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" v-show="showUpload == true"/>
+                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" v-if="showUpload == true && editMode == true"/>
                 <q-btn color="grey-8" label="cancel" @click="showUpload = false,picFood = selectedFood.foodPic" v-show="showUpload == true" class="q-ma-md"/>
                 
                 <div class="my-card q-ma-md q-pa-sm q-py-md text-center text-overline" style="border: 1.5px solid;border-color: #ffdab9;">
@@ -659,7 +659,7 @@ export default {
                 let foodss = this.picFood
                 let random = sri(9)
                 console.log(random, 'rand')
-                console.log(this.foodpic, 'foodref')
+                console.log(this.picFood, 'foodref')
                 let vm = this
                 let uploadTask = this.storageRef.child(`foodPhotos/${random}`).put(foodss)
                 uploadTask.on('state_changed', function (snapshot) {
@@ -694,6 +694,14 @@ export default {
             var photo = this.$refs.foodref.files[0]
             
             this.picFood = photo
+            console.log(photo,'')
+            console.log('photo2', this.picFood)
+        },
+        photoAdded2 (p) {
+            var photo = this.$refs.foodref.files[0]
+            
+            this.picFood = photo
+            console.log(photo,'')
             console.log('photo2', this.picFood)
         },
         clears(){

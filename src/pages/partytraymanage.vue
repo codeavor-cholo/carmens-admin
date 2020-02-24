@@ -128,7 +128,7 @@
                 <div class="container row q-ma-md">
                 <q-input color="deep-orange-4" outlined class="col-12" dense v-model="foodNames" label="Party Tray Name"/>
                 <q-select color="deep-orange-4" class="col-12 q-mt-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
-                <q-uploader ref="foodref" class="full-width q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="border-color: #FFDAB9" />
+                <q-uploader ref="foodref" class="full-width q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded2" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="border-color: #FFDAB9" v-if="showUpload == false && editMode == false"/>
                 </div>
 
                 <div class="my-card q-ma-md q-pa-sm q-py-md" style="border: 1.5px solid;border-color: #ffdab9;">
@@ -195,7 +195,7 @@
                 >    
                 <q-btn color="teal" icon="edit" label="change picture" size="sm" class="float-right q-ma-md" @click="showUpload = true" disabled="true"/>
                 </q-img>
-                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" v-show="showUpload == true"/>
+                <q-uploader ref="foodref" class="q-ma-md" extensions="'.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG'" @added="photoAdded" :url="foodpic" label="Upload Photo" color="deep-orange-4" square flat bordered style="width: 500px; border-color: #FFDAB9" v-if="showUpload == true && editMode == true"/>
                 <q-btn color="grey-8" label="cancel" @click="showUpload = false,picFood = selectedFood.foodPic" v-show="showUpload == true" class="q-ma-md"/>
                 
                 </div>
@@ -620,6 +620,13 @@ export default {
             
             this.picFood = photo
             console.log('photo2', photo)
+        },
+        photoAdded2 (p) {
+            var photo = this.$refs.foodref.files[0]
+            
+            this.picFood = photo
+            console.log(photo,'')
+            console.log('photo2', this.picFood)
         },
         clears(){
             this.categName = ''
