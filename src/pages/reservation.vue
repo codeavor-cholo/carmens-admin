@@ -3,6 +3,7 @@
         <template>  
             <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
                 <template v-slot:before>
+                <q-tabs v-model="tab" vertical class="text-grey-8 bg-grey-9 full-height relative-position" :active-color="tab != 'WOPP' ? 'white' : 'teal'" :active-bg-color="tab != 'WOPP' ? 'deep-orange-4' : 'teal-1'">
                     <div class="bg-grey-9 fit">
                         <div class="text-h6 text-center text-white q-py-md">FILTER OPTIONS</div>
                         <q-input v-model="filter" clearable type="text" label="Search Reservation" color="deep-orange-4" class="q-ma-md bg-white" outlined icon="search">
@@ -11,7 +12,8 @@
                             </template>
                         </q-input>
                     </div>
-                    
+                    <q-tab name="reservation" style="font-family: 'Roboto Slab', serif;"   class="bg-grey-9 text-white" label="Reservation"></q-tab>
+                </q-tabs>
                 </template>    
                 <template v-slot:after>   
                 <q-btn label="ADD NEW RESERVATION" :to="{ name: 'walkinreserve' }" class="bg-deep-orange-4 q-my-md q-ml-md text-white">
@@ -184,6 +186,7 @@ import { StripeElements } from 'vue-stripe-checkout';
                 {label: 'CASH', value: 'CASH'},
                 {label: 'CARD', value: 'CARD'},
             ],
+            tab: 'reservation',
             expanded: false,    
             showCompleteBanner: false,
             checkerArray: [],

@@ -81,6 +81,15 @@
               </q-item-section>
             </q-item>
 
+            <q-item clickable :to="{ name: 'calendar' }" active-class="text-white bg-deep-orange-4">
+              <q-item-section avatar>
+                <q-icon color="white" name="mdi-calendar" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Calendar</q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-expansion-item
               expand-separator
               icon="mdi-settings-outline"
