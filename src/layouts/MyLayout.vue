@@ -192,7 +192,16 @@ export default {
                 let username = gg.email.toString().split('@')
                 self.userEmail = username[0]
                 self.accountLoggedIn = gg
+                // let index = this.$lodash.findIndex(this.dashboardUsers,a=>{
+                //   return a.userName == username[0]
+                // })
+                // if(index == -1){
+                //     this.$firebase.auth().signOut()
+                //     .then(() => {
+                //     this.$router.push('/')
+                //   })
 
+                // }
               } else {
                   // No user is signed in.
                   self.$router.push('/')
