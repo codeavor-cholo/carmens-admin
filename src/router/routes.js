@@ -16,6 +16,8 @@ const routes = [
       { path: '/users', meta: {requiredAuth: true}, name: 'users', component: () => import('pages/users.vue') },
       { path: '/calendar', meta: {requiredAuth: true}, name: 'calendar', component: () => import('pages/calendar.vue') },
       { path: '/customReservation/:id', meta: {requiredAuth: true}, name: 'customReservation', component: () => import('pages/customReservation.vue') },
+      { path: '/monitor', meta: {requiredAuth: true}, name: 'monitor', component: () => import('pages/monitor.vue') },
+      { path: '/status', meta: {requiredAuth: true}, name: 'status', component: () => import('pages/status.vue') }
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },
