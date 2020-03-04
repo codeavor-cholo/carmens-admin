@@ -15,6 +15,7 @@ const routes = [
       { path: '/otherManage', meta: {requiredAuth: true}, name: 'otherManage', component: () => import('pages/otherManage.vue') },
       { path: '/users', meta: {requiredAuth: true}, name: 'users', component: () => import('pages/users.vue') },
       { path: '/calendar', meta: {requiredAuth: true}, name: 'calendar', component: () => import('pages/calendar.vue') },
+      { path: '/partytrayreserve', meta: {requiredAuth: true}, name: 'partytrayreserve', component: () => import('pages/partytrayreserve.vue') },
       { path: '/customReservation/:id', meta: {requiredAuth: true}, name: 'customReservation', component: () => import('pages/customReservation.vue') },
     ]
   },

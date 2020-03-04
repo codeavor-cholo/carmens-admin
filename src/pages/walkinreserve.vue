@@ -416,7 +416,7 @@
                     </q-card-section>
                   </q-card>
             </div>
-            <q-page-sticky position="top-right" :offset="[18, 0]">
+            <q-page-sticky position="top-right" :offset="[10, 0]">
             <div v-show="this.step < 3" class="col-4 q-pt-sm q-pr-sm q-pl-md">
                 <q-card class="my-card" style="width: 400px; height: 550px">
                     <q-card-section>
@@ -1041,9 +1041,9 @@ export default {
               let key = ref.id
               let paymentDetails = {
                   clientReservationKey: ref.id,
-                  clientPayDetails: this.paydetails,
-                  clientTokenID: this.token.id,
-                  clientPaymentType: 'CARD',
+                  clientPayDetails: 'CASH',
+                  clientPaymentType: 'CASH',
+                  clientTokenID: 'CASH',
               }
                   this.$firestoreApp.collection('Payments').add(paymentDetails)
                   .then(()=>{
