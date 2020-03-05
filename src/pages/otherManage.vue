@@ -61,6 +61,9 @@
                                         <div v-if="tab == 'motif'">
                                             <q-list>
                                                 <q-item class="text-h6">
+                                                    <q-item-section avatar>
+                                                        <q-avatar :style="'background-color:'+props.row.hex"/>
+                                                    </q-item-section>
                                                     <q-item-section>
                                                         <q-item-label overline> {{props.row.motif}}</q-item-label>
                                                     </q-item-section>
@@ -207,6 +210,7 @@
 
                 <q-card-section>
                     <q-input class="q-ma-sm" dense v-model="motif" label="Motif Name"/>
+                    <q-color v-model="hex" inline class="my-picker q-mt-md"/>
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
@@ -315,6 +319,7 @@ import { date } from 'quasar'
 export default {
   data () {
     return {
+      hex: '#FFFFFF',
       isEditCateg: false,
       isEditInc: false,
       isEditMotif: false,
@@ -1052,6 +1057,7 @@ export default {
       addMotif () {
             var motif = {
                 motif: this.motif,
+                hex: this.hex
             }   
             let optionss = this.$lodash.filter(this.Motif, m => {
                 if(m.motif === this.motif){

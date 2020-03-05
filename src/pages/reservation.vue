@@ -88,7 +88,7 @@
                                         </q-card-section>
                                         <!-- color="expanded ? 'grey-8':'pink-3' " -->
                                         <q-card-actions>
-                                            <q-btn color="deep-orange-4" @click="paybalance(props.row)" label="Pay Balance" flat dense icon="mdi-paypal" />
+                                            <q-btn color="deep-orange-4" @click="paybalance(props.row)" :disable="props.row.clientTotalPayment === props.row.clientPaidAmount"  :label="props.row.clientTotalPayment === props.row.clientPaidAmount ? 'NO BALANCE' : 'PAY BALANCE'" :icon="props.row.clientTotalPayment === props.row.clientPaidAmount ? '' : 'mdi-paypal'"  flat dense />
                                             <q-space />
                                             <q-btn :color="expanded ? 'grey-8':'deep-orange-4'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
                                         </q-card-actions>
@@ -102,18 +102,32 @@
                 <q-dialog v-model="paymentDialog">
                     <q-card style="min-width: 1000px">
                         <q-card-section class="items-center">
-                            <q-select class="q-pa-md" color="deep-orange-4" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
-                                <q-list bordered dense>
+                                <div class="row q-pa-sm">
+                                    <div class="col-8 ">
+                                        <div class="col q-pa-sm"> 
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif" >Full Name:&nbsp;&nbsp; <b class="text-h6">{{this.selectedReservation.clientFName}}&nbsp;{{this.selectedReservation.clientLName}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Email Address:&nbsp;&nbsp; <b class="text-h6">{{this.selectedReservation.clientEmail}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Event Address:&nbsp;&nbsp; <b class="text-h6">{{this.selectedReservation.clientPlace}},&nbsp;{{this.selectedReservation.clientCity}}</b></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 class-q-pa-sm">
+                                        <div>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif" >Date of Event:&nbsp;&nbsp; <b class="text-h6">{{this.selectedReservation.clientReserveDate}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Event:&nbsp;&nbsp; <b class="text-h6">{{this.selectedReservation.clientEvent}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Motif:&nbsp;&nbsp; <b class="text-h6">{{this.selectedReservation.clientMotif}}</b></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <q-select class="q-pa-md" style="margin-top: -20px" color="deep-orange-4" dense outlined v-model="selectPay" :options="payoptions" emit-value map-options label="Select Payment" />
+                                <q-list dense>
                                     <q-item class="q-mt-none q-pt-none">
                                         <q-item-section class="q-ml-lg"><strong><div>Total Payment:</div></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{totalclientPayment}}php</strong></q-item-section>
                                     </q-item>
-                                    <q-separator/>
                                     <q-item class="q-mt-none q-pt-none">
                                         <q-item-section class="q-ml-lg"><strong><div>Total Paid Amount:</div></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{clientPaidAmounts}}php</strong></q-item-section>
                                     </q-item>
-                                    <q-separator/>
                                     <q-item class="q-mt-none q-pt-none">
                                         <q-item-section class="q-ml-lg"><strong><div>Total Balance:</div></strong></q-item-section>
                                         <q-item-section class="q-mr-lg" side><strong>{{clientBalance}}php</strong></q-item-section>
@@ -122,12 +136,8 @@
                                 <div v-show="this.selectPay === 'CASH'">
                                     <q-list dense>
                                         <q-item>
-                                            <q-item-section class="q-ml-lg"><strong><q-radio v-model="paymentMode" val="clientBalance" label="Full Balance" /></strong></q-item-section>
-                                            <q-item-section class="q-mr-lg" side><strong>{{clientBalance}}php</strong></q-item-section>
-                                        </q-item>
-                                        <q-item>
                                             <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
-                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="deep-orange-4" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
+                                            <q-item-section class="q-mr-lg" side><q-input type="number" error-message="Please Enter Amount that is less than or equal to your Balance" :error="!isValid" style="width: 500px" color="deep-orange-4" outlined dense v-model="enterAmount" label="Enter Amount To Pay"/></q-item-section>
                                         </q-item>
                                     </q-list>
                                 </div>
@@ -135,18 +145,13 @@
                                     <div>
                                         <q-list dense>
                                           <q-item>
-                                              <q-item-section class="q-ml-lg">
-                                              <strong>
-                                                <!-- <q-checkbox @input="paymentSelect" color="pink-3" v-model="fullPayment" label="Total Payment" /> -->
-                                              <q-radio v-model="paymentMode" val="clientBalance" label="Total Balance" />
-                                              </strong>
-                                              </q-item-section>
-                                              <q-item-section class="q-mr-lg" side><strong>{{clientBalance}}php</strong></q-item-section>
+                                            <q-item-section class="q-ml-lg"><strong><b>Enter Amount to Pay:</b></strong></q-item-section>
+                                            <q-item-section class="q-mr-lg" side><q-input type="number" style="width: 500px" color="deep-orange-4" outlined dense v-model="enterAmount" error-message="Please Enter Amount that is less than or equal to your Balance" :error="!isValid" label="Enter Amount To Pay"/></q-item-section>
                                           </q-item>
                                       </q-list>
                                     </div>
-                                    <div class="container row q-mx-md">
-                                      <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline class="col-8 q-mr-md">
+                                    <div class="items-center full-width">
+                                      <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline style="border: 2px solid orange" class="q-pa-md">
                                       </stripe-elements>
                                       <!-- <button @click="submit">Pay ${{amount / 100}}</button> -->
                                     </div>
@@ -154,8 +159,8 @@
                         </q-card-section>
 
                         <q-card-actions align="right">
-                        <q-btn v-show="this.selectPay == 'CASH'" label="Pay" color="teal" v-close-popup />
-                        <q-btn icon="mdi-paypal" v-show="this.selectPay == 'CARD'" outlined color="teal" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn>
+                        <q-btn v-show="this.selectPay == 'CASH'" @click="updatePaymentCash" label="Pay" icon="mdi-currency-php" color="teal" v-close-popup >&nbsp;{{enterAmount}}</q-btn>
+                        <q-btn icon="mdi-paypal" v-show="this.selectPay == 'CARD'" outlined color="teal" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{cardAmount}}</b></q-btn>
                         <q-btn label="Cancel" flat dense v-close-popup/>
                         </q-card-actions>
                     </q-card>
@@ -165,6 +170,7 @@
 </template>
 <script>
 import { StripeElements } from 'vue-stripe-checkout';
+import { date } from 'quasar'
 // import moment from 'moment'
         export default {
         components: {
@@ -199,6 +205,7 @@ import { StripeElements } from 'vue-stripe-checkout';
             viandsQty: [],
             selection: [],
             selectedInclusions: [],
+            selectedReservation: [],
             hidelabel: true,
             packagePrice: 0,
             Food: [],
@@ -239,31 +246,138 @@ import { StripeElements } from 'vue-stripe-checkout';
             })
     },
     computed: {
-        // toPayAmount(){
-        //     if(this.paymentMode == 'clientBalance'){
-        //         this.enterAmount = this.clientBalance
-        //         this.amount = this.clientBalance
-        //         return this.clientBalance
-        //     }if(this.paymentMode == 'client25Balance') {
-        //         this.enterAmount = this.client25balance
-        //         this.amount = this.client25balance     
-        //         return this.client25balance  
-        //     }
-        // }
+        cardAmount(){
+            if(this.enterAmount === 0 || this.enterAmount === ''){
+                return this.amount = 0
+            }else {
+                return this.amount = parseInt(this.enterAmount)
+            }
+        },
+        isValid () {
+            if(this.selectedReservation.length === 0){
+                return []
+            }else{
+                this.clientBalance = parseInt(this.selectedReservation.clientTotalPayment) - parseInt(this.selectedReservation.clientPaidAmount)
+                return parseInt(this.enterAmount) <= parseInt(this.clientBalance)
+            }
+        }
     },
     methods:{
+        updatePaymentCash(){
+            var PaymentBago = {
+                clientReserveDate: this.selectedReservation.clientReserveDate,
+                clientFName: this.selectedReservation.clientFName,
+                clientLName: this.selectedReservation.clientLName,
+                clientPlace: this.selectedReservation.clientPlace,
+                clientCity: this.selectedReservation.clientCity,
+                clientEmail: this.selectedReservation.clientEmail,
+                clientEvent: this.selectedReservation.clientEvent,
+                clientMotif: this.selectedReservation.clientMotif,
+                clientPax: this.selectedReservation.clientPax,
+                clientStartTime: this.selectedReservation.clientStartTime,
+                clientEndTime: this.selectedReservation.clientEndTime,
+                clientSelectPackage: this.selectedReservation.clientSelectPackage,
+                clientFoodChoice: this.selectedReservation.clientFoodChoice,
+                clientAddOns: this.selectedReservation.clientAddOns,
+                clientTotalPayment: this.selectedReservation.clientTotalPayment,
+                clientTotalDownPayment: this.selectedReservation.clientTotalDownPayment,
+                clientPaidAmount: parseInt(this.selectedReservation.clientPaidAmount) + parseInt(this.enterAmount),
+                clientPayDetails: this.selectedReservation.clientPayDetails,
+                clientPaymentType: this.selectedReservation.clientPaymentType,
+                clientTokenID: this.selectedReservation.clientTokenID,
+                clientReserveType: this.selectedReservation.clientReserveType,
+                clientDateofReserve: this.selectedReservation.clientDateofReserve,
+            }
+                this.$q.dialog({
+                        title: 'Update Payment',
+                        message: 'Update This Payment?',
+                        ok: 'Yes',
+                        cancel: 'Cancel'
+                    }).onOk(() => { 
+                    this.$firestoreApp.collection('Reservation').doc(this.reserveId).set(PaymentBago)
+                    .then((ref) =>{
+                        let paymentDetails = {
+                            clientReservationKey: this.reserveId,
+                            clientPayDetails: 'CASH',
+                            clientTokenID: 'CASH',
+                            clientPaymentType: 'CASH',
+                            clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+                        }
+                        this.$firestoreApp.collection('Payments').add(paymentDetails)
+                        .then(()=>{
+                            this.$q.notify({
+                                message: 'Payments Updated!',
+                                icon: 'mdi-folder-plus-outline',
+                                color: 'orange-8',
+                                textColor: 'white',
+                                position: 'center'
+                                })
+                            })  
+                        })
+                        this.enterAmount = 0
+                        this.paymentDialog = false
+                    })
+        },
+        updatePaymentCard(){
+            var PaymentBago = {
+                clientReserveDate: this.selectedReservation.clientReserveDate,
+                clientFName: this.selectedReservation.clientFName,
+                clientLName: this.selectedReservation.clientLName,
+                clientPlace: this.selectedReservation.clientPlace,
+                clientCity: this.selectedReservation.clientCity,
+                clientEmail: this.selectedReservation.clientEmail,
+                clientEvent: this.selectedReservation.clientEvent,
+                clientMotif: this.selectedReservation.clientMotif,
+                clientPax: this.selectedReservation.clientPax,
+                clientStartTime: this.selectedReservation.clientStartTime,
+                clientEndTime: this.selectedReservation.clientEndTime,
+                clientSelectPackage: this.selectedReservation.clientSelectPackage,
+                clientFoodChoice: this.selectedReservation.clientFoodChoice,
+                clientAddOns: this.selectedReservation.clientAddOns,
+                clientTotalPayment: this.selectedReservation.clientTotalPayment,
+                clientTotalDownPayment: this.selectedReservation.clientTotalDownPayment,
+                clientPaidAmount: parseInt(this.selectedReservation.clientPaidAmount) + parseInt(this.enterAmount),
+                clientPayDetails: this.selectedReservation.clientPayDetails,
+                clientPaymentType: this.selectedReservation.clientPaymentType,
+                clientTokenID: this.selectedReservation.clientTokenID,
+                clientReserveType: this.selectedReservation.clientReserveType,
+                clientDateofReserve: this.selectedReservation.clientDateofReserve,
+            } 
+                    this.$firestoreApp.collection('Reservation').doc(this.reserveId).set(PaymentBago)
+                    .then((ref) =>{
+                        let paymentDetails = {
+                            clientReservationKey: this.reserveId,
+                            clientPayDetails: this.paydetails,
+                            clientTokenID: this.token.id,
+                            clientPaymentType: 'CARD',
+                            clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+                        }
+                        this.$firestoreApp.collection('Payments').add(paymentDetails)
+                        .then(()=>{
+                            this.$q.notify({
+                                message: 'Payments Updated!',
+                                icon: 'mdi-folder-plus-outline',
+                                color: 'orange-8',
+                                textColor: 'white',
+                                position: 'center'
+                                })
+                            })  
+                        })
+                        this.enterAmount = 0
+        },
         expandeds(props){
             this.expanded = !this.expanded
         },
         paybalance(props){
             this.reserveId = props['.key']
+            this.selectedReservation = props
             this.paymentDialog = true
             this.totalclientPayment = props.clientTotalPayment
             this.clientPaidAmounts = props.clientPaidAmount
             this.clientBalance = parseInt(props.clientTotalPayment) - parseInt(props.clientPaidAmount)
             this.client25balance = parseInt(props.clientTotalPayment) * 0.25
-            this.enterAmount = this.clientBalance
-            this.amount = this.clientBalance
+            this.enterAmount = parseInt(this.clientBalance)
+            this.amount = parseInt(this.clientBalance)
         },
         //PAY
         submit () {
@@ -292,8 +406,17 @@ import { StripeElements } from 'vue-stripe-checkout';
                 ok: 'Ok'
             })
         }else{
-            this.paydetails = charge
-        }
+            this.$q.dialog({
+                        title: 'Update Payment',
+                        message: 'Update This Payment?',
+                        ok: 'Yes',
+                        cancel: 'Cancel'
+                    }).onOk(() => {
+                        this.paydetails = charge
+                        this.updatePaymentCard()
+                        this.paymentDialog = false
+                })
+            }
         }
 
   
