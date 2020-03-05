@@ -10,7 +10,7 @@
                             <q-item-label>Address here</q-item-label>
                         </div>
                         <div class="col">
-                            <q-btn outline color="deep-orange-4" label="Payment" />
+                            <q-btn outline color="deep-orange-4" label="Payment" @click="payment = true" />
                         </div>
                     </div>
                 <q-item-label class="text-center">Orders to deliver</q-item-label>
@@ -71,5 +71,29 @@
                 </q-item-section>
             </q-item>
         </q-list>
+
+
+        <q-dialog v-model="payment" persistent>
+            <q-card style="min-width: 350px">
+                <q-card-section>
+                <div class="text-h6">Payment Here</div>
+                </q-card-section>
+
+                <q-card-actions align="right" class="text-primary">
+                <q-btn flat label="Cancel" v-close-popup />
+                <q-btn flat label="Add address" v-close-popup />
+                </q-card-actions>
+        </q-card>
+        </q-dialog>
     </q-page>    
 </template>
+
+<script>
+export default {
+  data () {
+    return {
+      payment: false,
+    }
+  }
+}
+</script>

@@ -152,6 +152,15 @@
                 <q-item-label >Order Monitoring</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item clickable @click="$router.push('/statusupdate')">
+              <q-item-section avatar>
+                <q-icon color="white" name="event_available" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label >Status Update</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-scroll-area>
 

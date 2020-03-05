@@ -8,44 +8,45 @@
             <div style="font-size:20px">Delivery Status</div>
             <q-btn color="deep-orange-4" flat label="Update Status" @click="stat = true" />
           </div>
+        
         <q-timeline color="deep-orange-4">
-        <div class="q-pl-md">
-        <q-timeline-entry
-            title="Order Received!" 
-            subtitle="10:00pm"   
-        >
-        </q-timeline-entry>
+            <div class="q-pl-md">
+            <q-timeline-entry
+                title="Order Confirmed!" 
+                subtitle="10:00am"   
+            >
+            </q-timeline-entry>
 
-        <q-timeline-entry
-            title="Preparing Order!" 
-            subtitle="10:00pm"   
-        >
-        </q-timeline-entry>
+            <q-timeline-entry
+                title="Preparing Order!" 
+                subtitle="10:30am"   
+            >
+            </q-timeline-entry>
 
-        <q-timeline-entry
-            title="Done Preparing!"
-            subtitle="10:00pm"    
-        >
-        </q-timeline-entry>
+            <q-timeline-entry
+                title="Done Preparing!"
+                subtitle="11:00am"    
+            >
+            </q-timeline-entry>
 
-        <q-timeline-entry
-            title="Pending for delivery!"
-            subtitle="10:00pm"    
-        >
-        </q-timeline-entry>
+            <q-timeline-entry
+                title="Pending for delivery!"
+                subtitle="11:30am"    
+            >
+            </q-timeline-entry>
 
-        <q-timeline-entry
-            title="Order is out for delivery!"
-            subtitle="10:00pm"    
-        >
-        </q-timeline-entry>
+            <q-timeline-entry
+                title="Order is out for delivery!"
+                subtitle="12:00pm"    
+            >
+            </q-timeline-entry>
 
-        <q-timeline-entry
-            title="Delivered!"
-            subtitle="10:00pm"    
-        >
-        </q-timeline-entry>
-        </div>
+            <q-timeline-entry
+                title="Delivered!"
+                subtitle="12:30pm"    
+            >
+            </q-timeline-entry>
+            </div>
         </q-timeline>
     
 
@@ -53,12 +54,12 @@
         <q-card style="min-width: 350px">
             
             <q-card-section class="column">
-                <q-radio v-model="status" color="deep-orange-4" val="rec" label="Order Received!" />
-                <q-radio v-model="status" color="deep-orange-4" val="prep" label="Preparing Order!" />
-                <q-radio v-model="status" color="deep-orange-4" val="done" label="Done Preparing!" />
-                <q-radio v-model="status" color="deep-orange-4" val="pen" label="Pending for Delivery!" />
-                <q-radio v-model="status" color="deep-orange-4" val="out" label="Order is out for delivery!" />
-                <q-radio v-model="status" color="deep-orange-4" val="del" label="Order Delivered!" />
+                <q-checkbox v-model="rec" color="deep-orange-4" label="Order Confirmed!" />
+                <q-checkbox v-model="prep" color="deep-orange-4" label="Preparing Order!" />
+                <q-checkbox v-model="done" color="deep-orange-4" label="Done Preparing!" />
+                <q-checkbox v-model="pen" color="deep-orange-4" label="Pending for Delivery!" />
+                <q-checkbox v-model="out" color="deep-orange-4" label="Order is out for delivery!" />
+                <q-checkbox v-model="del" color="deep-orange-4" label="Order Delivered!" />
             </q-card-section>
 
             <q-card-actions align="right" class="text-primary">
@@ -76,7 +77,13 @@ export default {
   data () {
     return {
       stat: false,
-      status: 'rec'
+      payment: false,
+      rec: false,
+      prep: false,
+      done: false,
+      pen: false,
+      out: false,
+      del: false
     }
   }
 }
