@@ -5,7 +5,7 @@
         <q-btn color="white" flat dense round @click="drawer = !drawer" icon="menu" elevated aria-label="Menu"/>
         <q-toolbar-title class="row">
           <img style="height:80%;width:130px" src="statics/pics/logo.png" @click="$router.push('/')">
-          <div class="q-pl-xl" style="font-family: 'Simonetta', serif;">
+          <div class="q-pl-xl desktop-only" style="font-family: 'Simonetta', serif;">
             Carmen's Diner and Catering Services
           </div>  
         </q-toolbar-title>
@@ -150,6 +150,24 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>Users</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable @click="$router.push('/monitor')">
+              <q-item-section avatar>
+                <q-icon color="white" name="event_available" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label >Order Monitoring</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable @click="$router.push('/statusupdate')">
+              <q-item-section avatar>
+                <q-icon color="white" name="event_available" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label >Status Update</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

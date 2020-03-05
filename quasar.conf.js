@@ -103,8 +103,8 @@ module.exports = function (ctx) {
         'QBtnDropdown',
         'QScrollArea',
         'QChip',
-        'QBanner',
-        'QColor'
+        'QColor',
+        'QRadio'
       ],
       directives: [],
 
