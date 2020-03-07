@@ -82,9 +82,15 @@
                         <q-input v-model="newUser.password" type="password" label="Password" outlined="" color="teal" class="q-mt-md q-mr-md col" dense/>
                         <q-input v-model="newUser.confirmPassword" type="password" label="Confirm Password" outlined="" color="teal" class="q-mt-md col" dense/>
                     </div>
-                    <q-select v-model="newUser.position" label="Position" outlined="" color="teal" class="q-mt-md" :options="positionOpts" emit-value dense/>
+                    <!-- <q-select v-model="newUser.position" label="Position" outlined="" color="teal" class="q-mt-md" :options="positionOpts" emit-value dense/> -->
                     <div class="text-overline q-my-md">PERMISSIONS</div>
                     <div style="border: 1.5px solid;border-color: teal;" class="q-pa-md">
+                        <div class="text-caption text-weight-bold text-teal">POSITION</div>
+                        <div>
+                            <q-radio color="teal" v-model="newUser.position" val="Staff" label="Staff" />
+                            <q-radio color="teal" v-model="newUser.position" val="Delivery Boy" label="Delivery Boy" />
+                            <q-radio color="teal" v-model="newUser.position" val="Admin" label="Admin" />
+                        </div>
                         <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
                         <q-checkbox v-model="permissions.packages" label="Package Management" color="teal"/>
                         <q-checkbox v-model="permissions.food" label="Food Management" color="teal" class=""/>
@@ -106,9 +112,15 @@
                         <q-input v-model="selectedUser.password" type="password" label="Password" outlined="" color="teal" class="q-mt-md q-mr-md col" dense/>
                         <q-input v-model="selectedUser.confirmPassword" type="password" label="Confirm Password" outlined="" color="teal" class="q-mt-md col" dense/>
                     </div> -->
-                    <q-select v-model="selectedUser.position" label="Position" outlined="" color="teal" class="q-mt-md" :options="positionOpts" emit-value dense/>
+                    <!-- <q-select v-model="selectedUser.position" label="Position" outlined="" color="teal" class="q-mt-md" :options="positionOpts" emit-value dense/> -->
                     <div class="text-overline q-my-md">PERMISSIONS</div>
                     <div style="border: 1.5px solid;border-color: teal;" class="q-pa-md">
+                        <div class="text-caption text-weight-bold text-teal">POSITION</div>
+                        <div>
+                            <q-radio color="teal" v-model="selectedUser.position" val="Staff" label="Staff" />
+                            <q-radio color="teal" v-model="selectedUser.position" val="Delivery Boy" label="Delivery Boy" />
+                            <q-radio color="teal" v-model="selectedUser.position" val="Admin" label="Admin" />
+                        </div>
                         <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
                         <q-checkbox v-model="selectedPermission.packages" label="Package Management" color="teal"/>
                         <q-checkbox v-model="selectedPermission.food" label="Food Management" color="teal" class=""/>
@@ -146,7 +158,7 @@ export default {
                 password: '',
                 confirmPassword: '',
                 email: '',
-                position: ''
+                position: 'Staff',
             },
             permissions: {
                 packages: false,

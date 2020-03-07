@@ -18,7 +18,7 @@
             </div>          
         </div>
 <!-- MOST POPULAR -->
-            <q-table grid :data="returnWithPartyTrays" :columns="columns" :pagination="pagination" :filter="filter" class="row items-center q-pa-lg q-ma-lg">
+            <q-table grid :data="returnWithPartyTrays" :columns="columns" :rows-per-page-options="[0]" :pagination.sync="pagination" hide-bottom :filter="filter" class="row items-center q-pa-lg q-ma-lg">
                 <template v-slot:item="props">            
                     <div class="q-pa-sm grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
                         <q-card flat class="my-card" style="width:230px;height: 250px" >
@@ -98,7 +98,7 @@ export default {
         CartItems: [],
         addPorder: false,
         filter: '',
-        pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
+        pagination: { page: 1, rowsPerPage: 0},
         columns: [
             { name: 'category', required: true, label: 'Food Category', align: 'center', field: 'category', sortable: true },
             { name: 'foodName', align: 'center', label: 'Food Name', field: 'foodName', sortable: true },

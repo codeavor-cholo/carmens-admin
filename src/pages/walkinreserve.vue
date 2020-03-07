@@ -200,7 +200,7 @@
                         <div class="q-pa-sm q-pt-md">
                         <q-stepper header-nav v-model="step" flat ref="stepper" color="primary" animated active-color="deep-orange-4" inactive-color="grey-8">
                             <q-step :name="1" title="Select Package" icon="settings" :done="step > 1">
-                                <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" selection="single" :selected.sync="selected">
+                                <q-table grid :data="Packages" :columns="columns" :filter="filter" row-key=".key" :rows-per-page-options="[0]" hide-bottom :pagination.sync="pagination" selection="single" :selected.sync="selected">
                                     <template v-slot:item="props">
                                         <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition" color="deep-orange-4" :style="props.selected ? 'transform: scale(0.95);' : ''">
                                             <q-card class="my-card" style="border: 2px solid;border-color: grey;" :class="props.selected ? 'bg-grey-2' : ''">
@@ -611,7 +611,7 @@ export default {
       addonsList: [],
       step: 1,
       filter: '',
-      pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
+      pagination: { page: 1, rowsPerPage: 0},
       columns: [
           { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
           { name: 'price', align: 'center', label: 'Package Per Head Price', field: 'price', sortable: true },
