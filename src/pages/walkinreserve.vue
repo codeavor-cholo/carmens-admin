@@ -22,7 +22,21 @@
                       <q-select class="q-pt-sm" color="deep-orange-3" dense outlined v-model="selectCity" :options="cityOpt" emit-value map-options label="Select City" />
                       <q-input class="q-pt-sm" color="deep-orange-3" outlined dense v-model="clientEvent" label="Event Name"/>
                       <div class="row">
-                        <q-select class="q-pt-sm" color="deep-orange-3" dense outlined style="width: 163px" v-model="selectMotif" :options="motifOpt" emit-value map-options label="Select Motif" />
+                        <q-select class="col" color="grey-10" dense outlined  v-model="selectMotif" options-selected-class="bg-grey text-white" multiple="" :options="motifOpt" emit-value map-options label="Select Motif" @input="showInput">
+                             <template v-slot:option="scope">
+                              <q-item
+                                v-bind="scope.itemProps"
+                                v-on="scope.itemEvents"
+                              >
+                                <q-item-section avatar>
+                                  <q-avatar :style="'background-color:'+scope.opt.hex" size="3em" />
+                                </q-item-section>
+                                <q-item-section>
+                                  <q-item-label>{{ scope.opt.label }}</q-item-label>
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                        </q-select>
                         <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="deep-orange-3" outlined dense v-model="clientPax" label="Pax"/>
                       </div>
                       <div class="row">
@@ -580,7 +594,7 @@ export default {
       clientEvent: '',
       clientPax: 0,
       clientEmail: '',
-      selectMotif: '',
+      selectMotif: [],
       selectCity: '',
       addons: '',
       selectPay: '',
@@ -730,14 +744,15 @@ export default {
                     return sum
                     }
     },
-    motifOpt(){
-          let optionss = this.Motif.map(m => {
-              return {
-                  label: m.motif,
-                  value: m.motif
-              }
-          })
-          return optionss
+      motifOpt(){
+        let optionss = this.Motif.map(m => {
+            return {
+                label: m.motif,
+                value: m.motif,
+                hex: m.hex
+            }
+        })
+        return optionss
       },
       addonsOpt(){
           let optionss = this.Addons.map(m => {

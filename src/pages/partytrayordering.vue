@@ -12,7 +12,7 @@
                 </div>
                 <div class="q-pa-sm items-center col-3">
                     <q-btn dense style="background-color:#e4acbf;width:120px;margin-top:20px" text-color="white" label="view basket" @click="basket=true">
-                        <q-badge color="grey-10" text-color="white" :label="returnLength" floating/>
+                        <!-- <q-badge color="grey-10" text-color="white" floating/> -->
                     </q-btn>
                 </div>
             </div>          
@@ -45,8 +45,6 @@
                     </div>
                 </template>
             </q-table>
-        
-
             <q-dialog v-model="addPorder" persistent="">
             <q-card class="text-center text-weight-bold" style="min-width: 400px">
                             <q-img
@@ -93,12 +91,10 @@ export default {
         FoodCategory: [],
         PartyTrayLabel: [],
         selectedPorder: [],
-        basket: false,
-        ordersKey: this.$q.localStorage.getItem('addCart'),
         CartItems: [],
         addPorder: false,
         filter: '',
-        pagination: { page: 1, rowsPerPage: 0},
+        pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
         columns: [
             { name: 'category', required: true, label: 'Food Category', align: 'center', field: 'category', sortable: true },
             { name: 'foodName', align: 'center', label: 'Food Name', field: 'foodName', sortable: true },
@@ -130,51 +126,14 @@ export default {
 
   },
   computed: {
-    returnCart(){
-    try {
-        // console.log(hi,'hi')
-
-        let key 
-        var user = this.$firebase.auth().currentUser
-        if(user){
-        key = user.uid
-        } else {
-        key = this.ordersKey
-        }
-
-        console.log(key,'key')
-        let value = this.$lodash.map(this.CartItems,a=>{
-        if(a['.key'] == key){
-            let g = {...a}
-            g.ordersKey = a['.key']
-            delete g['.key']
-            return g
-        }
-        })
-        var first = function(element) { return !!element }    
-        var gotcha = value.find(first)
-        console.log(gotcha,'gotcha')
-        return gotcha.items
-    } catch (error) {
-        console.log(error,'error')
-        return []
-    }
-    },
-    returnWithPartyTrays(){
-        let party = this.$lodash.filter(this.Food, a=>{
-            if(a.partyTrayPrice != null){
-                return a
-            } 
-        })
-        return party
-    },
-    returnLength(){
-        try {
-            return this.$lodash.sumBy(this.returnCart,a=>{return parseInt(a.qty)})
-        } catch (error) {
-            return 0
-        }
-    },
+        returnWithPartyTrays(){
+            let party = this.$lodash.filter(this.Food, a=>{
+                if(a.partyTrayPrice != null){
+                    return a
+                } 
+            })
+            return party
+        },
 
   },
   methods: {

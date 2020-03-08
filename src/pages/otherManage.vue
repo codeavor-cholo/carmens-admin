@@ -10,7 +10,7 @@
                 <q-tab name="category" class="text-white" label="Category" />
                 <q-tab name="inclusion" class="text-white" label="Inclusions" />
                 <q-tab name="addons" class="text-white" label="Add-Ons" />
-                <q-tab name="position" class="text-white" label="Position" />
+                <!-- <q-tab name="position" class="text-white" label="Position" /> -->
                 </q-tabs>
             </template>
             <template v-slot:after>
