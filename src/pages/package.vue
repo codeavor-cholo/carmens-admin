@@ -14,7 +14,7 @@
                     
                 </template>    
                 <template v-slot:after>   
-                <q-btn fab icon="mdi-plus-thick" color="deep-orange-4" @click="addPackageDialog = true" class="q-my-md q-ml-md">
+                <q-btn fab icon="mdi-plus-thick" color="deep-orange-4" @click="addPackageDialog = true,editMode = false" class="q-my-md q-ml-md">
                     <q-tooltip>
                                         Add New Package
                     </q-tooltip>
@@ -53,7 +53,7 @@
                                         </q-list>
                                         </q-card-section>
                                         <q-card-actions>
-                                            <q-btn color="deep-orange-4"   label="Edit" icon="mdi-pencil"  flat dense />
+                                            <q-btn color="deep-orange-4"   label="Edit" icon="mdi-pencil"  flat dense @click="openEditDialog(props.row)" />
                                             <q-space />
                                             <q-btn color="teal" label="Delete" @click="openDeletePackage(props.row)" flat dense icon="delete" />
                                         </q-card-actions>
@@ -82,8 +82,19 @@
                             Select Category
                             </span>
                         </div>
-                        <div class="q-gutter-xs">
-                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="deep-orange-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category)"/>
+                        <div class="q-gutter-xs" v-show="!editMode">
+                            <q-checkbox v-model="selection" :val="i" :label="i.min != undefined ? i.category+' ('+ i.min +' - '+ i.max +' Pesos)' : i.category" color="deep-orange-6" v-for="(i, index) in this.mergeData" :key="index" @input="checkIfRemoved(i.category,i)"/>
+                        </div>
+                        <div class="q-gutter-xs" v-show="editMode">
+                                <q-option-group
+                                v-model="editGroupCategory"
+                                :options="categoryOpt"
+                                color="green"
+                                type="checkbox"
+                                @input="consoleLaman"
+                                inline
+                                class="text-capitalize"
+                                />
                         </div>
                     </div>
                     <div v-show="this.selection.length != 0">
@@ -112,8 +123,19 @@
                             Select Inclusions
                             </span>
                         </div>
-                        <div class="q-gutter-xs">
+                        <div class="q-gutter-xs" v-show="!editMode">
                             <q-checkbox v-model="selectedInclusions" :val="i" :label="i.inclusion" color="deep-orange-6" v-for="(i, index) in this.Inclusion" :key="index"/>
+                        </div>
+                        <div class="q-gutter-xs" v-show="editMode">
+                                 <q-option-group
+                                v-model="editGroupInc"
+                                :options="InclusionOpt"
+                                color="green"
+                                type="checkbox"
+                                inline
+                                @input="consoleInc"
+                                class="text-capitalize"
+                                />                           
                         </div>
                     </div>
 
@@ -193,8 +215,9 @@
                 </div>
 
                 <q-card-actions align="right" class="text-primary col-12 q-mr-md">
-                    <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
-                <q-btn flat label="Add Package" color="deep-orange-4" v-close-popup @click="addPackage"/>
+                <q-btn flat label="Cancel" v-close-popup color="grey-8" @click="resetValues"/>
+                <q-btn flat label="Add Package" color="deep-orange-4" v-close-popup @click="addPackage" v-show="!editMode"/>
+                <q-btn flat label="Update Package" color="deep-orange-4" v-close-popup @click="updatePackage" v-show="editMode"/>
                 
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
                 </q-card-actions>
@@ -203,6 +226,8 @@
     </q-page>
 </template>
 <script>
+import { format } from 'quasar'
+const { capitalize } = format
 export default {
     data(){
         return {
@@ -228,7 +253,11 @@ export default {
             columns: [
                 { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
                 { name: 'price', align: 'center', label: 'Package Per Head Price', field: 'price', sortable: true },
-            ]
+            ],
+            editMode: false,
+            editGroupCategory: [],
+            editGroupInc: [],
+            selectedKeyEdit: ''
         }
     },
     mounted () {
@@ -319,13 +348,23 @@ export default {
 
         },
         categoryOpt(){
-                let optionss = this.FoodCategory.map(m => {
+                let optionss = this.mergeData.map(m => {
                     return {
-                        label: m.category,
-                        value: m.category
+                        label: m.category+' ('+ m.min +' - '+ m.max +' Pesos)',
+                        value: m.category,
                     }
                 })
-
+                console.log(optionss,'sdfsdfasdf')
+                return optionss
+        },
+        InclusionOpt(){
+                let optionss = this.Inclusion.map(m => {
+                    return {
+                        label: m.inclusion,
+                        value: m,
+                    }
+                })
+                console.log(optionss,'sdfsdfasdf')
                 return optionss
         },
         selectedCategory(){
@@ -385,6 +424,7 @@ export default {
                   persistent: true
                 }).onOk(()=>{
                     this.addPackageDialog = true
+                    this.editMode = false
                 })
             } else {
                 this.$q.dialog({
@@ -402,13 +442,14 @@ export default {
                           delete x['.key']
                           arrayInc.push(x)
                       })
+                      var dateToday = new Date()
                       let newPackage = {
                           name: this.packageName,
                           price: this.packagePrice,
                           viands: this.mergePricing,
                           inclusions: arrayInc,
                           priceBasis: this.returnSelectedMinMax,
-                          dateAdded: new Date()
+                          dateAdded: dateToday.toString()
                       }
                       console.log('ok',newPackage)
                       this.$firestoreApp.collection('Packages').add(newPackage)
@@ -455,14 +496,140 @@ export default {
         findIndexSelection(arr,val){
             return this.$lodash.findIndex(arr,val)
         },
-        checkIfRemoved(category){
-            var index = this.findIndexSelection(this.selection,category)
+        checkIfRemoved(category,arr){
+            console.log(category,'categoryCheck')
+            var index = this.findIndexSelection(this.selection,arr)
+            console.log(index,'index')
             if(index == -1){
                 delete this.viandsQty[category]
                 console.log(this.viandsQty,'this.viandsQty')
             }
 
         },
+        openEditDialog(packages){
+            this.editMode = true
+            this.addPackageDialog = true
+            // this.editGroup = this.categoryOpt
+            console.log(packages,'edit')
+            let viands = packages.viands
+            let inc = packages.inclusions
+            let map = viands.map(a=>{
+                return a.category
+            })
+            let pushs = []
+            for(var x = 0; x < inc.length; x++){
+                let categ = inc[x].inclusion
+                let filter = this.$lodash.filter(this.Inclusion,a=>{
+                    return a.inclusion == categ
+                })
+                pushs.push(filter[0])
+            }
+            console.log(pushs,'sdfsdf')
+            this.editGroupCategory = map
+            this.editGroupInc = pushs
+            this.packageName = packages.name
+            this.packagePrice = packages.price
+            this.selection = viands
+
+            for(var x = 0; x < viands.length; x++){
+                this.viandsQty[viands[x].category] = viands[x].viandsQty
+            }
+            this.selectedKeyEdit = packages['.key']
+            this.selectedInclusions = pushs
+        },
+        consoleLaman(input){
+            console.log(input,'input')
+            console.log(this.editGroupCategory,'laman')
+
+            let pushs = []
+            for(var x = 0; x < this.editGroupCategory.length; x++){
+                let categ = this.editGroupCategory[x]
+                let filter = this.$lodash.filter(this.mergeData,a=>{
+                    return a.category == categ
+                })
+                pushs.push(filter[0])
+            }
+
+            //check if remove push
+
+            console.log(pushs,'pushs')
+            this.selection = pushs
+            console.log(this.selection,'selection')
+            for(var y = 0; y < this.mergeData.length; y++){
+                console.log('trigger')
+                this.checkIfRemoved(this.mergeData[y].category,this.mergeData[y])
+            }
+        },
+        consoleInc(){
+            console.log(this.editGroupInc,'laman')
+            let pushs = []
+            for(var x = 0; x < this.editGroupInc.length; x++){
+                let categ = this.editGroupInc[x]
+                let filter = this.$lodash.filter(this.Inclusion,a=>{
+                    return a == categ
+                })
+                pushs.push(filter[0])
+            }
+            this.selectedInclusions = pushs
+            console.log(this.selectedInclusions)
+        },
+        updatePackage(){
+            let key = this.selectedKeyEdit
+            console.log(key,'key')
+            if(this.selection.length == 0 || this.selectedInclusions.length == 0 || this.packageName == '' || this.packagePrice == 0){
+                this.$q.dialog({
+                  title: 'Required Fields is Empty.',
+                  message: 'Fill up all Requirements',
+                  color:'pink-6',
+                  ok: 'Ok',
+                  persistent: true
+                }).onOk(()=>{
+                    this.addPackageDialog = true
+                    this.editMode = true
+                })
+            } else {
+                this.$q.dialog({
+                    title: 'Updating Package',
+                    message: 'Update This Package?',
+                    ok: 'Yes',
+                    cancel: 'Cancel',
+                    persistent: true
+                  }).onOk(() => {
+                      let arrayInc = []
+                      let removekey = this.$lodash.filter(this.selectedInclusions,a=>{
+                          let x = {...a}
+                          let key = a['.key']
+                          x.incKey = key
+                          delete x['.key']
+                          arrayInc.push(x)
+                      })
+                      var dateToday = new Date()
+                      let newPackage = {
+                          name: this.packageName,
+                          price: this.packagePrice,
+                          viands: this.mergePricing,
+                          inclusions: arrayInc,
+                          priceBasis: this.returnSelectedMinMax,
+                          dateAdded: dateToday.toString()
+                      }
+                      console.log('ok',newPackage)
+                      this.$firestoreApp.collection('Packages').doc(key).set(newPackage)
+                      .then(()=>{
+                        this.addPackageDialog = false
+                        this.$q.notify({
+                                message: 'Package Updated!',
+                                icon: 'mdi-folder-plus-outline',
+                                color: 'pink-3',
+                                textColor: 'white',
+                                position: 'center'
+                            })
+                        this.resetValues()
+                        this.editMode = false
+                      })
+                      
+                  })
+            }
+        }
 
 
     }
