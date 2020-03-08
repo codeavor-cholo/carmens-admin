@@ -74,7 +74,7 @@
                                 <q-card-actions class="q-pt-none q-mt-none">
                                     <q-btn class="q-pt-none q-mt-none" color="deep-orange-4" label="Assign Delivery Staff" flat dense />
                                     <q-space />
-                                    <q-btn class="q-pt-none q-mt-none" flat dense color="deep-orange-4" @click="openPayment(props.row)" label="Update Payment" />
+                                    <q-btn class="q-pt-none q-mt-none" v-show="props.row.firstPayment != props.row.totalToPayAmount" flat dense color="deep-orange-4" @click="openPayment(props.row)" label="Update Payment" />
                                 </q-card-actions>
                             </q-card>
                         </div>
@@ -98,19 +98,31 @@
                         <q-tab-panels v-model="tab" animated>
                             <q-tab-panel name="cash">
                             <div class="text-grey-8 row">
+                                <div class="full-width text-center text-grey-8 text-h6">
+                                    <strong><q-chip class="text-weight-bold" color="deep-orange-3" style="font-size:25px;font-family: 'Simonetta', serif;">Client Name: {{this.selectedPayment.clientName}}</q-chip></strong>
+                                </div>
                                 <div class="q-pa-sm column col-8">
-                                    <q-input type="number" color="orange-4" outlined v-model="enteramount" full-width label="Enter Amount" />
+                                    <q-input type="number" color="orange-4" readonly outlined v-model="enteramount" full-width label="Enter Amount" />
                                 </div>
                                 <div class="q-pa-sm column col-4">
-                                    <q-btn class="col-12" color="orange-4" label="Pay" ></q-btn>
+                                    <q-btn class="col-12" color="orange-4" @click="updatePaymentCash" label="Update Payment" ></q-btn>
                                 </div>
                             </div>
                             </q-tab-panel>
 
                             <q-tab-panel name="card">
-                            With so much content to display at once, and often so little screen real-estate,
-                            Cards have fast become the design pattern of choice for many companies, including
-                            the likes of Google and Twitter.
+                                <div class="text-grey-8 row">
+                                    <div class="full-width text-center text-grey-8 text-h6">
+                                        <strong><q-chip class="text-weight-bold" color="deep-orange-3" style="font-size:25px;font-family: 'Simonetta', serif;">Client Name: {{this.selectedPayment.clientName}}</q-chip></strong>
+                                    </div>
+                                    <div class="q-pa-sm column col-8">
+                                        <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline>
+                                        </stripe-elements>        
+                                    </div>
+                                    <div class="q-pa-sm column col-4">
+                                        <q-btn outlined color="teal" class="col-12" style="height: 40px" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn>
+                                    </div>
+                                </div>
                             </q-tab-panel>
                         </q-tab-panels>
                     </q-card>
@@ -126,11 +138,12 @@ import { date } from 'quasar'
     },
     data(){
         return {
+            splitterModel: 20,
             amount: 0,
             publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
             token: null,
             charge: null,
-            enterAmount: 0,
+            enteramount: 0,
             payment: false,
             tab: 'cash',
             expanded: false,
@@ -168,9 +181,81 @@ import { date } from 'quasar'
         },
     },
     methods: {
+        updatePaymentCash(){
+            var PaymentBago = {
+                clientAddress: this.selectedPayment.clientAddress,
+                clientName: this.selectedPayment.clientName,
+                clientNumber: this.selectedPayment.clientNumber,
+                deliveryDate: this.selectedPayment.deliveryDate,
+                deliveryTime: this.selectedPayment.deliveryTime,
+                firstName: this.selectedPayment.firstName,
+                firstPayment: parseInt(this.selectedPayment.firstPayment) + parseInt(this.enteramount),
+                lastName: this.selectedPayment.lastName,
+                message: this.selectedPayment.message,
+                orders: this.selectedPayment.orders,
+                paymentTerms: this.selectedPayment.paymentTerms,
+                totalToPayAmount: this.selectedPayment.totalToPayAmount
+            }
+                this.$q.dialog({
+                    title: 'Update Payment',
+                    message: 'Update This Payment?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => { 
+                this.$firestoreApp.collection('partyTrayOrders').doc(this.reserveId).set(PaymentBago)
+                .then((ref) =>{
+                    let paymentDetails = {
+                        clientReservationKey: this.reserveId,
+                        secondPayment: this.enteramount,
+                        clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+                    }
+                    this.$firestoreApp.collection('Payments').add(paymentDetails)
+                    .then(()=>{
+                        this.$q.notify({
+                            message: 'Payments Updated!',
+                            icon: 'mdi-folder-plus-outline',
+                            color: 'orange-8',
+                            textColor: 'white',
+                            position: 'center'
+                            })
+                        })  
+                    })
+                    this.enterAmount = 0
+                    this.payment = false
+                })
+        },
+        updatePaymentCard(){
+            var PaymentBago = {
+                clientAddress: this.selectedPayment.clientAddress,
+                clientName: this.selectedPayment.clientName,
+                clientNumber: this.selectedPayment.clientNumber,
+                deliveryDate: this.selectedPayment.deliveryDate,
+                deliveryTime: this.selectedPayment.deliveryTime,
+                firstName: this.selectedPayment.firstName,
+                firstPayment: parseInt(this.selectedPayment.firstPayment) + parseInt(this.enteramount),
+                lastName: this.selectedPayment.lastName,
+                message: this.selectedPayment.message,
+                orders: this.selectedPayment.orders,
+                paymentTerms: this.selectedPayment.paymentTerms,
+                totalToPayAmount: this.selectedPayment.totalToPayAmount
+            }
+            this.$firestoreApp.collection('partyTrayOrders').doc(this.reserveId).set(PaymentBago)
+            .then((ref) =>{
+                let paymentDetails = {
+                    clientReservationKey: this.reserveId,
+                    secondPayment: this.enteramount,
+                    clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+                }
+                this.$firestoreApp.collection('Payments').add(paymentDetails)  
+            })
+        },
         openPayment (props) {
+          this.reserveId = props['.key']
+          console.log(this.reserveId, 'id')
           this.selectedPayment = props 
           this.payment = true
+          this.enteramount = parseInt(props.totalToPayAmount) - parseInt(props.firstPayment)
+          this.amount = parseInt(props.totalToPayAmount) - parseInt(props.firstPayment)
         },
         //PAY
         submit () {
@@ -189,7 +274,35 @@ import { date } from 'quasar'
         sendTokenToServer (charge) {
         // Send to server
         console.log(charge,'charge')
-            this.paydetails = charge
+            if(this.amount === 0){
+                this.$q.dialog({
+                    title: `Unable to Continue??`,
+                    message: 'Please Select Payment Type??',
+                    color: 'pink-6',
+                    textColor: 'grey',
+                    icon: 'negative',
+                    ok: 'Ok'
+                })
+            }else{
+                this.$q.dialog({
+                    title: 'Update Payment',
+                    message: 'Update This Payment?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => {
+                    this.paydetails = charge
+                    this.updatePaymentCard()
+                    this.$q.notify({
+                        message: 'Payments Updated!',
+                        icon: 'mdi-folder-plus-outline',
+                        color: 'orange-8',
+                        textColor: 'white',
+                        position: 'center'
+                    })
+                    this.enterAmount = 0
+                    this.payment = false
+                })
+            }
         }
     }
 }

@@ -52,6 +52,11 @@
                                             </q-item>
                                         </q-list>
                                         </q-card-section>
+                                        <q-card-actions>
+                                            <q-btn color="deep-orange-4"   label="Edit" icon="mdi-pencil"  flat dense />
+                                            <q-space />
+                                            <q-btn color="teal" label="Delete" @click="openDeletePackage(props.row)" flat dense icon="delete" />
+                                        </q-card-actions>
                                     </q-card>
                                 </div>
                             </template>
@@ -421,6 +426,24 @@ export default {
                       
                   })
             }
+        },
+        openDeletePackage (task) {
+                var id = task['.key']
+                this.$q.dialog({
+                    title: 'Delete Package?',
+                    message: 'Delete This Package?',
+                    ok: 'Yes',
+                    cancel: 'Cancel'
+                }).onOk(() => { 
+                    this.$firestoreApp.collection('Packages').doc(id).delete()
+                    this.$q.notify({
+                            message: 'Package Deleted!',
+                            icon: 'mdi-delete',
+                            color: 'pink-6',
+                            textColor: 'white',
+                            position: 'center'
+                        })
+                })
         },
         resetValues(){
             this.selection = []

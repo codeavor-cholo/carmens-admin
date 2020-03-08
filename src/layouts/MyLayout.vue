@@ -143,15 +143,16 @@
                     </q-item-section>
                   </q-item>
 
+                  <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users" active-class="text-white bg-deep-orange-4">
+                    <q-item-section avatar class="q-pl-xl">
+                      <q-icon color="white" name="people" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Users Management</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
             </q-expansion-item>
-            <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users" active-class="text-white bg-deep-orange-4">
-              <q-item-section avatar>
-                <q-icon color="white" name="people" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Users</q-item-label>
-              </q-item-section>
-            </q-item>
 
             <q-item clickable @click="$router.push('/monitor')">
               <q-item-section avatar>
