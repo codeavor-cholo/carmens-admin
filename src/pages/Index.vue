@@ -1,370 +1,531 @@
 <template>
-<q-page>
-        <div>
-            <div class="row q-gutter-md">
-            <div class="q-pa-md q-pl-xl" style="font-size:60px;font-family: 'Domine', serif;padding-left:130px">PARTY TRAYS</div>
-            <div class="row items-center q-pa-sm" style="padding-left:120px">
-            <q-input v-model="filter" dense style="width:400px" rounded standout="bg-white text-grey-8" clearable input-class="text-pink-3" label="Search Food" class="q-ma-md" outlined icon="search" >
-                <template v-slot:prepend>
-                    <q-icon name="search" color="pink-3"/>
-                </template>
-            </q-input>
-            </div>
-            <div class="row items-center">
-            <q-btn-dropdown dense label="filter by" flat color="grey-8">
-                <q-list>
-                    <q-item clickable v-close-popup>
-                    <q-item-section>
-                        <q-item-label>Photos</q-item-label>
-                    </q-item-section>
-                    </q-item>
+  <q-layout view="hhh lpR fff">
 
-                    <q-item clickable v-close-popup>
-                    <q-item-section>
-                        <q-item-label>Videos</q-item-label>
-                    </q-item-section>
-                    </q-item>
-
-                    <q-item clickable v-close-popup>
-                    <q-item-section>
-                        <q-item-label>Articles</q-item-label>
-                    </q-item-section>
-                    </q-item>
-                </q-list>
-                </q-btn-dropdown>
-                </div>
-                </div>          
+    <q-header class="transparent text-white row items-center justify-start" style="height:63px">
+      <q-toolbar>
+        <div class="q-px-sm q-pt-sm q-pl-xl">
+        <img style="height:100%;width:180px" src="statics/pics/carmen-logo.png" @click="$router.push('/')">
         </div>
 
-<!-- MOST POPULAR -->
-            
-            
-            <div class="row">
-                <div class="col-3 q-pt-xl q-pl-xl" style="font-size:30px;font-family: 'Domine', serif"> ALL PARTY TRAYS </div>
-                <div class="col-9">
-                <q-table grid :data="returnWithPartyTrays" :columns="columns" :pagination="pagination" :filter="filter" class="row items-center q-pa-lg q-ma-lg">
-                <template v-slot:item="props">            
-                    <div class="q-pa-sm grid-style-transition" :style="props.selected ? 'transform: scale(0.95);' : ''">
-                        <q-card flat class="my-card" style="width:165px;height:200px" >
-                            <div>
-                                <q-img :src="props.row.foodPic" styl="height:200px" :ratio="4/3"/>
-                            
-                            <q-card-section side>
-                            <q-list dense>
-                                <div class="row items-center justify-between">
-                                    <div class="col">    
-                                        <div>
-                                            <div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><b>{{props.row.foodName}}</b></div>
-                                            <div style="font-size:12px">{{props.row.partyTrayPrice[0].price}} Pesos</div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <q-btn round color="pink-3" @click="openDialog(props.row)" class="q-ml-lg" flat size="md" icon="shopping_cart"/>
-                                    </div>
-                                </div>
-                            </q-list>
-                            </q-card-section>
-                            </div>
-                        </q-card>
-                    </div>
-                </template>
-            </q-table>
+        <div style="color:#E4ACBF">
+        <q-tabs  
+        indicator-color="transparent"
+        active-color="pink-3" 
+        v-model="tab">
+        <div class="row q-pa-sm">
+        <div><q-route-tab to="/" name="air"><b>PARTY TRAYS</b></q-route-tab></div>
+        <div><q-route-tab to="/catering"><b>CATERING SERVICES</b></q-route-tab></div>
+        <div style="padding-left:380px;"><q-route-tab to="" ><b>sign up</b></q-route-tab></div>
+        <!-- STATIC SHOW HIDE LOGIN -->
+        <div><q-tab v-show="show" @click="login = true"><b>login</b></q-tab></div>
+        <div class="row items-center">
+          <q-btn-dropdown dense style="color:#e4acbf" v-show="!show"  :label="displayName" flat>
+            <q-list>
+              <q-item clickable v-close-popup @click="$router.push('/profile')">
+                <q-item-section>
+                  <q-item-label>My Account</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup @click="tempLogout">
+                <q-item-section>
+                  <q-item-label>Log Out</q-item-label>
+                </q-item-section>
+              </q-item>
+
+            </q-list>
+          </q-btn-dropdown>
+          <!-- END OF STATIC -->
+          </div>
+        </div>
+        </q-tabs>
+        </div>
+
+        <div>
+        <q-btn dense style="background-color:#e4acbf;width:120px" text-color="white" label="view basket" @click="basket=true">
+          <q-badge color="grey-10" text-color="white" :label="returnLength" floating/>
+        </q-btn>
+        </div>
+
+        <div class="q-pa-sm">
+             <q-btn dense round icon="search" text-color="pink-2" color="white" @click="tempLogout"/>
+        </div>
+      </q-toolbar>
+    </q-header>
+
+    <q-page-container style="background: linear-gradient(to right, #ffffff 50%, #eeeeee 50%)">
+        <q-dialog v-model="basket" persistent >
+        <q-card style="min-width:500px;border-radius:20px;" class="q-pa-lg">
+          <div class="row justify-between">
+            <span class="text-h6 col">BASKET <span class="text-teal-6 text-subtitle2">({{returnLength}} ITEMS)</span></span>
+            <q-btn color="grey-10" icon="close" flat round  v-close-popup />
+          </div>
+          
+          <q-card-section class="row items-center">
+            <q-scroll-area style="width: 100%; height: 400px;" :visible="false">
+            <q-list bordered class="full-width" separator="">
+              <q-item v-for="items in returnCart" :key="items['.key']">
+                <q-item-section avatar>
+                  <q-img
+                    :src="items.foodPic"
+                    :ratio="1"
+                    spinner-color="primary"
+                    spinner-size="82px"
+                    style="width:5em;border-radius:5px;"
+                    class="q-my-sm"
+                  />
+                </q-item-section>
+                <q-item-section>
+                <q-item-label>{{items.foodName}}</q-item-label>
+                <q-item-label caption lines="1">Size: {{items.size}}</q-item-label>
+                <q-item-label class="text-subtitle2" lines="1">₱ {{items.price}}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn color="grey-8" icon="delete" round size="md" flat class="absolute-top-right q-ma-xs" @click="removeOrder(items)" />
+                  <q-item-label caption class="q-mt-lg">x {{items.qty}}</q-item-label>
+                  <q-item-label lines="1" class="text-subtitle2 text-pink-6 text-weight-bold">₱ {{items.price * items.qty}}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-scroll-area>
+          </q-card-section>
+          <q-card-actions align="right" class="justify-between row">
+            <div class="text-weight-bold text-h6" >SUBTOTAL : <span class="text-teal-6">{{returnSubTotal}}</span></div>
+            <q-btn :label="'Checkout '+returnLength+ ' items'" color="pink-6" v-close-popup  class="text-weight-bold" outline="" @click="checkOutOrders"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+      <q-dialog v-model="login">
+      <q-card>
+        <q-card-section class="row justify-between q-mx-md q-mt-md">
+          <div class="text-h6">Login Account</div>
+          <q-btn class="text-overline text-teal" flat>CREATE ACCOUNT</q-btn>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none text-center">
+          <q-input v-model="clientEmail" type="email" label="Enter Email Address" style="width:450px;" class="q-pa-sm q-px-md" outlined="" color="pink-3" dense/>
+          <q-input v-model="clientPassword" type="password" label="Enter Password" style="width:450px;" class="q-pa-sm q-px-md" outlined="" color="pink-3" dense/>
+          <div class="row q-px-md q-mt-md">
+                                
+          <q-btn color="grey"  label="LOGIN VIA GOOGLE" @click="basketChecker" class="col-5"/>
+          <div class="text-overline text-center col-2">OR</div>
+          <q-btn color="teal" label="LOGIN account" class="col"/>
+
+          </div>
+          
+        </q-card-section>
+
+        <q-card-section class="q-pt-none q-mb-md text-center">
+          
+          
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+
+    <!-- <q-dialog v-model="checkout" persistent>
+      <q-card style="min-width: 650px;border-radius:20px;" class="q-pa-md">
+        <div class="row justify-center q-gutter-md">
+        <q-card class="my-card" style="width:350px">
+          <q-card-section class="bg-grey-3"> 
+            <div class="row q-gutter-sm items-center">
+              <q-icon name="place" class="text-black" color="pink" style="font-size: 1.5rem;" />
+              <div>Delivery Address</div>
             </div>
-            </div> 
-        
 
-            <q-dialog v-model="addPorder" persistent="">
-            <q-card class="text-center text-weight-bold" style="min-width: 400px">
-                            <q-img
-                                :src="this.selectedPorder.foodPic"
-                                :ratio="4/3"
-                                >
-                                <div class="absolute-bottom text-subtitle1 text-center q-pa-xs">
-                                    {{this.selectedPorder.foodName}}
-                                </div>
-                            </q-img>
-                            <div class="q-mt-md">
-                            <span class="text-center text-weight-bold text-h6" style="font-family: 'Roboto Slab', serif;">PARTY TRAY SIZE/s AND PRICES</span>
-                            </div>
-                            <div class="q-pa-sm row q-pr-xl" v-for="(price, index) in this.selectedPorder.partyTrayPrice" :key="index">
-                                <div class="col">                                
-                                    <q-checkbox class="q-mt-md" keep-color color="deep-orange-4" dense :val="price" v-model="pOrderSelected" :label="price.label+' ( '+price.paxMin+' - '+price.paxMax+' ) ₱'+price.price" @input="checkIfRemoved(price)"/>
-                                    <!-- {{ price.label }}({{price.paxMin}} - {{price.paxMax}}) for {{ price.price }}php -->
-                                </div>
-                                <div class="col-3">
-                                    <q-input :rules="[val => val !== null && val !== '' || 'Please type quantity', val => val > 0 || 'Mininum value is 1']" color="grey-10" v-model="orderQty[price.label]" type="number" label="QTY" outlined="" dense v-show="returnStatus(price)"/>
-                                </div>
-                            </div>
+            <div class="q-pt-sm q-pl-lg">Name of Customer &nbsp;&nbsp;&nbsp; number</div>
+            <div class="q-pl-lg">Delivery Address</div>
+          </q-card-section>
+          
+          <q-card-section>
+            <div class="q-pt-sm">
+             <q-list bordered separator>
+                <q-item>
+                  <q-item-section>
+                    <div class="row q-gutter-md">
+                      <img src="statics/pics/foo.jpeg" style="height:50px;width:50px">
+                      <div class="column">
+                        <q-item-label>FOODNAME</q-item-label>
+                        <q-item-label caption lines="1">size</q-item-label>
+                        <q-item-label class="text-subtitle2" lines="1">₱ price</q-item-label>
+                      </div>
+                    </div>
+                  </q-item-section>
+                  <q-item-section side>
+                  <q-item-label caption class="q-mt-lg">x 1</q-item-label>
+                  <q-item-label lines="1" class="text-subtitle2 text-pink-6 text-weight-bold">₱ price</q-item-label>
+                </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+          </q-card-section>
+        </q-card>
 
-                    <q-card-actions align="right" class="text-primary q-pa-md">
-                        <q-btn flat color="grey-6" label="Cancel" v-close-popup @click="pOrderSelected = [], orderQty = []"/>
-                        <q-btn flat color="deep-orange-4" label="Add To Basket" v-close-popup icon="shopping_cart" @click="addToBasket(selectedPorder)"/>
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>      
-        
-</q-page>
+        <q-card class="my-card" style="width:250px;border: 5px solid;border-color: pink;">
+          <q-card-section>
+            <q-input
+              v-model="message"
+              filled
+              type="textarea"
+              class="bg-white"
+              label="Leave your message."
+            />
+            <div class="row justify-around">
+              <div class="q-pt-md">Total payment:</div>
+              <div class="q-pt-md" style="font-size:18px"><b>Total</b></div>
+            </div>
+            <div class="q-pt-md q-pb-sm text-center">Payment Method</div>
+            <div class="row justify-around">
+              <q-btn color="pink-5" label="Cash" />
+              <q-btn color="pink-5" label="Card" />
+            </div>  
+          </q-card-section>
+        </q-card>
+        </div>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Add address" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog> -->
+
+      <router-view />
+    </q-page-container>
+
+  </q-layout>
 </template>
-
 
 <script>
 export default {
   data () {
     return {
-        orderQty: [],  
-        pOrderSelected: [],
-        search: '',
-        storageRef: null,
-        Food: [],
-        FoodCategory: [],
-        PartyTrayLabel: [],
-        selectedPorder: [],
-        CartItems: [],
-        addPorder: false,
-        filter: '',
-        pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
-        columns: [
-            { name: 'category', required: true, label: 'Food Category', align: 'center', field: 'category', sortable: true },
-            { name: 'foodName', align: 'center', label: 'Food Name', field: 'foodName', sortable: true },
-            // { name: 'foodPrice', align: 'center', label: 'Package Price', field: 'foodPrice', sortable: true },
-        ],
+      tab: 'air',
+      search: '',
+      message:'',
+      show: true,
+      displayName: '',
+      basket: false,
+      ordersKey: this.$q.localStorage.getItem('addCart'),
+      CartItems: [],
+      login: false,
+      clientEmail: '',
+      clientPassword: ''
+     
     }
-  }, 
-  mounted (){   
-      this.$binding('PartyTrayLabel', this.$firestoreApp.collection('PartyTrayLabel'))
-        .then(PartyTrayLabel => {
-        console.log(PartyTrayLabel, 'PartyTrayLabel')
-        }),
-        this.$binding('FoodCategory', this.$firestoreApp.collection('FoodCategory'))
-        .then(FoodCategory => {
-        console.log(FoodCategory, 'FoodCategory')
-        }),
-        this.$binding('Food', this.$firestoreApp.collection('Food'))
-        .then(Food => {
-        console.log(Food, 'Food')
-        }),
+  },
+    created() {
+          let self = this
+          this.$firebase.auth().onAuthStateChanged(function(user) {
+              
+              if (user) {
+                let gg = {...user}
+                console.log('createdUser',user)
+                console.log('createdUser',user.uid)
+                console.log('user',gg.displayName)
+                self.show = false
+                self.displayName = gg.displayName
+                
+              } else {
+                self.show = true
+              }
+          })
+  },
+  mounted(){
         this.$binding('CartItems', this.$firestoreApp.collection('CartItems'))
         .then(CartItems => {
         console.log(CartItems, 'CartItems')
-        }),
-        this.storageRef = this.$firebase.storage().ref()
-        console.log(this.storageRef, 'store')
-  },
-  created(){
-
+        })
   },
   computed: {
-        returnWithPartyTrays(){
-            let party = this.$lodash.filter(this.Food, a=>{
-                if(a.partyTrayPrice != null){
-                    return a
-                } 
-            })
-            return party
-        },
+    returnCart(){
+      try {
+        // console.log(hi,'hi')
 
-  },
-  methods: {
-    openDialog(item){
-        this.selectedPorder = item
-        this.addPorder = true
-    },
-    addToBasket(props){
-        let item = {...props}
-        
-        let key = item['.key']
-        delete item['.key']
-        item.foodKey = key
-        let size = this.pOrderSelected
-        let qty = this.orderQty
-
-        let keys = this.$lodash.keys(this.orderQty)
-        // console.log(keys,'keys')
-
-        if(size.length != keys.length){
-            // this.showCompleteBanner = true
-            console.log('no sqty')
-        }
-
-        let merge = [] //sizes and qty
-        for( var x = 0; x < size.length; x++){
-            let m = {...size[x]}
-            m.qty = qty[m.label]
-            merge.push(m)
-        }
-
-        console.log(merge,'merge')
-        console.log(item,'itemAddToBasket')
-
-        let value = this.$q.localStorage.getItem('addCart')
+        let key 
         var user = this.$firebase.auth().currentUser
         if(user){
-            let uid = user.uid
-            console.log(this.CartItems,'checking')
-            let index = this.$lodash.findIndex(this.CartItems,a=>{
-                return a['.key'] == uid
-            })
-            console.log(index,'index uid')
-            if(index == -1){
-                //first cart is add if none in database index
-                this.firstCart(item,merge[0],uid)
-            } else {
-                for( var y= 0; y < merge.length; y++){
-                    this.openPorder(item,merge[y],uid)
-                }                
-            }
-            
-        }
-        else{
-            if(value == null){
-                this.firstCart(item,merge[0],'')
-            } else {
-                for( var y= 0; y < merge.length; y++){
-                    this.openPorder(item,merge[y],'')
-                }
-            }
-        }
-
-
-        
-        this.pOrderSelected = []
-        this.orderQty = []
-        
-    },
-    openPorder(props,sizeQty,uid){
-
-        // console.log(props,'props')
-        // console.log(sizeQty,'size')
-        let order = {...props}
-        order.size = sizeQty.label
-        order.price = sizeQty.price
-        order.min = sizeQty.paxMin
-        order.max = sizeQty.paxMax
-        order.qty = sizeQty.qty
-        order.checkerName = order.foodName+'_'+sizeQty.label
-        delete order.partyTrayPrice
-        let key = 'addCart'
-        // get value
-        let value = this.$q.localStorage.getItem(key)
-        
-
-        // console.log(value,'value')
-        // console.log(order,'order ko')
-        if(value == null && uid == ''){
-            let itemss = []
-            itemss.push(order)
-            console.log(itemss,'to push no local')  
-            let addCart = {
-                items: itemss
-            }
-            // console.log(addCart,'to db')
-            this.$firestoreApp.collection('CartItems').add(addCart)
-            .then((ref) =>{
-                // console.log(ref.id, 'ref id')
-                let dbKey = ref.id
-                this.$q.localStorage.set(key, dbKey)
-                console.log('updated key', this.$q.localStorage.getItem(key))
-            })    
+          key = user.uid
         } else {
-            let basis
-            if(uid != ''){
-                basis = uid
-            } else {
-                basis = value
-            }
-
-            console.log(itemss,'to push no local')  
-            let itemss = []
-            let cartItems = this.$lodash.filter(this.CartItems, a=>{
-                return a['.key'] == basis
-            })
-
-            console.log(cartItems[0].items,'cartItema')
-            if(cartItems[0].items !== undefined){
-                itemss = cartItems[0].items
-            }
-            
-
-            let indexing = this.$lodash.findIndex(itemss,a=>{
-                return a.checkerName == order.checkerName
-            })
-            // console.log(indexing,'indexing')
-            if(indexing > -1){
-                itemss[indexing].qty = parseInt(itemss[indexing].qty) + parseInt(order.qty)
-            } else {
-                itemss.push(order) 
-            }
-
-            let addCart = {
-                items: itemss
-            }
-
-            this.$firestoreApp.collection('CartItems').doc(basis).set(addCart)
-            .then((ref) =>{
-                console.log('cart updated')
-            })    
-        }
-        
-    },
-    firstCart(props,sizeQty,uid){
-        let order = {...props}
-        order.size = sizeQty.label
-        order.price = sizeQty.price
-        order.min = sizeQty.paxMin
-        order.max = sizeQty.paxMax
-        order.qty = sizeQty.qty
-        order.checkerName = order.foodName+'_'+sizeQty.label
-        delete order.partyTrayPrice
-        let key = 'addCart'
-        let itemss = []
-
-        itemss.push(order)
-
-        console.log(itemss,'to push no local firstCart')  
-        let addCart = {
-            items: itemss
-        }
-        if(uid != ''){
-            this.$firestoreApp.collection('CartItems').doc(uid).set(addCart)
-            .then((ref) =>{
-            // console.log(ref.id, 'ref id')
-                // location.reload()
-                this.$q.localStorage.clear()
-            }) 
-        } else {
-            this.$firestoreApp.collection('CartItems').add(addCart)
-                .then((ref) =>{
-                // console.log(ref.id, 'ref id')
-                    let dbKey = ref.id
-                    this.$q.localStorage.set(key, dbKey)
-                    console.log('updated key', this.$q.localStorage.getItem(key))
-                    location.reload()
-                }) 
+          key = this.ordersKey
         }
 
-    },
-    returnStatus(size){
-        // console.log(size)
-        // console.log(this.pOrderSelected,'asd')
-        let index = this.$lodash.findIndex(this.pOrderSelected,a=>{
-            return a == size
+        console.log(key,'key')
+        let value = this.$lodash.map(this.CartItems,a=>{
+          if(a['.key'] == key){
+            let g = {...a}
+            g.ordersKey = a['.key']
+            delete g['.key']
+            return g
+          }
         })
-        // console.log(index)
-        if(index > -1){
-            return true
-        } else {
-            return false
-        }
+        var first = function(element) { return !!element }    
+        var gotcha = value.find(first)
+        console.log(gotcha,'gotcha')
+        return gotcha.items
+      } catch (error) {
+        console.log(error,'error')
+        return []
+      }
     },
-    findIndexSelection(arr,val){
-        return this.$lodash.findIndex(arr,val)
+    returnLength(){
+      try {
+        return this.$lodash.sumBy(this.returnCart,a=>{return parseInt(a.qty)})
+      } catch (error) {
+        return 0
+      }
     },
-    checkIfRemoved(category){
-        var index = this.findIndexSelection(this.pOrderSelected,category.label)
-        if(index == -1){
-            delete this.orderQty[category.label]
-            // console.log(this.orderQty,'this.orderQty')
+    returnSubTotal(){
+      try {
+        return this.$lodash.sumBy(this.returnCart,a=>{return parseInt(a.price) * parseInt(a.qty)})
+      } catch (error) {
+        console.log(error,'er')
+        return 0
+      }
+    }
+  },
+  methods:{
+    tempLogout(){
+            this.$q.dialog({
+                title: `Are you sure you want to logout?`,
+                type: 'negative',
+                color: 'pink-3',
+                class: 'text-grey-8',
+                icon: 'warning',
+                ok: 'Ok',
+                cancel: 'Cancel',
+                persistent: true
+                
+            }).onOk(()=>{
+              this.$firebase.auth().signOut()
+              .then(()=>{
+                console.log('no user')
+                this.show = false
+                this.displayName = ''
+                this.$router.push('/')
+                location.reload()
+              })
+              // 
+              // remove this comment if you are done with the testing
+            })
+    },
+    loginGoogle(){
+
+                let key = this.$q.localStorage.getItem('addCart')
+                var provider = new this.$firebase.auth.GoogleAuthProvider();
+                this.$firebase.auth().signInWithPopup(provider)
+                .then((result)=>{
+                  // This gives you a Google Access Token. You can use it to access the Google API.
+                  var token = result.credential.accessToken;
+                  // The signed-in user info.
+                  var user = result.user;
+                  console.log('token',token)
+                  console.log('user',user)
+
+                  var uid = user.uid
+
+                  //save user details in database with token / set to update always when login in
+                  let newUser = {
+                    gAccessToken: token,
+                    displayName: user.displayName,
+                    email: user.email,
+                    emailVerified: user.emailVerified,
+                    refreshToken: user.refreshToken
+                  }
+
+                  let index = this.$lodash.findIndex(this.CartItems,a=>{
+                    return a['.key'] == uid
+                  })
+                  console.log(index,'indexcheck')
+                  if(index == -1){
+                    if(this.returnCart.length != 0){
+
+                      let addCart = {
+                        items: this.returnCart
+                      }
+                      this.$firestoreApp.collection('CartItems').doc(uid).set(addCart)
+                      .then(()=>{
+                        this.$firestoreApp.collection("CartItems").doc(key).delete().
+                          then(()=> {
+                              console.log("Document successfully deleted!")
+                              this.$q.localStorage.clear()
+                              this.$firestoreApp.collection('Customers').doc(uid).set(newUser)
+                              .then(()=>{
+                                console.log('saved user')
+                                //save progress for future reference
+                                // console.log('progress', this.returnProgress)
+                                this.login = false
+
+                              })
+
+                              console.log('newUser',newUser)
+                              // location.reload()
+                          }).catch((error)=> {
+                              console.error("Error removing document: ", error)
+                          })
+                      })
+                    }
+                  } else {
+                    let vm = this
+                    
+                    if(this.returnCart.length != 0){
+                      
+                      // console.log(key,'key')
+
+                      let value = vm.CartItems.filter(a=>{
+                        return a['.key'] == uid
+                      })
+                      // console.log(value,'value')
+                      var first = function(element) { return !!element }    
+                      var itemsFirst = value.find(first)
+                      let items = itemsFirst.items
+                      console.log(items,'items')
+                      let local = vm.returnCart
+                      console.log(local)
+                      for(var x = 0; x < local.length; x++){
+                        //check local if available in items
+                        let indexing = vm.$lodash.findIndex(items,a=>{
+                          return a.checkerName == local[x].checkerName
+                        })
+                        console.log(indexing,'indexing')
+                        if(indexing > -1){
+                            items[indexing].qty = parseInt(items[indexing].qty) + parseInt(local[x].qty)
+                        } else {
+                            items.push(order) 
+                        }
+                      }
+
+                      console.log(items, 'itemsMerge')
+                      let addCart = {
+                        items: items
+                      }
+
+                      vm.$firestoreApp.collection('CartItems').doc(uid).set(addCart)
+                      .then(()=>{
+                        vm.$firestoreApp.collection("CartItems").doc(key).delete().
+                          then(()=> {
+                              console.log("Document successfully deleted!")
+                              vm.$q.localStorage.clear()
+                              this.$firestoreApp.collection('Customers').doc(uid).set(newUser)
+                              .then(()=>{
+                                console.log('saved user')
+                                //save progress for future reference
+                                // console.log('progress', this.returnProgress)
+                                this.login = false
+
+                              })
+
+                              console.log('newUser',newUser)
+                              // location.reload()
+                          }).catch((error)=> {
+                              console.error("Error removing document: ", error)
+                          })
+                      })
+                    }
+                  }
+
+
+
+
+                }).catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+
+                console.log('error',errorCode)
+                console.log('error',errorMessage)
+                this.$q.dialog({
+                    title: errorCode,
+                    message: errorMessage,
+                    color: 'pink-6',
+                    textColor: 'grey',
+                    icon: 'negative',
+                    ok: 'Ok'
+                })
+                // ...
+                });
+
+     
+    },
+    basketChecker(){
+      if(this.returnCart.length != 0){
+            this.login = false
+            this.$q.dialog({
+                title: 'You have '+this.returnLength+` Items in your Basket`,
+                message:'This will be automatically saved to your account once you login in. Do you want to continue ?',
+                type: 'negative',
+                color: 'pink-3',
+                class: 'text-grey-8',
+                icon: 'warning',
+                ok: 'Ok',
+                cancel: 'Cancel',
+                persistent: true
+                
+            }).onOk(()=>{
+              this.loginGoogle()
+            }).onCancel(()=>{
+              this.login = true
+            })
+      } else {
+          this.loginGoogle()
+      } 
+
+    },
+    removeOrder(item){
+      this.$q.dialog({
+        title: 'Remove '+item.foodName + ' ?',
+        message: 'Do you want to remove this item from your basket?.',
+        ok: 'Yes',
+        cancel: 'Cancel',
+        persistent: true,
+        color:'pink-6'
+      }).onOk(() => {
+        let orders = this.returnCart
+        let indexing = this.$lodash.findIndex(orders,a=>{
+            return a.checkerName == item.checkerName
+        })
+
+        orders.splice(indexing,1)
+        let add = {
+          items: orders
         }
+        this.$firestoreApp.collection('CartItems').doc(this.ordersKey).set(add)
+        .then((ref) =>{
+            console.log('cart updated')
+            
+        })  
+
+      }).onCancel(()=>{
+        this.basket = true
+      })
+
+    },
+    checkOutOrders(){
+      this.$q.localStorage.clear()
+      var user = this.$firebase.auth().currentUser
+      if(user){
+        console.log(user.uid,'meron pwede checkout na')
+          this.$q.dialog({
+            title: 'Checkout '+this.returnLength+' Items',
+            message: 'Proceed to checkout and payment ?',
+            ok: 'Yes',
+            cancel: 'Cancel',
+            persistent: true,
+            color:'pink-6'
+        }).onOk(() => {
+          console.log('orders',this.returnCart)
+          this.$router.push('/checkout')
+        }).onCancel(()=>{
+          this.basket = true
+        })
+      } else {
+        this.login = true
+      }
     },
   }
 }

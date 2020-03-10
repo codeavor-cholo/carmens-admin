@@ -206,7 +206,11 @@ import { date } from 'quasar'
                 .then((ref) =>{
                     let paymentDetails = {
                         clientReservationKey: this.reserveId,
-                        secondPayment: this.enteramount,
+                        clientPayDetails: 'CASH',
+                        clientTokenID: 'CASH',
+                        clientPaymentType: 'CASH',
+                        clientUID: 'WALK-IN',
+                        forPartyTray: true,
                         clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                     }
                     this.$firestoreApp.collection('Payments').add(paymentDetails)
@@ -243,7 +247,11 @@ import { date } from 'quasar'
             .then((ref) =>{
                 let paymentDetails = {
                     clientReservationKey: this.reserveId,
-                    secondPayment: this.enteramount,
+                    clientPayDetails: this.charge,
+                    clientTokenID: this.token.id,
+                    clientPaymentType: 'CARD',
+                    clientUID: 'WALK-IN',
+                    forPartyTray: true,
                     clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                 }
                 this.$firestoreApp.collection('Payments').add(paymentDetails)  
