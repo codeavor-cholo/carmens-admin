@@ -142,11 +142,11 @@
                 </q-card-section>
                 
                 <q-card-section class="col container q-mt-xl q-pl-none q-mr-sm">
-                    <!-- <q-page-sticky position="top-right" :offset="[200, 0]">  -->
-                    <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: teal;">
+                    <q-page-sticky position="top-right" :offset="[200, -30]"> 
+                    <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: teal;width: 330px">
                         <div class="q-ml-sm q-mr-sm text-weight-bold text-teal">
                             <span style="font-family: 'Roboto Slab', serif;">
-                            Package Pricing Guide
+                            Package Pricing Per Pax
                             </span>
                         </div>
                         <q-separator/>
@@ -210,7 +210,7 @@
                     <q-input color="deep-orange-4" outlined class="q-mt-sm" type="number" v-model="packagePrice" label="Package Price"/>
                     <!-- <q-input color="pink-3" outlined class="q-mt-md" type="number" dense v-model="packagePrice" label="Inclusion Price"/> -->
                     </div>
-                <!-- </q-page-sticky> -->
+                </q-page-sticky>
                 </q-card-section>
                 </div>
 

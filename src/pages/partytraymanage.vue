@@ -96,7 +96,7 @@
                                             </q-item>
                                             <q-item v-for="(price, index) in props.row.partyTrayPrice" :key="index">
                                                 <q-item-section>
-                                                <q-item-label overline>{{ price.label }}</q-item-label>
+                                                <q-item-label overline>{{ price.label }} ({{price.paxMin}} - {{price.paxMax}})</q-item-label>
                                                 </q-item-section>
                                                 <q-item-section side>
                                                 <q-item-label caption>{{ price.price }}</q-item-label>
@@ -178,7 +178,7 @@
                     </div>
                 </div>
                 <div class="my-card q-ma-md q-pa-sm q-py-md text-overline row" style="border: 1.5px solid;border-color: #FFDAB9;">
-                    <q-checkbox left-label v-model="partyTrayShow" label="Add Package Price" class="col-6 q-mr-md"/>
+                    <q-checkbox left-label v-model="partyTrayShow" label="Add Package Price Per Pax" class="col-6 q-mr-md"/>
                     <q-input color="deep-orange-4" outlined class="col q-mr-md" type="number" dense v-model="foodPrice" label="Package Price" v-show="partyTrayShow == true"/>
                 </div>
                 </q-card-section> 
@@ -253,7 +253,7 @@
                 </q-card-section> 
 
                 <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Cancel" v-close-popup color="grey-8" />
+                <q-btn flat label="Cancel" @click="editMode=false" v-close-popup color="grey-8" />
                 <q-btn flat label="Add Food" @click="addFood" color="deep-orange-4" v-close-popup v-show="editMode == false"/>
                 <q-btn flat label="Update Food" @click="updateFood" color="deep-orange-4" v-close-popup v-show="editMode == true"/>
                 <!-- <q-btn flat label="merge Food" @click="mergePricing" color="pink-3" /> -->
@@ -544,7 +544,8 @@ export default {
                                 foodName: this.foodNames,
                                 foodPic: this.newFoodPic,
                                 foodPrice: this.foodPrice,
-                                partyTrayPrice: partyTrays
+                                partyTrayPrice: partyTrays,
+                                available: true
                             }   
                         } else {
                             let partyTrays = this.mergePricing
@@ -552,7 +553,8 @@ export default {
                                 category: this.selectCategory,
                                 foodName: this.foodNames,
                                 foodPic: this.newFoodPic,
-                                partyTrayPrice: partyTrays
+                                partyTrayPrice: partyTrays,
+                                available: true
                             }
                         }
 

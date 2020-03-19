@@ -1,532 +1,465 @@
 <template>
-  <q-layout view="hhh lpR fff">
+    <q-page padding>
+        <template>  
+        <!-- <q-page-sticky position="bottom-right" :offset="[80, 50]">
+            <q-btn label="Add New Package" icon="add" class="q-my-md q-ml-md" color="orange-8" @click="addPackageDialog = true" />
+                <q-tooltip>
+                    New Reservation
+                </q-tooltip>
+        </q-page-sticky> -->
+            <div class="q-mx-lg" >
+                <q-table grid :data="Reservation" :columns="columns" :filter="filter"  pagination.sync="pagination" class="q-px-sm full-width align-center ">
+                    <template v-slot:item="props">
+                        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
+                            <q-card class="my-card"  style="border-radius:20px" >
+                                <q-card-section class="text-grey-8">
+                                    <q-list dense>
+                                    <q-item class="q-mt-sm">
+                                        <q-item-section>
+                                            <span class="full-width text-h6  text-weight-bold">{{props.row.clientFName}} {{props.row.clientLName}}</span>
+                                        </q-item-section>
+                                            <q-item-section side>
+                                            <span class="text-h6 text-weight-bold text-orange-8">{{props.row.clientReserveDate}}</span>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item>
+                                        <q-item-section lines="1">
+                                            <span class="full-width text-weight-bold flex flex-center">{{props.row.clientPlace}} {{props.row.clientCity}}</span>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item class="column items-center">
+                                        <q-item-section>
+                                            <q-btn flat label="View Full Details And Pay Balance" icon="mdi-pencil" @click="getedit(props.row)" color="green"/>
+                                        </q-item-section>
+                                    </q-item>  
+                                    <q-separator  inset class="q-mt-sm" />           
+                                    <q-item class="q-mt-sm " v-show="props.row.clientFoodChoice">
+                                    <span class="full-width text-weight-bold">FOOD Choices</span>
+                                    </q-item>
+                                    <q-item v-for="(price, index) in props.row.clientFoodChoice" :key="index" class="column items-center">
+                                        <q-item-section>
+                                        <q-item-label> {{ price.foodName }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-for="(price, index) in props.row.clientAdditionalFood" :key="index" class="column items-center">
+                                        <q-item-section>
+                                        <q-item-label> {{ price.foodName }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
 
-    <q-header class="transparent text-white row items-center justify-start" style="height:63px">
-      <q-toolbar>
-        <div class="q-px-sm q-pt-sm q-pl-xl">
-        <img style="height:100%;width:180px" src="statics/pics/carmen-logo.png" @click="$router.push('/')">
-        </div>
-
-        <div style="color:#E4ACBF">
-        <q-tabs  
-        indicator-color="transparent"
-        active-color="pink-3" 
-        v-model="tab">
-        <div class="row q-pa-sm">
-        <div><q-route-tab to="/" name="air"><b>PARTY TRAYS</b></q-route-tab></div>
-        <div><q-route-tab to="/catering"><b>CATERING SERVICES</b></q-route-tab></div>
-        <div style="padding-left:380px;"><q-route-tab to="" ><b>sign up</b></q-route-tab></div>
-        <!-- STATIC SHOW HIDE LOGIN -->
-        <div><q-tab v-show="show" @click="login = true"><b>login</b></q-tab></div>
-        <div class="row items-center">
-          <q-btn-dropdown dense style="color:#e4acbf" v-show="!show"  :label="displayName" flat>
-            <q-list>
-              <q-item clickable v-close-popup @click="$router.push('/profile')">
-                <q-item-section>
-                  <q-item-label>My Account</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable v-close-popup @click="tempLogout">
-                <q-item-section>
-                  <q-item-label>Log Out</q-item-label>
-                </q-item-section>
-              </q-item>
-
-            </q-list>
-          </q-btn-dropdown>
-          <!-- END OF STATIC -->
-          </div>
-        </div>
-        </q-tabs>
-        </div>
-
-        <div>
-        <q-btn dense style="background-color:#e4acbf;width:120px" text-color="white" label="view basket" @click="basket=true">
-          <q-badge color="grey-10" text-color="white" :label="returnLength" floating/>
-        </q-btn>
-        </div>
-
-        <div class="q-pa-sm">
-             <q-btn dense round icon="search" text-color="pink-2" color="white" @click="tempLogout"/>
-        </div>
-      </q-toolbar>
-    </q-header>
-
-    <q-page-container style="background: linear-gradient(to right, #ffffff 50%, #eeeeee 50%)">
-        <q-dialog v-model="basket" persistent >
-        <q-card style="min-width:500px;border-radius:20px;" class="q-pa-lg">
-          <div class="row justify-between">
-            <span class="text-h6 col">BASKET <span class="text-teal-6 text-subtitle2">({{returnLength}} ITEMS)</span></span>
-            <q-btn color="grey-10" icon="close" flat round  v-close-popup />
-          </div>
-          
-          <q-card-section class="row items-center">
-            <q-scroll-area style="width: 100%; height: 400px;" :visible="false">
-            <q-list bordered class="full-width" separator="">
-              <q-item v-for="items in returnCart" :key="items['.key']">
-                <q-item-section avatar>
-                  <q-img
-                    :src="items.foodPic"
-                    :ratio="1"
-                    spinner-color="primary"
-                    spinner-size="82px"
-                    style="width:5em;border-radius:5px;"
-                    class="q-my-sm"
-                  />
-                </q-item-section>
-                <q-item-section>
-                <q-item-label>{{items.foodName}}</q-item-label>
-                <q-item-label caption lines="1">Size: {{items.size}}</q-item-label>
-                <q-item-label class="text-subtitle2" lines="1">₱ {{items.price}}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-btn color="grey-8" icon="delete" round size="md" flat class="absolute-top-right q-ma-xs" @click="removeOrder(items)" />
-                  <q-item-label caption class="q-mt-lg">x {{items.qty}}</q-item-label>
-                  <q-item-label lines="1" class="text-subtitle2 text-pink-6 text-weight-bold">₱ {{items.price * items.qty}}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-scroll-area>
-          </q-card-section>
-          <q-card-actions align="right" class="justify-between row">
-            <div class="text-weight-bold text-h6" >SUBTOTAL : <span class="text-teal-6">{{returnSubTotal}}</span></div>
-            <q-btn :label="'Checkout '+returnLength+ ' items'" color="pink-6" v-close-popup  class="text-weight-bold" outline="" @click="checkOutOrders"/>
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <q-dialog v-model="login">
-      <q-card>
-        <q-card-section class="row justify-between q-mx-md q-mt-md">
-          <div class="text-h6">Login Account</div>
-          <q-btn class="text-overline text-teal" flat>CREATE ACCOUNT</q-btn>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none text-center">
-          <q-input v-model="clientEmail" type="email" label="Enter Email Address" style="width:450px;" class="q-pa-sm q-px-md" outlined="" color="pink-3" dense/>
-          <q-input v-model="clientPassword" type="password" label="Enter Password" style="width:450px;" class="q-pa-sm q-px-md" outlined="" color="pink-3" dense/>
-          <div class="row q-px-md q-mt-md">
-                                
-          <q-btn color="grey"  label="LOGIN VIA GOOGLE" @click="basketChecker" class="col-5"/>
-          <div class="text-overline text-center col-2">OR</div>
-          <q-btn color="teal" label="LOGIN account" class="col"/>
-
-          </div>
-          
-        </q-card-section>
-
-        <q-card-section class="q-pt-none q-mb-md text-center">
-          
-          
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-
-    <!-- <q-dialog v-model="checkout" persistent>
-      <q-card style="min-width: 650px;border-radius:20px;" class="q-pa-md">
-        <div class="row justify-center q-gutter-md">
-        <q-card class="my-card" style="width:350px">
-          <q-card-section class="bg-grey-3"> 
-            <div class="row q-gutter-sm items-center">
-              <q-icon name="place" class="text-black" color="pink" style="font-size: 1.5rem;" />
-              <div>Delivery Address</div>
+                                    <q-item class="q-mt-sm" v-show="props.row.clientSelectPackage.type != 'CUSTOMIZE'">
+                                    <span class="full-width text-weight-bold " >INCLUSIONS</span>
+                                    </q-item>
+                                    <q-item v-for="(price, index) in props.row.clientSelectPackage.inclusions" :key="index" class="column items-center">
+                                        <q-item-section >
+                                        <q-item-label> {{ price.inclusion }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-for="(prices, indexes) in props.row.clientSelectPackage.addons" :key="indexes" class="column items-center">
+                                        <q-item-section >
+                                        <q-item-label> {{prices.addOnsQty}}x {{ prices.addons }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-for="(priceses, indexeses) in props.row.clientSelectPackage.services" :key="indexeses" class="column items-center">
+                                        <q-item-section >
+                                        <q-item-label> {{priceses.serviceQty}}x {{ priceses.services }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-show="props.row.clientAddons != 0 && props.row.clientServices != 0" class="q-mt-sm">
+                                    <span class="full-width text-weight-bold" >Add-Ons & Services</span>
+                                    </q-item>
+                                    <q-item v-for="(price, index) in props.row.clientAddons" :key="index" class="column items-center">
+                                        <q-item-section >
+                                        <q-item-label>{{price.addonsQty}}x {{ price.addons }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-for="(prices, indexes) in props.row.clientServices" :key="indexes" class="column items-center">
+                                        <q-item-section >
+                                        <q-item-label>{{prices.servicesQty}}x {{ prices.services }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                                <q-separator  inset class="q-mt-sm" />
+                                <q-card-actions align="center">
+                                    <q-btn flat label="Cancel Event" icon="mdi-cancel" color="orange-8"/>
+                                    <q-separator vertical class="column items-center text-weigth-bold" />
+                                    <q-btn flat label="Reschedule Event" icon="mdi-calendar-edit" color="orange-8" />
+                                </q-card-actions>
+                                </q-card-section>
+                            </q-card>
+                        </div>
+                    </template>
+                </q-table>
             </div>
+        </template>
+        <q-dialog v-model="detailsAndPayment" full-height full-width >
+            <q-card>
+                <q-card-section>
+                <div class="text-h6"></div>
+                </q-card-section>
 
-            <div class="q-pt-sm q-pl-lg">Name of Customer &nbsp;&nbsp;&nbsp; number</div>
-            <div class="q-pl-lg">Delivery Address</div>
-          </q-card-section>
-          
-          <q-card-section>
-            <div class="q-pt-sm">
-             <q-list bordered separator>
-                <q-item>
-                  <q-item-section>
-                    <div class="row q-gutter-md">
-                      <img src="statics/pics/foo.jpeg" style="height:50px;width:50px">
-                      <div class="column">
-                        <q-item-label>FOODNAME</q-item-label>
-                        <q-item-label caption lines="1">size</q-item-label>
-                        <q-item-label class="text-subtitle2" lines="1">₱ price</q-item-label>
-                      </div>
+                <q-card-section class="q-pt-none">
+                <div class="row flex flex-center">
+                    <q-img src="statics/logo.png" :ratio="1" style="width:3.5em;" class="q-ml-sm"/>
+                    <q-toolbar-title v-if="$q.screen.gt.xs" shrink class="row items-center no-wrap">
+                        <strong>Crissy's Meal Magic Catering Services</strong>
+                    </q-toolbar-title>
+                </div>
+                <div class="row">
+                    <div class="q-pa-sm column col-9">
+                        <b class="col">FULLNAME: <i>{{this.selectedReservation.clientFName}} {{this.selectedReservation.clientLName}}</i></b> 
+                        <b class="col">PLACE OF EVENTS: <i>{{this.selectedReservation.clientPlace}} {{this.selectedReservation.clientCity}}</i></b>
+                        <b v-if="this.selectedReservation.clientPackageType != 'FIXED'" class="col">PLACE OF EVENTS: <i>{{this.selectedReservation.clientPax}}Guest</i></b>
+                        <b v-else class="col">PAX: <i>{{this.selectedReservation.clientSelectPackage.adultPax}} Adults & {{this.selectedReservation.clientSelectPackage.kidPax}} Kids</i></b> 
+                        <b class="col">Motif: <i>{{this.selectedReservation.clientMotif}}</i></b>
+                        <b class="col">Theme: <i>{{this.selectedReservation.clientMotif}}</i></b>
                     </div>
-                  </q-item-section>
-                  <q-item-section side>
-                  <q-item-label caption class="q-mt-lg">x 1</q-item-label>
-                  <q-item-label lines="1" class="text-subtitle2 text-pink-6 text-weight-bold">₱ price</q-item-label>
-                </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-          </q-card-section>
-        </q-card>
+                    <div class="q-pa-sm column col-3">
+                        <b class="col">DATE OF EVENTS: <i>{{this.selectedReservation.clientReserveDate}}</i></b> 
+                        <b class="col">TIME: <i>{{this.selectedReservation.clientStartTime}} - {{this.selectedReservation.clientEndTime}}</i></b>
+                        <b class="col">EVENT: <i>{{this.selectedReservation.clientEvent}}</i></b>
+                        <b class="col">Email: <i>{{this.selectedReservation.clientEmail}}</i></b>
+                        <b class="col">Package Type: <i>{{this.selectedReservation.clientPackageType}} PACKAGE</i></b>
+                    </div>
+                </div>
+                <q-separator inset />           
+                <div class="row">
+                    <div class="q-pa-sm col-2">
+                        <q-item>
+                        <span class="full-width text-weight-bold">FOOD CHOICES</span>
+                        </q-item>
+                        <q-list dense v-for="(price, index) in this.selectedReservation.clientFoodChoice" :key="index">
+                            <q-item>
+                                <q-item-section>
+                                <li> {{ price.foodName }}</li>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                        <span class="full-width text-weight-bold">Additional Food</span>
+                        <q-list dense v-for="(price, index) in this.selectedReservation.clientAdditionalFood" :key="index">
+                            <q-item>
+                                <q-item-section>
+                                <li> {{ price.foodName }}</li>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </div>
+                    <div v-show="this.selectedReservation.clientPackageType != 'CUSTOMIZE'" class="q-pa-sm col-3">
+                        <q-item>
+                            <span class="full-width text-weight-bold " >INCLUSIONS</span>
+                        </q-item>
+                            <q-item dense v-for="(price, index) in this.returnFree.inclusions" :key="index" class="">
+                                <q-item-section >
+                                    <li>
+                                        {{ price.inclusion }}
+                                    </li>
+                                </q-item-section>
+                            </q-item>
+                            <q-item dense v-for="(prices, indexes) in this.returnFree.addons" :key="indexes" class="">
+                                <q-item-section >
+                                <li> {{prices.addOnsQty}}x {{ prices.addons }}</li>
+                                </q-item-section>
+                            </q-item>
+                            <q-item dense v-for="(priceses, indexeses) in this.returnFree.services" :key="indexeses" class="">
+                                <q-item-section >
+                                <li> {{priceses.serviceQty}}x {{ priceses.services }}</li>
+                                </q-item-section>
+                        </q-item>
+                    </div>
+                    <div v-show="this.selectedReservation.clientAddons != 0 || this.selectedReservation.clientServices != 0" class="q-pa-sm col-3">
+                        <q-item>
+                            <span class="full-width text-weight-bold " >Add-Ons & Services</span>
+                        </q-item>
+                        <q-item dense v-for="(price, index) in this.selectedReservation.clientAddons" :key="index" class="">
+                            <q-item-section >
+                                <li>
+                                    {{price.addonsQty}}x {{ price.addons }}
+                                </li>
+                            </q-item-section>
+                        </q-item>
+                        <q-item dense v-for="(price, index) in this.selectedReservation.clientServices" :key="index" class="">
+                            <q-item-section >
+                                <li>
+                                    {{price.servicesQty}}x {{ price.services }}
+                                </li>
+                            </q-item-section>
+                        </q-item>
+                    </div>
+                    <div class="q-pa-sm col-4">
+                            <div class="row">
+                                <div class="col-6 row">
+                                    <b class="q-pa-sm col-12">Total Payment: <i>P</i> {{this.selectedReservation.clientTotalPayment}}</b>
+                                    <b class="q-pa-sm col-12">Paid Amount: <i>P</i> {{this.selectedReservation.clientPaidAmount}}</b>
+                                </div>
+                                <div class="col-6 row">
+                                    <b btnclass="col q-pa-sm">Current Balance: <q-btn flat dense @click="payamount" color="orange-8"><i v-show="this.currentBalance != 0">P&nbsp;</i> {{this.currentBalance === 0 ? 'NO BALANCE' : this.currentBalance,}}</q-btn></b>
+                                </div>
+                            </div>
+                            <div v-show="this.currentBalance != 0" class="q-pa-sm">
+                                <q-input type="number" class="col" color="orange-8" outlined v-model="enterAmount" label="Enter Amount To Pay"/>
+                            </div>
+                            <q-separator inset/>
+                            <div v-show="this.currentBalance != 0" class="column items-center">
+                                <div class="column items-center text-weight-bold">Pay via Card</div>
+                            </div>
+                            <div v-show="this.currentBalance != 0" class="container q-pa-sm">
+                                <stripe-elements ref="elementsRef" color="orange-8" :pk="publishableKey" :amount="amount" @token="tokenCreated" @loading="loading = $event" outline class="col q-mr-md">
+                                </stripe-elements>
+                                <q-btn outlined color="orange-8" class="col full-width" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amountOnCard}}</b></q-btn>
+                                <!-- <button @click="submit">Pay ${{amount / 100}}</button> -->
+                            </div>
+                            <div v-show="this.currentBalance != 0" class="column items-center">
+                                <div class="column items-center text-weight-bold">Pay via Cash</div>
+                            </div>
+                            <div v-show="this.currentBalance != 0" class="q-pa-sm">
+                                <q-input type="number" readonly class="q-pa-sm full-width col" color="orange-8" outlined v-model="enterAmount" label="Amount To Pay on Cash"/>
+                                <q-btn outlined color="orange-8" class="col full-width" @click="updatePaymentCash">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{enterAmount}}</b></q-btn>
+                            </div>
+                    </div>
+                </div>
+                </q-card-section>
 
-        <q-card class="my-card" style="width:250px;border: 5px solid;border-color: pink;">
-          <q-card-section>
-            <q-input
-              v-model="message"
-              filled
-              type="textarea"
-              class="bg-white"
-              label="Leave your message."
-            />
-            <div class="row justify-around">
-              <div class="q-pt-md">Total payment:</div>
-              <div class="q-pt-md" style="font-size:18px"><b>Total</b></div>
-            </div>
-            <div class="q-pt-md q-pb-sm text-center">Payment Method</div>
-            <div class="row justify-around">
-              <q-btn color="pink-5" label="Cash" />
-              <q-btn color="pink-5" label="Card" />
-            </div>  
-          </q-card-section>
-        </q-card>
-        </div>
+                <!-- <q-card-actions align="bottom-left" class="bg-white text-teal">
+                <q-btn flat label="OK" v-close-popup />
+                </q-card-actions> -->
+            </q-card>
+        </q-dialog>
 
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Add address" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
-
-      <router-view />
-    </q-page-container>
-
-  </q-layout>
+    </q-page>
 </template>
-
 <script>
+import { date } from 'quasar'
+import { StripeElements } from 'vue-stripe-checkout';
 export default {
-  data () {
-    return {
-      tab: 'air',
-      search: '',
-      message:'',
-      show: true,
-      displayName: '',
-      basket: false,
-      ordersKey: this.$q.localStorage.getItem('addCart'),
-      CartItems: [],
-      login: false,
-      clientEmail: '',
-      clientPassword: ''
-     
-    }
-  },
-    created() {
-          let self = this
-          this.$firebase.auth().onAuthStateChanged(function(user) {
-              
-              if (user) {
-                let gg = {...user}
-                console.log('createdUser',user)
-                console.log('createdUser',user.uid)
-                console.log('user',gg.displayName)
-                self.show = false
-                self.displayName = gg.displayName
-                
-              } else {
-                self.show = true
-              }
-          })
-  },
-  mounted(){
-        this.$binding('CartItems', this.$firestoreApp.collection('CartItems'))
-        .then(CartItems => {
-        console.log(CartItems, 'CartItems')
-        })
-  },
-  computed: {
-    returnCart(){
-      try {
-        // console.log(hi,'hi')
-
-        let key 
-        var user = this.$firebase.auth().currentUser
-        if(user){
-          key = user.uid
-        } else {
-          key = this.ordersKey
+     components: {
+         StripeElements
+     },
+      data(){
+        return {
+            enterAmount: 0,
+            loading: false,
+            amount: 0,
+            publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
+            token: null,
+            charge: null,
+            options: [
+                { label: 'Full Payment', value: 'Full Payment' },
+                { label: 'Down Payment', value: 'Down Payment' },
+                { label: 'Reservation Fee', value: 'Reservation Fee' }
+            ],
+            detailsAndPayment: false,
+            Reservation: [],
+            selectedReservation: [],
+            filter: '',
+            pagination: { sortBy: 'clientFname', descending: false, page: 1, rowsPerPage: 10},
+            columns: [
+                { name: 'clientFname', required: true, label: 'First Name', align: 'center', field: 'clientFname', sortable: true },
+                { name: 'clientEvent', align: 'center', label: 'Event', field: 'clientEvent', sortable: true },
+            ]
         }
-
-        console.log(key,'key')
-        let value = this.$lodash.map(this.CartItems,a=>{
-          if(a['.key'] == key){
-            let g = {...a}
-            g.ordersKey = a['.key']
-            delete g['.key']
-            return g
-          }
-        })
-        var first = function(element) { return !!element }    
-        var gotcha = value.find(first)
-        console.log(gotcha,'gotcha')
-        return gotcha.items
-      } catch (error) {
-        console.log(error,'error')
-        return []
-      }
     },
-    returnLength(){
-      try {
-        return this.$lodash.sumBy(this.returnCart,a=>{return parseInt(a.qty)})
-      } catch (error) {
-        return 0
-      }
-    },
-    returnSubTotal(){
-      try {
-        return this.$lodash.sumBy(this.returnCart,a=>{return parseInt(a.price) * parseInt(a.qty)})
-      } catch (error) {
-        console.log(error,'er')
-        return 0
-      }
-    }
-  },
-  methods:{
-    tempLogout(){
-            this.$q.dialog({
-                title: `Are you sure you want to logout?`,
-                type: 'negative',
-                color: 'pink-3',
-                class: 'text-grey-8',
-                icon: 'warning',
-                ok: 'Ok',
-                cancel: 'Cancel',
-                persistent: true
-                
-            }).onOk(()=>{
-              this.$firebase.auth().signOut()
-              .then(()=>{
-                console.log('no user')
-                this.show = false
-                this.displayName = ''
-                this.$router.push('/')
-                location.reload()
-              })
-              // 
-              // remove this comment if you are done with the testing
+    mounted () {
+        this.$binding('Reservation', this.$firestoreApp.collection('Reservation'))
+            .then(Reservation => {
+            console.log(Reservation, 'Reservation')
             })
     },
-    loginGoogle(){
-
-                let key = this.$q.localStorage.getItem('addCart')
-                var provider = new this.$firebase.auth.GoogleAuthProvider();
-                this.$firebase.auth().signInWithPopup(provider)
-                .then((result)=>{
-                  // This gives you a Google Access Token. You can use it to access the Google API.
-                  var token = result.credential.accessToken;
-                  // The signed-in user info.
-                  var user = result.user;
-                  console.log('token',token)
-                  console.log('user',user)
-
-                  var uid = user.uid
-
-                  //save user details in database with token / set to update always when login in
-                  let newUser = {
-                    gAccessToken: token,
-                    displayName: user.displayName,
-                    email: user.email,
-                    emailVerified: user.emailVerified,
-                    refreshToken: user.refreshToken
-                  }
-
-                  let index = this.$lodash.findIndex(this.CartItems,a=>{
-                    return a['.key'] == uid
-                  })
-                  console.log(index,'indexcheck')
-                  if(index == -1){
-                    if(this.returnCart.length != 0){
-
-                      let addCart = {
-                        items: this.returnCart
-                      }
-                      this.$firestoreApp.collection('CartItems').doc(uid).set(addCart)
-                      .then(()=>{
-                        this.$firestoreApp.collection("CartItems").doc(key).delete().
-                          then(()=> {
-                              console.log("Document successfully deleted!")
-                              this.$q.localStorage.clear()
-                              this.$firestoreApp.collection('Customers').doc(uid).set(newUser)
-                              .then(()=>{
-                                console.log('saved user')
-                                //save progress for future reference
-                                // console.log('progress', this.returnProgress)
-                                this.login = false
-
-                              })
-
-                              console.log('newUser',newUser)
-                              // location.reload()
-                          }).catch((error)=> {
-                              console.error("Error removing document: ", error)
-                          })
-                      })
-                    }
-                  } else {
-                    let vm = this
-                    
-                    if(this.returnCart.length != 0){
-                      
-                      // console.log(key,'key')
-
-                      let value = vm.CartItems.filter(a=>{
-                        return a['.key'] == uid
-                      })
-                      // console.log(value,'value')
-                      var first = function(element) { return !!element }    
-                      var itemsFirst = value.find(first)
-                      let items = itemsFirst.items
-                      console.log(items,'items')
-                      let local = vm.returnCart
-                      console.log(local)
-                      for(var x = 0; x < local.length; x++){
-                        //check local if available in items
-                        let indexing = vm.$lodash.findIndex(items,a=>{
-                          return a.checkerName == local[x].checkerName
-                        })
-                        console.log(indexing,'indexing')
-                        if(indexing > -1){
-                            items[indexing].qty = parseInt(items[indexing].qty) + parseInt(local[x].qty)
-                        } else {
-                            items.push(order) 
+    computed: {
+        currentBalance(){
+            try {
+                let totalpack =  parseInt(this.selectedReservation.clientTotalPayment) - parseInt(this.selectedReservation.clientPaidAmount)
+                return totalpack
+            } catch(err){
+                return 0
+            }
+        },
+        addTotalPaid(){
+            try {
+                let totalpack =  parseInt(this.selectedReservation.clientPaidAmount) + parseInt(this.enterAmount)
+                return totalpack
+            } catch(err){
+                return 0
+            }
+        },
+        amountOnCard(){
+            if(this.enterAmount === 0 || this.enterAmount === ''){
+                return this.amount = 0 
+            }else{
+                return this.amount = this.enterAmount
+            }
+        },
+        returnTheme(){
+            if(this.selectedReservation === []){
+                return []
+            }else{
+                let sr = this.selectedReservation
+                return sr.clientSelectTheme
+            }
+        },
+        returnFree(){
+         if(this.selectedReservation === []){
+                return []
+            } else {
+                let data = {...this.selectedReservation.clientSelectPackage}
+                var key = data['.key']
+                delete data.__index
+                delete data['.key']
+                console.log(data, 'datas')
+                return data
+            }
+        }
+    },
+    methods:{
+        updatePaymentCard(){
+            var PaymentBago = {
+                clientReserveDate: this.selectedReservation.clientReserveDate,
+                clientFName: this.selectedReservation.clientFName,
+                clientLName: this.selectedReservation.clientLName,
+                clientPlace: this.selectedReservation.clientPlace,
+                clientCity: this.selectedReservation.clientCity,
+                clientEvent: this.selectedReservation.clientEvent,
+                clientMotif: this.selectedReservation.clientMotif,
+                clientPax: this.selectedReservation.clientPax,
+                clientEmail: this.selectedReservation.clientEmail,
+                clientStartTime: this.selectedReservation.clientStartTime,
+                clientEndTime: this.selectedReservation.clientEndTime,
+                clientSelectPackage: this.selectedReservation.clientSelectPackage,
+                clientPackageType: this.selectedReservation.clientPackageType,
+                clientFoodChoice: this.selectedReservation.clientFoodChoice,
+                clientServices: this.selectedReservation.clientServices,
+                clientAddons: this.selectedReservation.clientAddons,
+                clientTotalPayment: this.selectedReservation.clientTotalPayment,
+                clientPaidAmount: this.addTotalPaid,
+                clientPayDetails: this.selectedReservation.clientPayDetails,
+                clientTokenID: this.selectedReservation.clientTokenID,
+                clientPaymentType: this.selectedReservation.clientPaymentType,
+                clientReserveType: 'WALK-IN',
+                clientDateofReserve: this.selectedReservation.clientDateofReserve
+                }
+                    this.$firestoreApp.collection('Reservation').doc(this.reserveID).set(PaymentBago)
+                    .then((ref) =>{
+                        let paymentDetails = {
+                            clientReservationKey: this.reserveID,
+                            clientPayDetails: this.paydetails,
+                            clientTokenID: this.token.id,
+                            clientPaymentType: 'CARD',
+                            clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
-                      }
-
-                      console.log(items, 'itemsMerge')
-                      let addCart = {
-                        items: items
-                      }
-
-                      vm.$firestoreApp.collection('CartItems').doc(uid).set(addCart)
-                      .then(()=>{
-                        vm.$firestoreApp.collection("CartItems").doc(key).delete().
-                          then(()=> {
-                              console.log("Document successfully deleted!")
-                              vm.$q.localStorage.clear()
-                              this.$firestoreApp.collection('Customers').doc(uid).set(newUser)
-                              .then(()=>{
-                                console.log('saved user')
-                                //save progress for future reference
-                                // console.log('progress', this.returnProgress)
-                                this.login = false
-
-                              })
-
-                              console.log('newUser',newUser)
-                              // location.reload()
-                          }).catch((error)=> {
-                              console.error("Error removing document: ", error)
-                          })
-                      })
-                    }
-                  }
-
-
-
-
-                }).catch(function(error) {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
-                // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
-
-                console.log('error',errorCode)
-                console.log('error',errorMessage)
+                        this.$firestoreApp.collection('Payments').add(paymentDetails)
+                        .then(()=>{
+                            this.$q.notify({
+                                message: 'Payments Updated!',
+                                icon: 'mdi-folder-plus-outline',
+                                color: 'orange-8',
+                                textColor: 'white',
+                                position: 'center'
+                                })
+                            })  
+                        })
+                        this.detailsAndPayment = false
+                        this.enterAmount = 0
+        },
+        updatePaymentCash(){
+            var PaymentBago = {
+                clientReserveDate: this.selectedReservation.clientReserveDate,
+                clientFName: this.selectedReservation.clientFName,
+                clientLName: this.selectedReservation.clientLName,
+                clientPlace: this.selectedReservation.clientPlace,
+                clientCity: this.selectedReservation.clientCity,
+                clientEvent: this.selectedReservation.clientEvent,
+                clientMotif: this.selectedReservation.clientMotif,
+                clientPax: this.selectedReservation.clientPax,
+                clientEmail: this.selectedReservation.clientEmail,
+                clientStartTime: this.selectedReservation.clientStartTime,
+                clientEndTime: this.selectedReservation.clientEndTime,
+                clientSelectPackage: this.selectedReservation.clientSelectPackage,
+                clientPackageType: this.selectedReservation.clientPackageType,
+                clientFoodChoice: this.selectedReservation.clientFoodChoice,
+                clientServices: this.selectedReservation.clientServices,
+                clientAddons: this.selectedReservation.clientAddons,
+                clientTotalPayment: this.selectedReservation.clientTotalPayment,
+                clientPaidAmount: this.addTotalPaid,
+                clientPayDetails: this.selectedReservation.clientPayDetails,
+                clientTokenID: this.selectedReservation.clientTokenID,
+                clientPaymentType: this.selectedReservation.clientPaymentType,
+                clientReserveType: this.selectedReservation.clientReserveType,
+                clientDateofReserve: this.selectedReservation.clientDateofReserve
+                }
                 this.$q.dialog({
-                    title: errorCode,
-                    message: errorMessage,
-                    color: 'pink-6',
-                    textColor: 'grey',
-                    icon: 'negative',
-                    ok: 'Ok'
-                })
-                // ...
-                });
-
-     
-    },
-    basketChecker(){
-      if(this.returnCart.length != 0){
-            this.login = false
-            this.$q.dialog({
-                title: 'You have '+this.returnLength+` Items in your Basket`,
-                message:'This will be automatically saved to your account once you login in. Do you want to continue ?',
-                type: 'negative',
-                color: 'pink-3',
-                class: 'text-grey-8',
-                icon: 'warning',
-                ok: 'Ok',
-                cancel: 'Cancel',
-                persistent: true
-                
-            }).onOk(()=>{
-              this.loginGoogle()
-            }).onCancel(()=>{
-              this.login = true
-            })
-      } else {
-          this.loginGoogle()
-      } 
-
-    },
-    removeOrder(item){
-      this.$q.dialog({
-        title: 'Remove '+item.foodName + ' ?',
-        message: 'Do you want to remove this item from your basket?.',
-        ok: 'Yes',
-        cancel: 'Cancel',
-        persistent: true,
-        color:'pink-6'
-      }).onOk(() => {
-        let orders = this.returnCart
-        let indexing = this.$lodash.findIndex(orders,a=>{
-            return a.checkerName == item.checkerName
-        })
-
-        orders.splice(indexing,1)
-        let add = {
-          items: orders
+                        title: 'Update Payment',
+                        message: 'Update This Payment?',
+                        ok: 'Yes',
+                        cancel: 'Cancel'
+                    }).onOk(() => { 
+                    this.$firestoreApp.collection('Reservation').doc(this.reserveID).set(PaymentBago)
+                    .then((ref) =>{
+                        let paymentDetails = {
+                            clientReservationKey: this.reserveID,
+                            clientPayDetails: 'CASH',
+                            clientTokenID: 'CASH',
+                            clientPaymentType: 'CASH',
+                            clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+                        }
+                        this.$firestoreApp.collection('Payments').add(paymentDetails)
+                        .then(()=>{
+                            this.$q.notify({
+                                message: 'Payments Updated!',
+                                icon: 'mdi-folder-plus-outline',
+                                color: 'orange-8',
+                                textColor: 'white',
+                                position: 'center'
+                                })
+                            })  
+                        })
+                        this.detailsAndPayment = false
+                        this.enterAmount = 0
+                    })
+        },
+        payamount(){
+            this.enterAmount = this.currentBalance
+        },
+        getedit (task) {
+            this.selectedReservation = task
+            this.reserveID = task['.key']
+            this.detailsAndPayment = true
+        },
+        submit () {
+        this.$refs.elementsRef.submit();
+        },
+        tokenCreated (token) {
+        this.token = token;
+        console.log(token,'token')
+        // for additional charge objects go to https://stripe.com/docs/api/charges/object
+        this.charge = {
+            source: token.card,
+            amount: this.amount,
         }
-        this.$firestoreApp.collection('CartItems').doc(this.ordersKey).set(add)
-        .then((ref) =>{
-            console.log('cart updated')
-            
-        })  
-
-      }).onCancel(()=>{
-        this.basket = true
-      })
-
-    },
-    checkOutOrders(){
-      this.$q.localStorage.clear()
-      var user = this.$firebase.auth().currentUser
-      if(user){
-        console.log(user.uid,'meron pwede checkout na')
-          this.$q.dialog({
-            title: 'Checkout '+this.returnLength+' Items',
-            message: 'Proceed to checkout and payment ?',
-            ok: 'Yes',
-            cancel: 'Cancel',
-            persistent: true,
-            color:'pink-6'
-        }).onOk(() => {
-          console.log('orders',this.returnCart)
-          this.$router.push('/checkout')
-        }).onCancel(()=>{
-          this.basket = true
-        })
-      } else {
-        this.login = true
-      }
-    },
-  }
+        this.sendTokenToServer(this.charge);
+        },
+        sendTokenToServer (charge) {
+        // Send to server
+        console.log(charge,'charge')
+        if(this.amount === 0){
+            this.$q.dialog({
+                title: `Unable to Continue??`,
+                message: 'Please Select Payment Type??',
+                color: 'orange-8',
+                textColor: 'grey',
+                icon: 'negative',
+                ok: 'Ok'
+            })
+        }else{
+            this.$q.dialog({
+                        title: 'Update Payment',
+                        message: 'Update This Payment?',
+                        ok: 'Yes',
+                        cancel: 'Cancel'
+                    }).onOk(() => {
+                        this.paydetails = charge
+                        this.updatePaymentCard()
+                    })
+        }
+        },
+    }
 }
 </script>

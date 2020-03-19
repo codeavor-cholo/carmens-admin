@@ -1,379 +1,461 @@
 <template>
-    <q-page>
-        <div class="container row q-gutter-md q-pt-xl q-pb-xl">
-        
-        <div class="col-4 q-pl-xl">
-            <q-card class="my-card" style="border: 5px solid;border-color: pink;">
-                <q-card-section class="bg-grey-3"> 
-                <div class="row q-gutter-sm items-center">
-                <q-icon name="shopping_cart" class="text-black" color="pink" style="font-size: 2rem;" />
-                <div class="text-h6">Basket Summary</div>
-                </div>
-            </q-card-section>
-            <!-- <q-separator color="black" /> -->
-            <q-card-section>
-                <div class="q-pt-sm">
-                <q-list separator>
-                    <q-item v-for="(order,i) in returnCart" :key="i">
-                    <q-item-section>
-                        <div class="row q-gutter-md">
-                        <q-img
-                            :src="order.foodPic"
-                            :ratio="1"
-                            spinner-color="primary"
-                            spinner-size="82px"
-                            style="width:4em;border-radius:5px;"
-                            class=""
-                        />
-                        <div class="column">
-                            <q-item-label>{{order.foodName}}</q-item-label>
-                            <q-item-label caption lines="1">{{order.size}}</q-item-label>
-                            <q-item-label class="text-subtitle2" lines="1">₱ {{order.price}}</q-item-label>
-                        </div>
-                        </div>
-                    </q-item-section>
-                    <q-item-section side>
-                    <q-btn color="grey-8" icon="clear" round size="sm" flat class="absolute-top-right q-ma-xs" @click="removeOrder(items)" />
-                    <q-item-label caption class="q-mt-lg">x {{order.qty}}</q-item-label>
-                    <q-item-label lines="1" class="text-subtitle2 text-pink-6 text-weight-bold">₱ {{order.qty * order.price}}</q-item-label>
-                    </q-item-section>
-                    </q-item>
-
-
-                </q-list>
-
-                </div>
-            </q-card-section>
-
-            <q-separator color="black" />
-            
-            <div class="row justify-end q-pa-md text-weight-bold text-h6 ">
-                <div>SUBTOTAL:</div>
-                <div class="q-ml-md text-teal-6"><b>₱ {{returnSubTotal}}</b></div>
-            </div>
-            </q-card>
-        </div>
-        
-        <div class="col-7">
-            <q-card class="my-card">
-                 <q-stepper
-                    v-model="step"
-                    ref="stepper"
-                    color="pink-4"
-                    active-color="pink-3" inactive-color="grey-8"
-                    animated
-                    >
-                    <q-step
-                        :name="1"
-                        title="Customer Details"
-                        icon="settings"
-                        :done="step > 1"
-                    >
-                        <div class="text-h5">Please fill-up all the details below </div>
-
-                        <div class="column q-gutter-md q-pt-md">
-                            <div class="row">
-                                <div class="col q-pr-sm"><q-input outlined v-model="fname" color="pink-3" label="First Name" /></div>
-                                <div class="col q-pl-sm"><q-input outlined v-model="lname" color="pink-3" label="Last Name" /></div>
-                            </div>
-                            <q-input 
-                            outlined v-model="cnum"  
-                            mask="(####) ### - ####"
-                            fill-mask
-                            color="pink-3" 
-                            label="Contact Number" />
-                            <q-input color="pink-3" outlined v-model="address" label="Delivery Address" />
-                            <q-select color="pink-3" outlined v-model="city" :options="cityOpt" label="Select City" emit-value="" map-options=""/>
-                        </div>
-                        <div class="column q-gutter-md q-pt-md">
-                            <div class="text-h6">Delivery Date and Time</div>
-                            <div class="row">
-                                <div class="col">
-                                    <q-date
-                                        v-model="date"
-                                        landscape
-                                        minimal
-                                        flat
-                                        color="pink-6"
-                                    />
+      <q-page class="flex flex-center">
+        <template>  
+            <q-splitter v-model="splitterModel" style="height: 92vh; width: 100%;" :limits="[18, 18]">  
+                <template v-slot:before>
+                    <div class="bg-grey-9 fit">
+                        <div class="text-h6 text-white text-center q-py-md">FILTER OPTIONS</div>
+                        <q-input v-model="filter" clearable type="text" label="Search Users" color="deep-orange-4" class="q-ma-md bg-white" outlined icon="search">
+                            <template v-slot:prepend>
+                                <q-icon name="search" color="deep-orange-4"/>
+                            </template>
+                        </q-input>
+                    </div>
+                    
+                </template> 
+                <template v-slot:after>   
+                <q-btn fab icon="mdi-plus-thick" color="teal" @click="addUserDialog = true,editMode = false" class="q-my-md q-ml-md">
+                    <q-tooltip>
+                                        Add New User
+                    </q-tooltip>
+                </q-btn>
+                <div>
+                    <q-table grid :data="returnNoAdmins" :columns="columns" class="q-px-sm full-width align-center ">
+                        <template v-slot:item="props">
+                                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition q-ma-sm" :style="props.selected ? 'transform: scale(0.95);' : ''">
+                                    <q-card class="my-card" style="border: 2px solid;border-color: #ffdab9;" >
+                                        <div>
+                                        <q-card-section>
+                                            <q-list dense>
+                                            <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name" v-show="col.name != 'partyTrayPrice'">
+                                                <q-item-section dense>
+                                                <q-item-label lines="1">{{ col.label }}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section side dense>
+                                                <q-item-label lines="2">{{ col.value }}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            <q-item class="q-mt-sm">
+                                                <span class="full-width text-center text-weight-bold">PERMISSIONS</span>
+                                            </q-item>
+                                            <q-item v-for="(permission, index) in returnPermissions(props.row)" :key="index">
+                                                <q-item-section>
+                                                <q-item-label overline>{{ permission.permissionName }}</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section side>
+                                                <q-item-label caption>
+                                                    <q-chip :color="permission.status == true ? 'teal' : 'red'" round size="xs" :text-color="permission.status == true ? 'teal' : 'red'" label=""/>
+                                                </q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            
+                                        </q-list>
+                                        </q-card-section>
+                                        <q-separator inset />
+                                        <q-card-actions align="right">
+                                            <q-btn flat label="DELETE" color="grey-8" @click="removeUser(props.row)"/>
+                                            <q-btn flat label="EDIT" color="teal" @click="editUser(props.row)"/>
+                                        </q-card-actions>
+                                        </div>
+                                    </q-card>
                                 </div>
-                                <div class="col">
-                                    <q-input v-model="time" type="time" label="Delivery Time" outlined color="pink-6"/>
-                                </div>
-                            </div>
-                        </div>
-                    </q-step>
+                            </template>
+                    </q-table>
+                </div>
 
-                    <q-step
-                        :name="2"
-                        title="Payment Details"
-                        icon="credit_card"
-                        :done="step > 2"
-                    >
+                </template>
+            </q-splitter>
+        </template>
+        <q-dialog v-model="addUserDialog" persistent>
+            <q-card style="min-width: 500px" class="q-pa-sm">
+                <q-card-section class="row">
+                    <div class="text-h6">Add New User</div>
+                    <q-space />
+                    <q-btn icon="close" v-close-popup flat round @click="addUserDialog = false"></q-btn>
+                </q-card-section>
+                <q-card-section v-if="!editMode">
+                    <q-chip color="teal" text-color="white" class="q-mb-md q-mt-none" icon="info" label="Recommended to Have Both Login Details" />
+                    <q-input v-model="newUser.email" type="email" label="Email Address (for gAuth)" outlined="" color="teal" dense/>
+                    <div class="text-center q-mt-md">OR</div>
+                    <q-input v-model="newUser.userName" type="text" label="User Name" outlined="" color="teal" class="q-mt-md" dense/>
                     <div class="row">
-                        <div class="q-pa-md col">
-                            <div class="text-h6 text-weight-bold">Order Summary</div>
-                            <div class="q-pl-md row q-gutter-sm items-center q-pt-sm">
-                                <q-icon name="place" class="text-black" color="pink" style="font-size: 1.5rem;" />
-                                <div class="text-weight-medium">{{address}}, {{city}}</div>
-                            </div>
-                            <div class="row q-gutter-md q-pt-md">
-                                <div class="q-pl-xl">{{fname}} {{lname}}</div>
-                                <div>{{cnum}}</div>
-                            </div>
-                            <div class="q-pl-xl">{{address}}, {{city}}</div>
-                            <div class="q-pl-md row q-gutter-sm items-center q-pt-sm">
-                                <q-icon name="date_range" class="text-black" color="pink" style="font-size: 1.5rem;" />
-                                <div class="text-weight-medium">{{date}}, {{time}}</div>
-                            </div>
-                        </div>    
-                        
-                        <div class="col q-pl-md q-pa-md ">    
-                            <div class="text-h6 text-weight-bold">Delivery Message</div>
-                            <q-input
-                            v-model="message"
-                            outlined=""
-                            dense
-                            type="textarea"
-                            class="bg-white"
-                            label="Leave your messages and requests here."
-                            /> 
-                        </div>    
-                    </div>  
-                    <div class="row q-pa-md q-mt-md bg-grey-2">
-                        <div class="col q-pa-sm text-weight-bold">Payment Options</div>
-                        <div class="col-3"><q-radio v-model="paymentOpt" val="FULL" label="FULL PAYMENT" color="pink-6"/></div>
-                        <div class="col q-pa-sm text-weight-bold">₱ {{returnSubTotal}}</div>
-                        <div class="col-3"><q-radio v-model="paymentOpt" val="COD" label="50% PAYMENT, 50% COD" color="pink-6"/></div>
-                        <div class="col q-pa-sm text-weight-bold">₱ {{returnSubTotal *.5}} NOW, ₱ {{returnSubTotal *.5}} LATER</div>
+                        <q-input v-model="newUser.password" type="password" label="Password" outlined="" color="teal" class="q-mt-md q-mr-md col" dense/>
+                        <q-input v-model="newUser.confirmPassword" type="password" label="Confirm Password" outlined="" color="teal" class="q-mt-md col" dense/>
                     </div>
-                    <div class="row q-pa-md q-py-xl">
-                        <stripe-elements ref="elementsRef" :pk="publishableKey" :amount="returnToPay" @token="tokenCreated" @loading="loading = $event" outline class="col-8 q-mr-md">
-                        </stripe-elements>
-                    <q-btn outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>P {{formatNumber(returnToPay)}}.00</b></q-btn>
+                    <!-- <q-select v-model="newUser.position" label="Position" outlined="" color="teal" class="q-mt-md" :options="positionOpts" emit-value dense/> -->
+                    <div class="text-overline q-my-md">PERMISSIONS</div>
+                    <div style="border: 1.5px solid;border-color: teal;" class="q-pa-md">
+                        <div class="text-caption text-weight-bold text-teal">POSITION</div>
+                        <div>
+                            <q-radio @input="radioOpt(),consolePermission()" color="teal" v-model="newUser.position" val="Staff" label="Staff" />
+                            <q-radio @input="radioOpt(),consolePermission()" color="teal" v-model="newUser.position" val="Delivery Boy" label="Delivery Boy" />
+                            <q-radio @input="radioOpt(),consolePermission()" color="teal" v-model="newUser.position" val="Admin" label="Admin" />
+                        </div>
+                        <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
+                        <div class="q-gutter-xs">
+                                 <q-option-group
+                                v-model="fileMaintenance"
+                                :options="optFileMaintenance"
+                                color="teal"
+                                type="checkbox"
+                                inline
+                                class="text-capitalize"
+                                />                           
+                        </div>
+                        <q-separator spaced inset/>
+                        <div class="text-caption text-weight-bold text-teal">OTHER MODULES</div>
+                        <div class="q-gutter-xs">
+                                 <q-option-group
+                                v-model="orderingOptions"
+                                :options="optOrdering"
+                                color="teal"
+                                type="checkbox"
+                                inline
+                                class="text-capitalize"
+                                />                           
+                        </div>
                     </div>
-                    </q-step>
-
-                    <template v-slot:navigation>
-                        <q-stepper-navigation>
-                        <q-btn @click="$refs.stepper.next()" color="teal" :label="step === 2 ? 'Finish' : 'Continue'" v-show="step !== 2"/>
-                        <q-btn v-if="step > 1" color="grey-8" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
-                        </q-stepper-navigation>
-                    </template>
-                    </q-stepper>
+                </q-card-section>
+                <q-card-section v-else>
+                    <q-chip color="teal" text-color="white" class="q-mb-md q-mt-none" icon="info" label="Recommended to Have Both Login Details" />
+                    <q-input v-model="selectedUser.email" type="email" label="Email Address (for gAuth)" outlined="" color="teal" dense/>
+                    <div class="text-center q-mt-md">OR</div>
+                    <q-input v-model="selectedUser.userName" disable type="text" label="User Name" outlined="" color="teal" class="q-mt-md" dense/>
+                    <!-- <div class="row">
+                        <q-input v-model="selectedUser.password" type="password" label="Password" outlined="" color="teal" class="q-mt-md q-mr-md col" dense/>
+                        <q-input v-model="selectedUser.confirmPassword" type="password" label="Confirm Password" outlined="" color="teal" class="q-mt-md col" dense/>
+                    </div> -->
+                    <!-- <q-select v-model="selectedUser.position" label="Position" outlined="" color="teal" class="q-mt-md" :options="positionOpts" emit-value dense/> -->
+                    <div class="text-overline q-my-md">PERMISSIONS</div>
+                    <div style="border: 1.5px solid;border-color: teal;" class="q-pa-md">
+                        <div class="text-caption text-weight-bold text-teal">POSITION</div>
+                        <div>
+                            <q-radio color="teal" v-model="selectedUser.position" val="Staff" label="Staff" />
+                            <q-radio color="teal" v-model="selectedUser.position" val="Delivery Boy" label="Delivery Boy" />
+                            <q-radio color="teal" v-model="selectedUser.position" val="Admin" label="Admin" />
+                        </div>
+                        <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
+                        <q-checkbox v-model="selectedPermission.packages" label="Package Management" color="teal"/>
+                        <q-checkbox v-model="selectedPermission.food" label="Food Management" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.partyTray" label="Party Trays Management" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.others" label="Other Management" color="teal" class=""/>
+                        <q-separator spaced inset/>
+                        <div class="text-caption text-weight-bold text-teal">OTHER MODULES</div>
+                        <q-checkbox v-model="selectedPermission.walkIn" label="Walk-In Reservation" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.partyTrayOrdering" label="Party Tray Ordering" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.users" label="Users" color="teal" class=""/>
+                    </div>
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat label="CANCEL" v-close-popup/>
+                    <q-btn flat label="SAVE USER" color="teal" @click="saveUser" v-if="!editMode"/>
+                    <q-btn flat label="UPDATE USER" color="teal" @click="updateUser" v-else/>
+                </q-card-actions>
             </q-card>
-        </div>
-        </div>
+        </q-dialog>
+        </q-page>
+</template>
+<style>
 
-    </q-page>    
-</template>     
-<style >
-  #payment-form button {
-    display: none
-  }
 </style>
 <script>
-import { StripeElements } from 'vue-stripe-checkout'
-import { uid } from 'quasar'
 export default {
-  components: {
-    StripeElements
-  },
     data () {
         return {
-            step: 1,
-            CartItems: [],
-            fname: '',
-            lname: '',
-            city: '',
-            address: '',
-            cnum: '',
-            City: [],
-            displayName: '',
-            message: '',
-            date: '',
-            time: '09:00',
-            paymentOpt: 'FULL',
-            uid: '',
-            //payment
-            loading: false,
-            amount: 0,
-            publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
-            token: null,
-            charge: null,
+            orderingOptions: ['walkIn', 'partyTrayOrdering', 'reservation'],
+            fileMaintenance: [],
+            optFileMaintenance: [
+                { label: 'Packages', value: 'packages' },
+                { label: 'Food', value: 'food' },
+                { label: 'Party Tray', value: 'partyTray' },
+                { label: 'Others Management', value: 'others' },
+                { label: 'Users', value: 'users' },
+            ],
+            optOrdering: [
+                { label: 'Party Tray Ordering', value: 'partyTrayOrdering' },
+                { label: 'Walk-In Reservation', value: 'walkIn' },
+                { label: 'Dashboard', value: 'dashboard' },
+                { label: 'Reservation', value: 'reservation' },
+                { label: 'Calendar', value: 'calendar' },
+                { label: 'Party Tray Reservations', value: 'partyTrayReservations' },
+            ],
+            editMode: false,
+            splitterModel: 20,
+            addUserDialog: false,
+            filter: '', //testing
+            newUser: {
+                userName: '',
+                password: '',
+                confirmPassword: '',
+                email: '',
+                position: 'Staff',
+            },
+            users: [],
+            Position: [],
+            columns: [
+                { name: 'displayName', required: true, label: 'User Name', align: 'center', field: 'displayName', sortable: true },
+                { name: 'position', required: true, label: 'Position', align: 'center', field: 'position', sortable: true },
+            ],
+            selectedUser:{},
+            selectedPermission:{}
         }
     },
-    mounted(){
-        this.$binding('CartItems', this.$firestoreApp.collection('CartItems'))
-            .then(CartItems => {
-            console.log(CartItems, 'CartItems')
-        }),
-        this.$binding('City', this.$firestoreApp.collection('City'))
-            .then(City => {
-            console.log(City, 'City')
-        })
-    },  
-    computed: {
-        returnCart(){
-            try {
-                console.log('hi')
-
-                let key 
-                var user = this.$firebase.auth().currentUser
-                if(user){
-                key = user.uid
-                this.uid = user.uid
-                this.displayName = user.displayName
-                console.log(this.displayName)
-                let arr = this.displayName.split(' ')
-                this.fname = arr[0]
-                this.lname = arr[1]
-                }
-
-                console.log(key,'key')
-                let value = this.$lodash.map(this.CartItems,a=>{
-                if(a['.key'] == key){
-                    let g = {...a}
-                    g.ordersKey = a['.key']
-                    delete g['.key']
-                    return g
-                }
-                })
-                var first = function(element) { return !!element }    
-                var gotcha = value.find(first)
-                console.log(gotcha,'gotcha')
-                return gotcha.items
-            } catch (error) {
-                console.log(error,'error')
-                return []
-            }
-        },
-        returnSubTotal(){
-            try {
-                return this.$lodash.sumBy(this.returnCart,a=>{return parseInt(a.price) * parseInt(a.qty)})
-            } catch (error) {
-                console.log(error,'er')
-                return 0
-            }
-        },
-        cityOpt(){
-            let optionss = this.City.map(m => {
+    mounted (){
+            this.$binding('users', this.$firestoreApp.collection('dashboardUsers'))
+            this.$binding('Position', this.$firestoreApp.collection('Position'))
+    },
+    computed :{
+        positionOpts(){
+            let pushOut = []
+            let map = this.$lodash.map(this.Position,a=>{
                 return {
-                    label: m.city,
-                    value: m.city
+                    label: a.position,
+                    value: a.position
                 }
             })
-            return optionss
+            return map
+
         },
-        returnToPay(){
-            let amount = this.returnSubTotal
-            if(this.paymentOpt == 'FULL'){
-                return amount
-            } else {
-                return amount * .5
-            }
+        returnNoAdmins(){
+            let noAdmin = this.$lodash.filter(this.users, a=>{
+                return a.position != 'superadmin' && a.position != 'Admin'
+            })
+            console.log(noAdmin,'noAdmin')
+            return noAdmin
         }
     },
-    methods:{
-        formatNumber(num) {
-            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    methods :{
+        consolePermission(){
+            console.log(this.fileMaintenance, 'optionsf')
+            console.log(this.orderingOptions, 'optionso')
         },
-        submit () {
-            this.$refs.elementsRef.submit();
-        },
-        tokenCreated (token) {
-            this.token = token;
-            console.log(token,'token')
-            // for additional charge objects go to https://stripe.com/docs/api/charges/object
-            this.charge = {
-                source: token.card,
-                amount: this.amount,
-            }
-            this.sendTokenToServer(this.charge);
-        },
-        sendTokenToServer (charge) {
-            // Send to server
-            console.log(charge,'charge')
-            if(this.returnToPay === 0){
-                this.$q.dialog({
-                    title: `Unable to Continue??`,
-                    message: 'Please Select Payment Type??',
-                    color: 'pink-6',
-                    textColor: 'grey',
-                    icon: 'negative',
-                    ok: 'Ok'
-                })
+        radioOpt(){
+            if(this.newUser.position === 'Admin'){
+                this.fileMaintenance = ['packages', 'food', 'partyTray', 'others', 'users']
+                this.orderingOptions = ['walkIn', 'partyTrayOrdering', 'dashboard', 'calendar', 'reservation', 'partyTrayReservations']
+            }else if(this.newUser.position === 'Staff'){
+                this.fileMaintenance = []
+                this.orderingOptions = ['walkIn', 'partyTrayOrdering', 'reservation', 'partyTrayReservations', 'calendar']
             }else{
+                this.fileMaintenance = []
+                this.orderingOptions = ['partyTrayReservations']   
+            }
+        },
+        editUser(user){
+            console.log(user,'editmode')
+            this.editMode = true
+            this.addUserDialog = true
+
+            let edit = {...user}
+            let userName = edit.userName.split('@')
+            edit.userName = userName[0]
+            this.selectedUser = edit
+            this.selectedPermission = edit.permissions
+        },
+        returnPermissions(user){
+            let permissions = {...user.permissions}
+            let map = this.$lodash.map(permissions,function(value,key){
+                let name = ''
+                switch(key) {
+                    case 'food':
+                        name = 'Food Management'
+                        break;
+                    case 'partyTray':
+                        name = 'Party Tray Management'
+                        break;
+                    case 'others':
+                        name = 'Others Management'
+                        break;
+                    case 'packages':
+                        name = 'Package Management'
+                        break;    
+                    case 'partyTrayOrdering':
+                        name = 'Party Tray Ordering'
+                        break;  
+                    case 'walkIn':
+                        name = 'Walk-In Reservation'
+                        break; 
+                    case 'users':
+                        name = 'Users Management'
+                        break;                                              
+                    default:
+                        name = key
+                        break;
+                }
+
+                return {
+                    permissionName: name,
+                    status: value
+                }
+            })
+            return map
+        },
+        saveUser(){
+            let data = this.newUser
+            data.permissions = this.permissions
+
+            console.log(data,'newUser')
+            if(data.userName == '' || data.password == '' || data.confirmPassword == ''){
                 this.$q.dialog({
-                    title: `Continue with the payment?`,
-                    message: 'This action cannot be undone.',
-                    color: 'teal',
-                    textColor: 'grey',
-                    icon: 'negative',
-                    ok: 'YES',
-                    cancel: 'NO'
+                  title: 'Required Fields is Empty.',
+                  message: 'Fill up all Requirements',
+                  color:'pink-6',
+                  ok: 'Ok',
+                  persistent: true
                 }).onOk(()=>{
-                    this.loadingOn = true
-                    this.paydetails = charge
-                    this.payCheckout()
-                    // this.reserveNowCard()            
+                    this.addUserDialog = true
                 })
+            } else {
+                if(data.password !=  data.confirmPassword){
+                    this.$q.dialog({
+                        title: 'Password Does Not Match',
+                        color:'pink-6',
+                        ok: 'Ok',
+                        persistent: true
+                    }).onOk(()=>{
+                        this.addUserDialog = true
+                    })  
+                } else {
+                    this.$q.dialog({
+                    title: 'Do you want to save this user',
+                    color:'pink-6',
+                    ok: 'Ok',
+                    persistent: true
+                    }).onOk(()=>{
+                        let newUserName = data.userName + '@carmens.com'
+                        data.displayName = data.userName
+                        data.userName = newUserName
+                        data.active = true
+                        console.log(data,'newUser')
+                        this.$auth.createUserWithEmailAndPassword(data.userName, data.password)
+                        .then((res)=> {
+                            console.log(res,'res')
+                            console.log(res.user.uid, 'uid') 
+                            delete data.password
+                            delete data.confirmPassword
+                            console.log(data,'finalSaveDatabase')
+                            // this.addUserDialog = true
+                            this.$firestoreApp.collection('dashboardUsers').doc(res.user.uid).set(data)
+                            .then(() =>{
+                                this.addUserDialog = false
+                                this.$q.notify({
+                                        message: 'User Added!',
+                                        icon: 'mdi-folder-plus-outline',
+                                        color: 'teal',
+                                        textColor: 'white',
+                                        position: 'center'
+                                    })
+                                this.clearAllInput()
+                            }).catch(err=>{
+                                this.addUserDialog = false
+                                this.$q.notify({
+                                        message: 'User Add Failed!',
+                                        icon: 'error',
+                                        color: 'negative',
+                                        textColor: 'white',
+                                        position: 'center'
+                                    })  
+                                this.clearAllInput()                              
+                            })
+                        }).catch((err)=>{
+                            console.log(err.code+' '+err.message)
+                        })
+                    }) 
+                }
 
             }
         },
-        payCheckout(){
-            let checkout = {
-                clientName: this.fname +' '+this.lname,
-                firstName: this.fname,
-                lastName: this.lname,
-                clientAddress: this.address,
-                city: this.city,
-                clientNumber: this.cnum,
-                deliveryDate: this.date,
-                deliveryTime: this.time,
-                message: this.message,
-                accountUID: this.uid,
-                paymentTerms: this.paymentOpt,
-                firstPayment: this.returnToPay,
-                totalToPayAmount: this.returnSubTotal,
-                orders: this.returnCart
-            }
-            let id = ''
-            this.$firestoreApp.collection('partyTrayOrders').add(checkout)
-            .then((ref) =>{
-                id = ref.id //for payment saving
-                console.log(id,'id for payment')
-                this.$firestoreApp.collection('CartItems').doc(this.uid).delete()
+        updateUser(){
+            let data = {...this.selectedUser}
+            data.permissions = this.selectedPermission
+            data.userName = this.selectedUser.userName +'@carmens.com'
+            data.displayName = this.selectedUser.userName
+            let docKey = data['.key']
+            delete data['.key']
+            console.log(data,'update')
+            this.$q.dialog({
+            title: 'Do you want to update this user',
+            color:'pink-6',
+            ok: 'Ok',
+            persistent: true
+            }).onOk(()=>{
+                this.$firestoreApp.collection('dashboardUsers').doc(docKey).set(data)
                 .then(()=>{
-                    console.log('Successfully deleted cart')
-                    let details = {
-                        clientReservationKey: id,
-                        clientPayDetails: this.charge,
-                        clientTokenID: this.token.id,
-                        clientPaymentType: 'CARD',
-                        clientUID: this.uid,
-                        forPartyTray: true,
-                    }
-                    this.$firestoreApp.collection('Payments').add(details)
-                    .then(()=>{
-                        this.$q.dialog({
-                            title: `Successfully Placed Orders`,
-                            message: 'Go to your account to see the details.',
-                            color: 'teal',
-                            textColor: 'grey',
-                            icon: 'negative',
-                            persistent: true,
-                            ok: 'OK',
-                            cancel: 'RETURN HOME'
-                        }).onOk(()=>{
-                            this.$router.push('/profile')
-                        }).onCancel(()=>{
-                            this.$router.push('/')
-                        })
+                    this.addUserDialog = false
+                    this.$q.notify({
+                        message: 'User Updated!',
+                        icon: 'mdi-folder-plus-outline',
+                        color: 'teal',
+                        textColor: 'white',
+                        position: 'center'
+                    })
+                })
+                .catch(err =>{
+                    this.addUserDialog = false
+                    this.$q.notify({
+                            message: 'User Update Failed!',
+                            icon: 'error',
+                            color: 'negative',
+                            textColor: 'white',
+                            position: 'center'
+                        })   
+                })
+
+            }).onCancel(()=>{
+                this.addUserDialog = true
+            })
+        },
+        removeUser(user){
+            let key = user['.key']
+            let name = user.displayName
+            this.$q.dialog({
+            title: 'Do you want to delete ' + user.displayName+' ?',
+            color:'pink-6',
+            ok: 'Ok',
+            cancel: 'cancel',
+            persistent: true
+            }).onOk(()=>{ 
+                this.$firestoreApp.collection(`dashboardUsers`).doc(key).delete()
+                .then(() => {
+                    this.$q.notify({
+                        message: `${name} has been deleted`,
+                        type: 'teal',
+                        color: 'teal',
+                        textColor: 'white',
+                        icon: 'info',
+                        position: 'center',
+                    })
+                    this.$forceUpdate()
+                })
+                .catch(err => {
+                    this.$q.notify({
+                        message: `An error occur ${err}`,
+                        type: 'negative',
+                        color: 'negative',
+                        textColor: 'white',
+                        icon: 'info',
+                        position: 'center',
                     })
                 })
             })
+        },
+        clearAllInput(){
+            this.newUser.userName = ''
+            this.newUser.password = ''
+            this.newUser.confirmPassword = ''
+            this.newUser.email = ''
+            this.newUser.position = ''
+            this.permissions = {
+                packages: false,
+                food: false,
+                partyTray: false,
+                others: false,
+                walkIn: false,
+                partyTrayOrdering: false,
+                users: false,
+            }
         }
     }
 }
 </script>
+

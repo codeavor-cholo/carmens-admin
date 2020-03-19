@@ -87,20 +87,26 @@
                     <div style="border: 1.5px solid;border-color: teal;" class="q-pa-md">
                         <div class="text-caption text-weight-bold text-teal">POSITION</div>
                         <div>
-                            <q-radio color="teal" v-model="newUser.position" val="Staff" label="Staff" />
-                            <q-radio color="teal" v-model="newUser.position" val="Delivery Boy" label="Delivery Boy" />
-                            <q-radio color="teal" v-model="newUser.position" val="Admin" label="Admin" />
+                            <q-radio @input="radioOpt" color="teal" v-model="newUser.position" val="Staff" label="Staff" />
+                            <q-radio @input="radioOpt" color="teal" v-model="newUser.position" val="Delivery Boy" label="Delivery Boy" />
+                            <q-radio @input="radioOpt" color="teal" v-model="newUser.position" val="Admin" label="Admin" />
+                            <q-radio @input="radioOpt" color="teal" v-model="newUser.position" val="Cashier" label="Cashier" />
                         </div>
                         <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
                         <q-checkbox v-model="permissions.packages" label="Package Management" color="teal"/>
                         <q-checkbox v-model="permissions.food" label="Food Management" color="teal" class=""/>
                         <q-checkbox v-model="permissions.partyTray" label="Party Trays Management" color="teal" class=""/>
                         <q-checkbox v-model="permissions.others" label="Other Management" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.users" label="Users" color="teal" class=""/>
                         <q-separator spaced inset/>
                         <div class="text-caption text-weight-bold text-teal">OTHER MODULES</div>
                         <q-checkbox v-model="permissions.walkIn" label="Walk-In Reservation" color="teal" class=""/>
                         <q-checkbox v-model="permissions.partyTrayOrdering" label="Party Tray Ordering" color="teal" class=""/>
-                        <q-checkbox v-model="permissions.users" label="Users" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.reservation" label="Reservation" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.dashBoard" label="Dashboard" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.calendar" label="Calendar" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.partyTrayReservation" label="Party Tray Reservation" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.cancelled" label="Cancelled Events" color="teal" class=""/>
                     </div>
                 </q-card-section>
                 <q-card-section v-else>
@@ -117,20 +123,26 @@
                     <div style="border: 1.5px solid;border-color: teal;" class="q-pa-md">
                         <div class="text-caption text-weight-bold text-teal">POSITION</div>
                         <div>
-                            <q-radio color="teal" v-model="selectedUser.position" val="Staff" label="Staff" />
-                            <q-radio color="teal" v-model="selectedUser.position" val="Delivery Boy" label="Delivery Boy" />
-                            <q-radio color="teal" v-model="selectedUser.position" val="Admin" label="Admin" />
+                            <q-radio @input="radioOptedit" color="teal" v-model="selectedUser.position" val="Staff" label="Staff" />
+                            <q-radio @input="radioOptedit" color="teal" v-model="selectedUser.position" val="Delivery Boy" label="Delivery Boy" />
+                            <q-radio @input="radioOptedit" color="teal" v-model="selectedUser.position" val="Admin" label="Admin" />
+                            <q-radio @input="radioOptedit" color="teal" v-model="selectedUser.position" val="Cashier" label="Cashier" />
                         </div>
                         <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
                         <q-checkbox v-model="selectedPermission.packages" label="Package Management" color="teal"/>
                         <q-checkbox v-model="selectedPermission.food" label="Food Management" color="teal" class=""/>
                         <q-checkbox v-model="selectedPermission.partyTray" label="Party Trays Management" color="teal" class=""/>
                         <q-checkbox v-model="selectedPermission.others" label="Other Management" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.users" label="Users" color="teal" class=""/>
                         <q-separator spaced inset/>
                         <div class="text-caption text-weight-bold text-teal">OTHER MODULES</div>
                         <q-checkbox v-model="selectedPermission.walkIn" label="Walk-In Reservation" color="teal" class=""/>
                         <q-checkbox v-model="selectedPermission.partyTrayOrdering" label="Party Tray Ordering" color="teal" class=""/>
-                        <q-checkbox v-model="selectedPermission.users" label="Users" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.reservation" label="Reservation" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.dashBoard" label="Dashboard" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.calendar" label="Calendar" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.partyTrayReservation" label="Party Tray Reservation" color="teal" class=""/>
+                        <q-checkbox v-model="selectedPermission.cancelled" label="Cancelled Events" color="teal" class=""/>
                     </div>
                 </q-card-section>
                 <q-card-actions align="right">
@@ -161,13 +173,18 @@ export default {
                 position: 'Staff',
             },
             permissions: {
+                calendar: false,
+                partyTrayReservation: true,
+                reservation: true,
+                dashBoard: false,
                 packages: false,
                 food: false,
                 partyTray: false,
                 others: false,
-                walkIn: false,
-                partyTrayOrdering: false,
+                walkIn: true,
+                partyTrayOrdering: true,
                 users: false,
+                cancelled: true,
             },
             users: [],
             Position: [],
@@ -204,6 +221,116 @@ export default {
         }
     },
     methods :{
+        radioOpt(){
+            if(this.newUser.position === 'Admin'){
+                this.permissions.calendar = true
+                this.permissions.partyTrayReservation = true
+                this.permissions.reservation = true
+                this.permissions.dashBoard = true
+                this.permissions.packages = true
+                this.permissions.food = true
+                this.permissions.partyTray = true
+                this.permissions.others = true
+                this.permissions.walkIn = true
+                this.permissions.partyTrayOrdering = true
+                this.permissions.users = true
+                this.permissions.cancelled = true
+            }else if(this.newUser.position === 'Staff'){
+                this.permissions.calendar = false
+                this.permissions.partyTrayReservation = true
+                this.permissions.reservation = true
+                this.permissions.dashBoard = false
+                this.permissions.packages = false
+                this.permissions.food = false
+                this.permissions.partyTray = false
+                this.permissions.others = false
+                this.permissions.walkIn = true
+                this.permissions.partyTrayOrdering = true
+                this.permissions.users = false
+                this.permissions.cancelled = true
+            }else if(this.newUser.position === 'Cashier'){
+                this.permissions.calendar = false
+                this.permissions.partyTrayReservation = true
+                this.permissions.reservation = true
+                this.permissions.dashBoard = false
+                this.permissions.packages = false
+                this.permissions.food = false
+                this.permissions.partyTray = false
+                this.permissions.others = false
+                this.permissions.walkIn = true
+                this.permissions.partyTrayOrdering = true
+                this.permissions.users = false
+                this.permissions.cancelled = false
+            }else{
+                this.permissions.calendar = false
+                this.permissions.partyTrayReservation = true
+                this.permissions.reservation = true
+                this.permissions.dashBoard = false
+                this.permissions.packages = false
+                this.permissions.food = false
+                this.permissions.partyTray = false
+                this.permissions.others = false
+                this.permissions.walkIn = false
+                this.permissions.partyTrayOrdering = false
+                this.permissions.users = false
+                this.permissions.cancelled = false
+            }
+        },
+        radioOptedit(){
+            if(this.selectedUser.position === 'Admin'){
+                this.selectedPermission.calendar = true
+                this.selectedPermission.partyTrayReservation = true
+                this.selectedPermission.reservation = true
+                this.selectedPermission.dashBoard = true
+                this.selectedPermission.packages = true
+                this.selectedPermission.food = true
+                this.selectedPermission.partyTray = true
+                this.selectedPermission.others = true
+                this.selectedPermission.walkIn = true
+                this.selectedPermission.partyTrayOrdering = true
+                this.selectedPermission.users = true
+                this.selectedPermission.cancelled = true
+            }else if(this.selectedUser.position === 'Staff'){
+                this.selectedPermission.calendar = false
+                this.selectedPermission.partyTrayReservation = true
+                this.selectedPermission.reservation = true
+                this.selectedPermission.dashBoard = false
+                this.selectedPermission.packages = false
+                this.selectedPermission.food = false
+                this.selectedPermission.partyTray = false
+                this.selectedPermission.others = false
+                this.selectedPermission.walkIn = true
+                this.selectedPermission.partyTrayOrdering = true
+                this.selectedPermission.users = false
+                this.selectedPermission.cancelled = false
+            }else if(this.selectedUser.position === 'Cashier'){
+                this.selectedPermission.calendar = false
+                this.selectedPermission.partyTrayReservation = true
+                this.selectedPermission.reservation = true
+                this.selectedPermission.dashBoard = false
+                this.selectedPermission.packages = false
+                this.selectedPermission.food = false
+                this.selectedPermission.partyTray = false
+                this.selectedPermission.others = false
+                this.selectedPermission.walkIn = true
+                this.selectedPermission.partyTrayOrdering = true
+                this.selectedPermission.users = false
+                this.selectedPermission.cancelled = true
+            }else{
+                this.selectedPermission.calendar = false
+                this.selectedPermission.partyTrayReservation = true
+                this.selectedPermission.reservation = true
+                this.selectedPermission.dashBoard = false
+                this.selectedPermission.packages = false
+                this.selectedPermission.food = false
+                this.selectedPermission.partyTray = false
+                this.selectedPermission.others = false
+                this.selectedPermission.walkIn = false
+                this.selectedPermission.partyTrayOrdering = false
+                this.selectedPermission.users = false
+                this.selectedPermission.cancelled = false
+            }
+        },
         editUser(user){
             console.log(user,'editmode')
             this.editMode = true

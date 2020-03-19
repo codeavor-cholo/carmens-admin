@@ -19,7 +19,8 @@ const routes = [
       { path: '/customReservation/:id', meta: {requiredAuth: true}, name: 'customReservation', component: () => import('pages/customReservation.vue') },
       { path: '/monitor', meta: {requiredAuth: true}, name: 'monitor', component: () => import('pages/monitor.vue') },
       { path: '/status', meta: {requiredAuth: true}, name: 'status', component: () => import('pages/status.vue') },
-      { path: '/statusupdate', meta: {requiredAuth: true}, name: 'statusupdate', component: () => import('pages/statusupdate.vue') }
+      { path: '/statusupdate', meta: {requiredAuth: true}, name: 'statusupdate', component: () => import('pages/statusupdate.vue') },
+      { path: '/cancelled', meta: {requiredAuth: true}, name: 'cancelled', component: () => import('pages/cancelled.vue') }
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },
