@@ -38,8 +38,10 @@
                                         <div v-else><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Balance:</b> <i class="text-weight-bold"> P </i>{{parseInt(props.row.totalToPayAmount) - parseInt(props.row.firstPayment)}}</p></div>
                                         <div><p class="q-pt-none q-mt-none"></p></div>
                                     </div>
-                                    <div style="margin-top: -25px" class="q-pt-none q-mt-none column items-center">
+                                    <div style="margin-top: -25px" class="q-pt-none q-mt-none row items-center">
                                         <q-btn class="q-pt-none q-mt-none" :color="expanded ? 'grey-8':'deep-orange-4'" :label="expanded ? 'Hide Orders' : 'View Orders'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expanded = !expanded" />
+                                        <q-space />
+                                        <q-btn class="q-pt-none q-mt-none" flat dense color="deep-orange-4" @click="openReceipt(props.row)" label="Print Receipt" />
                                     </div>
                                     <div>
                                         <q-slide-transition>
@@ -127,6 +129,76 @@
                         </q-tab-panels>
                     </q-card>
                 </q-dialog>
+                <q-dialog v-model="receipt">
+                    <q-card style="width: 1000px" class="my-card">
+                        <q-card-section>
+                            <div  class="row items-center q-pa-sm q-pl-lg">
+                                 <img class="bg-deep-orange-4" style="height:80%;width:130px" src="statics/pics/logo.png" >
+                                 <div class="q-pl-md text-h6 text-weight-bold" style="font-family: 'Simonetta', serif;">
+                                 Carmen's Diner and Catering Services
+                                 </div> 
+                                 <div class="q-pl-lg q-ml-lg text-weight-light" style="font-family: 'Simonetta', serif;">
+                                 Stall #7 J. Center Bldg., Vista Verte Ave., San Isidro, Cainta Rizal
+                                 </div> 
+                            </div>
+                            <div class="row">
+                                <div class="col-7">
+                                    <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Client Name:</b> {{this.selectedReceipt.clientName}}</p></div>
+                                    <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Contact No.:</b> {{this.selectedReceipt.clientNumber}}</p></div>
+                                </div>
+                                <div class="col-5 q-pl-lg">
+                                    <div><p class="col q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Date of Delivery:</b> {{this.selectedReceipt.deliveryDate}}</p></div>
+                                    <div><p class="col q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Delivery Time:</b> {{this.selectedReceipt.deliveryTime}}</p></div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Where:</b> {{this.selectedReceipt.clientAddress}} {{this.selectedReceipt.city}}</p></div>
+                            </div>
+                            <div>
+                            <q-list dense class="q-pt-sm q-pb-none q-mb-none text-weight-bold">
+                                <q-item dense class="q-pb-none q-mb-none">
+                                    <q-item-section class="col-1" top>
+                                        <q-item-label>Qty</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section class="col-4 items-center" top>
+                                        <q-item-label>Description</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section class="col-3 items-center" top>
+                                        <q-item-label>Size</q-item-label>    
+                                    </q-item-section>
+                                    <q-item-section class="col-2 items-center" top>
+                                        <q-item-label>Unit Price</q-item-label>    
+                                    </q-item-section>
+                                    <q-item-section class="col-2 items-center" top>
+                                        <q-item-label>Total Price</q-item-label>    
+                                    </q-item-section>
+                                </q-item>
+                                <q-item dense style="margin-top: -10px" class="q-mt-none q-pt-none text-weight-bold" v-for="(i, index) in this.selectedReceipt.orders" :key="index">
+                                    <q-item-section class="col-1">
+                                        <q-item-label lines="2">{{i.qty}}</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section class="col-4 items-center">
+                                        <q-item-label lines="2">{{i.foodName}}</q-item-label>
+                                    </q-item-section>
+                                     <q-item-section class="col-3 items-center">
+                                        <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.size}}( {{i.min}} - {{i.max}})</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section class="col-2 items-center">
+                                        <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.price}}</q-item-label>
+                                    </q-item-section>
+                                    <q-item-section class="col-2 items-center">
+                                        <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.price * i.qty}}</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                            </div>
+                            <q-separator />
+                            <div class="col-2 q-pa-sm" style="float: right">
+                                <div><p class="col"><b>SubTotal: </b> <b class="text-h6" style="font-family: 'Roboto Slab', serif;">{{this.selectedReceipt.totalToPayAmount}}</b></p></div>
+                            </div>
+                        </q-card-section>
+                    </q-card>
+                </q-dialog>
     </q-page>
 </template>
 <script>
@@ -138,6 +210,8 @@ import { date } from 'quasar'
     },
     data(){
         return {
+            selectedReceipt: [],
+            receipt: false,
             splitterModel: 20,
             amount: 0,
             publishableKey: 'pk_test_kUO5j8FaZUKitD1Qh3ibZ2HP00YkxaEOOS', 
@@ -181,6 +255,11 @@ import { date } from 'quasar'
         },
     },
     methods: {
+        openReceipt(props){
+            this.receiptID = props['.key']
+            this.selectedReceipt = props 
+            this.receipt = true
+        },
         updatePaymentCash(){
             var PaymentBago = {
                 clientAddress: this.selectedPayment.clientAddress,

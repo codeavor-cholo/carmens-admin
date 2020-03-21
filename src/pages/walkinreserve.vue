@@ -22,7 +22,7 @@
                       <q-select class="q-pt-sm" color="deep-orange-3" dense outlined v-model="selectCity" :options="cityOpt" emit-value map-options label="Select City" />
                       <q-input class="q-pt-sm" color="deep-orange-3" outlined dense v-model="clientEvent" label="Event Name"/>
                       <div class="row">
-                        <q-select class="col" color="grey-10" dense outlined  v-model="selectMotif" options-selected-class="bg-grey text-white" multiple="" :options="motifOpt" emit-value map-options label="Select Motif" @input="showInput">
+                        <q-select class="col" color="grey-10" dense outlined  v-model="selectMotif" options-selected-class="bg-grey text-white" multiple="" :options="motifOpt" emit-value map-options label="Select Motif">
                              <template v-slot:option="scope">
                               <q-item
                                 v-bind="scope.itemProps"

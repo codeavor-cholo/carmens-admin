@@ -144,7 +144,7 @@
                 <q-card-section class="q-pa-md" v-show="editMode == false">
                 <div class="container row q-ma-md">
                 <q-input color="deep-orange-4" outlined class="q-mr-md col" dense v-model="foodNames" label="Food Name"/>
-                <q-input color="deep-orange-4" outlined class="col-3" type="number" dense v-model="foodPrice" label="Package Price"/>
+                <q-input color="deep-orange-4" outlined class="col-4" type="number" dense v-model="foodPrice" label="Package Price Per Pax"/>
                 </div>
                 <q-select color="deep-orange-4" class="q-ma-md" dense outlined v-model="selectCategory" :options="categoryOpt" emit-value map-options label="Dish Type" />
 
