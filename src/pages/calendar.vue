@@ -40,7 +40,7 @@
           :locale="locale"
           class="calendar"
           style="height: 500px"
-          ref="calendar"
+          ref="day"
           :drag-over-func="onDragOver"
           :drop-func="onDrop"
           

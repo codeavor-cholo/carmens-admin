@@ -20,7 +20,8 @@ const routes = [
       { path: '/monitor', meta: {requiredAuth: true}, name: 'monitor', component: () => import('pages/monitor.vue') },
       { path: '/status', meta: {requiredAuth: true}, name: 'status', component: () => import('pages/status.vue') },
       { path: '/statusupdate', meta: {requiredAuth: true}, name: 'statusupdate', component: () => import('pages/statusupdate.vue') },
-      { path: '/cancelled', meta: {requiredAuth: true}, name: 'cancelled', component: () => import('pages/cancelled.vue') }
+      { path: '/cancelled', meta: {requiredAuth: true}, name: 'cancelled', component: () => import('pages/cancelled.vue') },
+      { path: '/staffscheduling', meta: {requiredAuth: true}, name: 'staffscheduling', component: () => import('pages/staffScheduling.vue') }
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },

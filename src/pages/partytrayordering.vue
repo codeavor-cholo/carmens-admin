@@ -252,6 +252,7 @@
 </q-page>
 </template>
 <script>
+import { date } from 'quasar'
 import { StripeElements } from 'vue-stripe-checkout'
 export default {
   components: {
@@ -454,7 +455,10 @@ export default {
                     paymentTerms: this.paymentOpt,
                     firstPayment: this.returnToPay,
                     totalToPayAmount: this.returnSubTotal,
-                    orders: this.basketList
+                    orders: this.basketList,
+                    clientReserveDate: this.date,
+                    clientStartTime: this.formatTimeInput(this.time),
+                    clientEndTime: this.formatEndTimeInput(this.time)
                 }
                 let id = ''
                 this.$firestoreApp.collection('partyTrayOrders').add(checkout)
@@ -555,6 +559,22 @@ export default {
         this.selectedPorder = item
         this.addPorder = true
     },
+    formatTimeInput(time){
+      //get time to format for display
+      let baseDate = new Date(2020,1,1)
+      let arr = time.split(':')
+      let formatTime = date.addToDate(baseDate, {hours:arr[0],minutes:arr[1]})
+
+      return this.$moment(formatTime).format('LT')
+    },
+    formatEndTimeInput(time){
+      //get time to format for display
+      let baseDate = new Date(2020,1,1)
+      let arr = time.split(':')
+      let formatTime = date.addToDate(baseDate, {hours:parseInt(arr[0])+1,minutes:arr[1]})
+
+      return this.$moment(formatTime).format('LT')
+    },    
     addToBasket(props){
         let item = {...props}
         let key = item['.key']
