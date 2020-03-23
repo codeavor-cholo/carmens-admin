@@ -106,7 +106,9 @@ module.exports = function (ctx) {
         'QColor',
         'QRadio'
       ],
-      directives: [],
+      directives: [
+        'Ripple'
+      ],
 
       // Quasar plugins
       plugins: [
