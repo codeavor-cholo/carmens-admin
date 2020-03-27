@@ -17,11 +17,12 @@ const routes = [
       { path: '/calendar', meta: {requiredAuth: true}, name: 'calendar', component: () => import('pages/calendar.vue') },
       { path: '/partytrayreserve', meta: {requiredAuth: true}, name: 'partytrayreserve', component: () => import('pages/partytrayreserve.vue') },
       { path: '/customReservation/:id', meta: {requiredAuth: true}, name: 'customReservation', component: () => import('pages/customReservation.vue') },
-      { path: '/monitor', meta: {requiredAuth: true}, name: 'monitor', component: () => import('pages/monitor.vue') },
-      { path: '/status', meta: {requiredAuth: true}, name: 'status', component: () => import('pages/status.vue') },
+      { path: '/viewdetails/:id', meta: {requiredAuth: true}, name: 'viewdetails', component: () => import('pages/monitor.vue') },
+      { path: '/status/:id', meta: {requiredAuth: true}, name: 'status', component: () => import('pages/status.vue') },
       { path: '/statusupdate', meta: {requiredAuth: true}, name: 'statusupdate', component: () => import('pages/statusupdate.vue') },
       { path: '/cancelled', meta: {requiredAuth: true}, name: 'cancelled', component: () => import('pages/cancelled.vue') },
-      { path: '/staffscheduling', meta: {requiredAuth: true}, name: 'staffscheduling', component: () => import('pages/staffScheduling.vue') }
+      { path: '/staffscheduling', meta: {requiredAuth: true}, name: 'staffscheduling', component: () => import('pages/staffScheduling.vue') },
+      { path: '/staffdashboard', meta: {requiredAuth: true}, name: 'staffdashboard', component: () => import('pages/staffDashboard.vue') }
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },
