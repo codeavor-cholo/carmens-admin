@@ -104,7 +104,8 @@ module.exports = function (ctx) {
         'QScrollArea',
         'QChip',
         'QColor',
-        'QRadio'
+        'QRadio',
+        'QSlideItem'
       ],
       directives: [
         'Ripple'
