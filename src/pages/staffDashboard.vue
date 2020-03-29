@@ -72,8 +72,8 @@
         </template>
         </q-table>  
 
-        <div class="text-h5 q-pa-md">TOMORROW </div>   
-        <q-table grid :data="returnStaffSchedule" :columns="columns" :filter="filter"  :pagination.sync="pagination" class="q-px-sm full-width align-center" row-key=".key">
+        <div class="text-h5 q-pa-md">TOMORROW <span class="text-grey-8 text-h6">( {{$moment(tomorrow).format('ll')}} )</span></div>   
+        <q-table grid :data="returnTomorrow" :columns="columns" :filter="filter"  :pagination.sync="pagination" class="q-px-sm full-width align-center" row-key=".key">
         <template v-slot:item="props">
             <div class="q-pa-sm col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition">
                 <q-card style="border-radius:10px">
@@ -145,7 +145,7 @@
         </q-table>    
 
         <div class="text-h5 q-pa-md">UPCOMING EVENTS </div>   
-        <q-table grid :data="returnStaffSchedule" :columns="columns" :filter="filter"  :pagination.sync="pagination" class="q-px-sm full-width align-center" row-key=".key">
+        <q-table grid :data="returnUpcoming" :columns="columns" :filter="filter"  :pagination.sync="pagination" class="q-px-sm full-width align-center" row-key=".key">
         <template v-slot:item="props">
             <div class="q-pa-sm col-xs-12 col-sm-6 col-md-3 col-lg-3 grid-style-transition">
                 <q-card style="border-radius:10px">
@@ -157,7 +157,7 @@
                             <div><q-btn color="deep-orange-4" icon="call" round flat /></div>
                         </div>
                         <div class="text-caption text-grey">
-                            {{props.row.clientStartTime}} - {{props.row.clientEndTime}}
+                            {{props.row.clientStartTime}} - {{props.row.clientEndTime}} ( {{$moment(props.row.clientReserveDate).format('ll')}} )
                             <br>
                             {{props.row.clientPlace}}, {{props.row.clientCity}}
                             <br>
@@ -170,7 +170,7 @@
                             <div><q-btn color="deep-orange-4" icon="call" round flat /></div>
                         </div>
                         <div class="text-caption text-grey">
-                            {{props.row.clientStartTime}}
+                            {{props.row.clientStartTime}} ( {{$moment(props.row.clientReserveDate).format('ll')}} )
                             <br>
                             {{props.row.clientAddress}}, {{props.row.city}}
                             <br>
@@ -191,7 +191,7 @@ export default {
         return {
             StaffSchedules: [],
             filter: '',
-            pagination: { sortBy: 'clientFname', descending: false, page: 1, rowsPerPage: 0},
+            pagination: { sortBy: 'dateBasis', descending: false, page: 1, rowsPerPage: 0},
             columns: [
                 { name: 'clientFname', required: true, label: 'First Name', align: 'center', field: 'clientFname', sortable: true },
                 { name: 'clientEvent', align: 'center', label: 'Event', field: 'clientEvent', sortable: true },
@@ -200,6 +200,7 @@ export default {
             accountLoggedIn: {},
             EventStatus: [],
             selectedEvent: null,
+            tomorrow: date.addToDate(new Date(), {days: 1}),
             eventStatusArray: ['Preparing Food!','Preparing Setup!','The Catering Team is en route!','Arrived at the Event Area','Setup on Progress','Event Place Is Ready!'],
             orderStatusArray: ['Order Confirmed!','Preparing Order!','Done Preparing!','Pending for Delivery','Order is  out for delivery!','Order Delivered!']
         }
@@ -233,12 +234,36 @@ export default {
     },
     computed:{
         returnStaffSchedule(){
+            let today = new Date()
             let user = this.accountLoggedIn
-            console.log(user,'user')
+            // console.log(user,'user')
 
-            return this.StaffSchedules.filter(a=>{
-                return a.staffKey == user.uid
+            let filter = this.StaffSchedules.filter(a=>{
+                let dates = date.formatDate(a.clientReserveDate, 'YYYY/MM/DD')
+                let dateArr = dates.split('/')
+                let start = a.clientStartTime.split(':')
+                let base
+
+                let AMPM = start[1].split(' ')
+                
+                if(AMPM[1] == 'PM' && parseInt(start[0]) !== 12){
+                    base = parseInt(start[0]) + 12
+                } else {
+                    base = parseInt(start[0])
+                }
+
+                let create = date.buildDate({ year:dateArr[0], month:dateArr[1], date:dateArr[2], hours:base, minutes: parseInt(start[1]), seconds: 0})
+                // console.log(create,'createDate') 
+
+                a.dateBasis = create  
+
+                return a.staffKey == user.uid && date.formatDate(a.clientReserveDate, 'YYYY/MM/DD') > date.formatDate(today, 'YYYY/MM/DD')
             })
+
+            let order = this.$lodash.orderBy(filter,'dateBasis','asc')
+            console.log(order,'order')
+
+            return order
         },
         returnToday(){
             console.log(this.returnStaffSchedule,'schedule')
@@ -249,6 +274,25 @@ export default {
             console.log(filter,'today')
             return filter
         },
+        returnTomorrow(){
+            console.log(this.returnStaffSchedule,'schedule')
+            let today = new Date()
+            let tomorrow = date.addToDate(today, {days: 1})
+
+            console.log(tomorrow,'tom')
+            let filter = this.$lodash.filter(this.returnStaffSchedule,a=>{
+                return date.formatDate(a.clientReserveDate,'YYYY-MM-DD') == date.formatDate(tomorrow,'YYYY-MM-DD')
+            })
+            console.log(filter,'tomorrow')
+            return filter
+        },
+        returnUpcoming(){
+            let diffToday = this.$lodash.difference(this.returnStaffSchedule,this.returnToday)
+            console.log('removeToday',diffToday)
+            let diffTommorow = this.$lodash.difference(diffToday,diffTommorow)
+            console.log('removeTomorrow',diffTommorow)
+            return diffTommorow
+        }
 
     },
     methods:{
