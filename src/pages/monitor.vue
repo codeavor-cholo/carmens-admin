@@ -13,8 +13,8 @@
                             <q-item-label caption>{{$moment(order.clientReserveDate).format('LL')}}, {{formatTimeInput(order.deliveryTime)}}</q-item-label>
                         </div>
                         <div class="">
-                            <div  v-if="order.totalToPayAmount > order.firstPayment">
-                                <q-btn outline color="deep-orange-4" label="Payment" @click="payment = true"/>  
+                            <div  v-if="order.totalToPayAmount > returnPaidAmountTotal">
+                                <q-btn outline color="deep-orange-4" label="Payment" @click="payment = true, paymentAmount = order.totalToPayAmount - order.firstPayment"/>  
                                 <q-item-label caption class="q-mt-md">(COD) Balance: <br><b>₱ {{order.totalToPayAmount - order.firstPayment}}.00</b></q-item-label>
                             </div>
                             <q-chip icon="check" label="FULLY PAID" v-else color="green" text-color="white"/>                           
@@ -62,15 +62,15 @@
         </q-list>
 
 
-        <q-dialog v-model="payment" persistent>
-            <q-card style="min-width: 350px">
+        <q-dialog v-model="payment">
+            <q-card style="min-width: 350px" class="q-pa-sm">
                 <q-card-section>
                 <div class="text-h6">Payment Here</div>
+                <q-input v-model="paymentAmount" type="number" label="Payment Amount" outlined="" readonly="" class="q-pt-md" rounded=""/>
                 </q-card-section>
 
                 <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Cancel" v-close-popup />
-                <q-btn flat label="Add address" v-close-popup />
+                <q-btn color="deep-orange-4" icon="money" :label="'Pay ₱ '+paymentAmount+'.00'" @click="savePayment"  class="full-width"/>
                 </q-card-actions>
         </q-card>
         </q-dialog>
@@ -82,10 +82,13 @@ import { date } from 'quasar'
 export default {
   data () {
     return {
+      paymentAmount: '',
       payment: false,
       orderId: '',
       order: null,
-      EventStatus: []
+      EventStatus: [],
+      Payments: [],
+      partyTrayOrders: []
     }
   },
   created(){
@@ -99,6 +102,14 @@ export default {
     this.$binding('EventStatus', this.$firestoreApp.collection('EventStatus'))
     .then(EventStatus => {
     console.log(EventStatus, 'EventStatus')
+    }),
+    this.$binding('Payments', this.$firestoreApp.collection('Payments'))
+    .then(Payments => {
+    console.log(Payments, 'Payments')
+    }),
+    this.$binding('partyTrayOrders', this.$firestoreApp.collection('partyTrayOrders'))
+    .then(partyTrayOrders => {
+    console.log(partyTrayOrders, 'partyTrayOrders')
     })
   },
   computed:{
@@ -112,6 +123,29 @@ export default {
         } else {
             return 'Orders Standby'
         }
+    },
+    returnPaymentsOfOrder(){
+        try {
+            let key = this.order['.key']
+            console.log(key,'key')
+            let filter = this.$lodash.filter(this.Payments,a=>{
+                return a.forPartyTray == true && a.clientReservationKey == key
+            })
+            console.log(filter,'returnPaymentsOfOrder') 
+            return filter 
+        } catch (error) {
+            return []
+        }
+    },
+    returnPaidAmountTotal(){
+        try {
+            console.log(this.$lodash.sumBy(this.returnPaymentsOfOrder,'clientPayDetails.amount'),'returnPaidAmountTotal') 
+            return this.$lodash.sumBy(this.returnPaymentsOfOrder,'clientPayDetails.amount')
+        } catch (error) {
+            return 0         
+        }
+
+
     }  
   },
   methods:{
@@ -123,6 +157,42 @@ export default {
 
         return this.$moment(formatTime).format('LT')
     },
+    savePayment(){
+        let firstPayment = this.returnPaymentsOfOrder[0]
+        let payload = {
+            clientPayDetails:{
+                amount: this.order.totalToPayAmount = this.returnPaidAmountTotal,
+                source: 'COD'
+            },
+            clientPaymentType: 'COD',
+            clientReservationKey: firstPayment.clientReservationKey,
+            clientTokenID: '',
+            clientUID: firstPayment.clientUID,
+            forPartyTray: true
+        }
+        this.$q.dialog({
+            title: 'Update Payment ?',
+            message: 'This action cannot be undone.',
+            ok: 'YES',
+            cancel: 'NO',
+            persistent: true
+            }).onOk(() => {  
+                console.log(payload,'payload')
+                this.$firestoreApp.collection('Payments').add(payload)
+                .then(()=>{
+                    console.log('done')
+                    this.$q.notify('PAYMENT UPDATED !')
+                    this.payment = false
+                })
+                .catch(()=>{
+                    console.log('error')
+                })
+
+            })    
+
+
+    },
+
   }
 }
 </script>
