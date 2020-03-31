@@ -5,7 +5,7 @@
         <q-btn color="white" flat dense round @click="drawer = !drawer" icon="menu" elevated aria-label="Menu"/>
         <q-toolbar-title class="row">
           <img style="height:80%;width:130px" src="statics/pics/logo.png" @click="$router.push('/')">
-          <div class="q-pl-xl desktop-only" style="font-family: 'Simonetta', serif;">
+          <div class="q-pl-xl mobile-hide" style="font-family: 'Simonetta', serif;">
             Carmen's Diner and Catering Services
           </div>  
         </q-toolbar-title>
@@ -69,6 +69,15 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>Dashboard</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable :to="{ name: 'staffdashboard' }" active-class="text-white bg-deep-orange-4">
+              <q-item-section avatar>
+                <q-icon color="white" name="mdi-view-dashboard" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Staff Dashboard</q-item-label>
               </q-item-section>
             </q-item>
             
@@ -172,14 +181,14 @@
 
             </q-expansion-item>
 
-            <q-item clickable @click="$router.push('/monitor')">
+            <!-- <q-item clickable @click="$router.push('/monitor')">
               <q-item-section avatar>
                 <q-icon color="white" name="event_available" />
               </q-item-section>
               <q-item-section>
                 <q-item-label >Order Monitoring</q-item-label>
               </q-item-section>
-            </q-item>
+            </q-item> -->
 
             <q-item clickable @click="$router.push('/statusupdate')">
               <q-item-section avatar>

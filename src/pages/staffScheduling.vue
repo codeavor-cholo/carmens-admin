@@ -289,7 +289,7 @@ export default {
 
                 let today = date.formatDate(new Date(),'YYYY-MM-DD')
                 let removePassEvents = this.$lodash.filter(order,b=>{
-                    return date.formatDate(b.clientReserveDate,'YYYY-MM-DD') > today
+                    return date.formatDate(b.clientReserveDate,'YYYY-MM-DD') >= today
                 })
                 console.log('today',today)
                 console.log(removePassEvents,'removepass')
