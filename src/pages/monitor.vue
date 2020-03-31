@@ -161,7 +161,7 @@ export default {
         let firstPayment = this.returnPaymentsOfOrder[0]
         let payload = {
             clientPayDetails:{
-                amount: this.order.totalToPayAmount = this.returnPaidAmountTotal,
+                amount: this.paymentAmount,
                 source: 'COD'
             },
             clientPaymentType: 'COD',

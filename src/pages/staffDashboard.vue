@@ -17,7 +17,7 @@
                             <br>
                             {{props.row.clientPlace}}, {{props.row.clientCity}}
                             <br>
-                            <q-btn color="grey-8" label="RESERVATION DETAILS" size="sm" outline="" class="q-mt-sm full-width"/>
+                            <q-btn color="grey-8" label="RESERVATION DETAILS" size="sm" outline="" class="q-mt-sm full-width" @click="$router.push('/reservationdetails/'+props.row.reservationKey)"/>
                         </div>
                     </div>
                     <div v-else>
@@ -89,7 +89,7 @@
                             <br>
                             {{props.row.clientPlace}}, {{props.row.clientCity}}
                             <br>
-                            <q-btn color="grey-8" label="RESERVATION DETAILS" size="sm" outline="" class="q-mt-sm full-width"/>
+                            <q-btn color="grey-8" label="RESERVATION DETAILS" size="sm" outline="" class="q-mt-sm full-width" @click="$router.push('/reservationdetails/'+props.row.reservationKey)"/>
                         </div>
                     </div>
                     <div v-else>
@@ -161,7 +161,7 @@
                             <br>
                             {{props.row.clientPlace}}, {{props.row.clientCity}}
                             <br>
-                            <q-btn color="grey-8" label="RESERVATION DETAILS" size="sm" outline="" class="q-mt-sm full-width"/>
+                            <q-btn color="grey-8" label="RESERVATION DETAILS" size="sm" outline="" class="q-mt-sm full-width" @click="$router.push('/reservationdetails/'+props.row.reservationKey)"/>
                         </div>
                     </div>
                     <div v-else>

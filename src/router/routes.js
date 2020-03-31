@@ -23,7 +23,7 @@ const routes = [
       { path: '/cancelled', meta: {requiredAuth: true}, name: 'cancelled', component: () => import('pages/cancelled.vue') },
       { path: '/staffscheduling', meta: {requiredAuth: true}, name: 'staffscheduling', component: () => import('pages/staffScheduling.vue') },
       { path: '/staffdashboard', meta: {requiredAuth: true}, name: 'staffdashboard', component: () => import('pages/staffDashboard.vue') },
-      { path: '/mobreservation', meta: {requiredAuth: true}, name: 'mobreservation', component: () => import('pages/mobreservation.vue') }
+      { path: '/reservationdetails/:id', meta: {requiredAuth: true}, name: 'mobreservation', component: () => import('pages/mobreservation.vue') }
 
     ]
   },

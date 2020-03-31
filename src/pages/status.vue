@@ -6,7 +6,8 @@
                 <div class="q-pl-md text-grey-6" style="font-size:1.5em" v-else>{{schedule.clientFName}} {{schedule.clientLName}} Event</div>
                 <div class="q-pl-md text-grey-6 text-caption">{{schedule.clientReserveDate}}, {{schedule.clientStartTime}} - {{schedule.clientEndTime}}</div>
             </div>
-            <q-btn color="deep-orange-4" flat @click="$router.push('/viewdetails/'+$route.params.id)" icon="keyboard_arrow_left" label="Back" />
+            <q-btn v-if="schedule.type == 'PARTY TRAY DELIVERY'" color="deep-orange-4" flat @click="$router.push('/viewdetails/'+$route.params.id)" icon="keyboard_arrow_left" label="Back" />
+            <q-btn v-else color="deep-orange-4" flat @click="$router.push('/reservationdetails/'+$route.params.id)" icon="keyboard_arrow_left" label="Back" />
         </div>
         
         <div class="row text-overline items-center justify-around">  
