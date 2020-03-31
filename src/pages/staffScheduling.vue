@@ -280,9 +280,13 @@ export default {
                 }
 
                 let diff = this.$lodash.difference(base,withSchedules)
+                // if(diff.length > 0){
+                //     diff = base
+                // }
 
-                // console.log(withSchedules,'withSchedules')
-                // console.log(diff,'remove with schedules')
+                console.log(withSchedules,'withSchedules')
+                console.log(diff,'remove with schedules')
+                console.log('base',base)
 
                 let order = this.$lodash.orderBy(diff,a=>{return date.formatDate(a.clientReserveDate,'YYYY-MM-DD')},'asc')
                 console.log('order',order)
@@ -310,10 +314,12 @@ export default {
                     })
                     return filter
                 } else {
+                    console.log('here')
                     return this.returnNoScheduleYet
                 }
 
             } catch (error) {
+                console.log('here',error)
                 return []
             }
         },

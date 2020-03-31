@@ -382,6 +382,7 @@ export default {
             clientAddress: this.address,
             city: this.city,
             clientNumber: this.cnum,
+            clientReserveDate: this.date,
             deliveryDate: this.date,
             deliveryTime: this.time,
             message: this.message,
@@ -389,7 +390,9 @@ export default {
             paymentTerms: this.paymentOpt,
             firstPayment: this.returnToPay,
             totalToPayAmount: this.returnSubTotal,
-            orders: this.basketList
+            orders: this.basketList,
+            clientStartTime: this.formatTimeInput(this.time),
+            clientEndTime: this.formatEndTimeInput(this.time)
         }
         let id = ''
         this.$firestoreApp.collection('partyTrayOrders').add(checkout)
@@ -403,6 +406,7 @@ export default {
                 clientUID: 'WALK-IN',
                 forPartyTray: true,
             }
+            console.log(details,'paydetails')
             this.$firestoreApp.collection('Payments').add(details)
             .then(()=>{
                 this.$q.dialog({
@@ -466,12 +470,13 @@ export default {
                 id = ref.id //for payment saving
                     let details = {
                         clientReservationKey: id,
-                        clientPayDetails: 'CASH',
+                        clientPayDetails: this.charge,
                         clientTokenID: 'CASH',
                         clientPaymentType: 'CASH',
                         clientUID: 'WALK-IN',
                         forPartyTray: true,
                     }
+                    console.log(details,'paydetails')
                     this.$firestoreApp.collection('Payments').add(details)
                     .then(()=>{
                         this.$q.dialog({
