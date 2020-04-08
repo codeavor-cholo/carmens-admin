@@ -257,7 +257,7 @@ export default {
 
                 a.dateBasis = create  
 
-                return a.staffKey == user.uid && date.formatDate(a.clientReserveDate, 'YYYY/MM/DD') > date.formatDate(today, 'YYYY/MM/DD')
+                return a.staffKey == user.uid && date.formatDate(a.clientReserveDate, 'YYYY/MM/DD') >= date.formatDate(today, 'YYYY/MM/DD')
             })
 
             let order = this.$lodash.orderBy(filter,'dateBasis','asc')
