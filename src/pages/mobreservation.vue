@@ -167,6 +167,7 @@ export default {
                 amount: this.paymentAmount,
                 source: 'COD'
             },
+            clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD'),
             clientPaymentType: 'COD',
             clientReservationKey: firstPayment.clientReservationKey,
             clientTokenID: '',
