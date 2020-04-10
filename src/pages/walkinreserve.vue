@@ -2,14 +2,24 @@
   <q-page>
     <div v-show="showdateform" class="q-pa-md">
         <div>
-            <q-card class="my-card fixed-center q-mt-lg" style="width: 700px; max-width: 80vw;height: 500px; max-height: 70vw">
+            
+            <q-card class="my-card fixed-center q-mt-lg" style="width: 700px; max-width: 80vw;height: auto; max-height: 70vw">
               <q-card-section>
                 <div class="text-grey text-h5 row justify-center" style="font-family: 'Simonetta', serif;">Select Date and Fill up Form</div>
                 <p class="text-grey column items-center">+50php if pax is less than 50</p>
+                <div class="text-red text-center q-pa-md" v-show="!isValid"><q-icon name="error"/> We can't accomodate pax greater than <b class="text-h6">150</b> anymore. Lower down your number of pax / Go back and select another date. </div>
                 <div class="row justify-between">    
                     
                     <div>
-                      <q-date v-model="dates" mask="YYYY/MM/DD" color="deep-orange-4" today-btn/>
+                      <q-date
+                        v-model="dates" 
+                        mask="YYYY/MM/DD" 
+                        color="deep-orange-4" 
+                        :options="returnOpenDates"
+                        :events="returnReserved"
+                        event-color="blue"
+                        @input="atInput"                      
+                      />
                     </div>
 
                     <div>
@@ -37,11 +47,11 @@
                               </q-item>
                             </template>
                         </q-select>
-                        <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="deep-orange-3" outlined dense v-model="clientPax" label="Pax"/>
+                        <q-input class="q-pt-sm q-ml-sm" type="number" style="width: 163px" color="deep-orange-3" outlined dense v-model="clientPax" label="Pax" hide-bottom-space="" :error="!isValid"/>
                       </div>
                       <div class="row">
-                        <q-input type="time" @input="endtime" mask="YYYY-MM-DD HH:mm:ss" class="q-pt-sm" color="deep-orange-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
-                        <q-input type="time" class="q-pt-sm q-ml-sm" mask="YYYY-MM-DD HH:mm:ss" dense style="width: 163px" color="deep-orange-3" outlined v-model="endTime" hint="End Time"/>
+                        <q-input type="time" class="q-pt-sm" color="deep-orange-3" dense outlined style="width: 163px" v-model="startTime" hint="Start Time" />
+                        <q-input type="time" class="q-pt-sm q-ml-sm" dense style="width: 163px" color="deep-orange-3" outlined v-model="endTime" hint="End Time"/>
                       </div>
                     </div>
 
@@ -75,7 +85,7 @@
                                     <q-icon name="mdi-pencil" color="teal" class="cursor-pointer">
                                       <q-tooltip>Edit</q-tooltip>
                                       <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                        <q-date v-model="dates" color="deep-orange-4" mask="YYYY/MM/DD" @input="() => $refs.qDateProxy.hide()" />
+                                        <q-date v-model="dates" color="deep-orange-4" mask="YYYY/MM/DD" @input="$refs.qDateProxy.hide(),atInput" :options="returnOpenDates" :events="returnReserved" event-color="blue"  />
                                       </q-popup-proxy>
                                     </q-icon>
                                   </template>
@@ -106,10 +116,10 @@
                                         </q-icon>
                                         <q-popup-edit v-model="clientPax">
                                           <template v-slot="{ initialValue, value, emitValue, set, cancel }">
-                                            <q-input type="number" style="width: 200px" class="relative position" autofocus dense :value="clientPax" hint="Enter Pax" @input="emitValue">
+                                            <q-input type="number" style="width: 200px" class="relative position q-mb-md q-mt-sm" autofocus dense :value="clientPax" hint="Enter Pax" @input="emitValue" error-message="We can't accomodate pax greater than 150 anymore. Lower down your number of pax / Go back and select another date." :error="!isValid">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="deep-orange-4" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="deep-orange-4" icon="check_circle" @click.stop="set" :disable="!isValid"/>
                                               </template>
                                             </q-input>
                                           </template>
@@ -610,6 +620,7 @@ export default {
       Packages: [],
       Motif: [],
       selected: [],
+      Reservation:[],
       Inclusion: [],
       Food: [],
       choiceOfFood: [],
@@ -625,6 +636,7 @@ export default {
       addonsList: [],
       step: 1,
       filter: '',
+      blockCount: 0,
       pagination: { page: 1, rowsPerPage: 0},
       columns: [
           { name: 'name', required: true, label: 'Package name', align: 'center', field: 'name', sortable: true },
@@ -657,9 +669,49 @@ export default {
     this.$binding('Addons', this.$firestoreApp.collection('Addons'))
             .then(Addons => {
             console.log(Addons, 'Addons')
+            }),
+    this.$binding('Reservation', this.$firestoreApp.collection('Reservation'))
+            .then(Reservation => {
+            console.log(Reservation, 'Reservation')
             })
   },
   computed: {
+    isValid () {
+      let max = 150
+
+      let value = this.dates
+        let eventCount = 1
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(value,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        eventsBase.forEach(b=>{
+          let count = b.clientPax > 150 ? 2 : 1
+          // console.log(b['.key'],' - ',b.clientPax,' = ',count)
+          eventCount = eventCount + count
+        })
+       
+        if(eventCount > 4){
+          this.blockCount = (4 - eventCount) + 1
+          // console.log('BLOCKED',value)
+          // console.log(this.blockCount,'remaining event')
+        } else {
+          this.blockCount = (4 - eventCount) + 1
+          // console.log(eventCount,value)
+          // console.log(this.blockCount,'remaining event')  
+        } 
+
+
+      if (this.blockCount <= 1){
+        return this.clientPax <= max
+      } else {
+        return true
+      }
+    }, 
     toPayAmount(){
       if(this.paymentMode == 'fullPayment'){
         this.enterAmount = this.totalPayment
@@ -851,6 +903,7 @@ export default {
   methods: {
     formatTimeInput(time){
       //get time to format for display
+      console.log(time,'time')
       let baseDate = new Date(2020,1,1)
       let arr = time.split(':')
       let formatTime = date.addToDate(baseDate, {hours:arr[0],minutes:arr[1]})
@@ -896,7 +949,7 @@ export default {
           this.showdateform = false
         }
     },
-    endtime(){
+    endtimeGet(){
             let newDate = new Date(this.startTime)
             // console.log('asd',this.datestimeView)
             newDate = date.addToDate(newDate, { hours: 5})
@@ -1338,6 +1391,78 @@ export default {
     },
     customizeSaveLocal(){
 
+    },
+    returnOpenDates(base){
+      // console.log(base,'base')
+      let today = new Date()
+      let format = date.formatDate(today,'YYYY/MM/DD')
+      if(format < base){
+        let eventCount = 1
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          // console.log(a,'a')
+          if(date.formatDate(base,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        eventsBase.forEach(b=>{
+          let count = b.clientPax > 150 ? 2 : 1
+          // console.log(b['.key'],' - ',b.clientPax,' = ',count)
+          eventCount = eventCount + count
+        })
+       
+        if(eventCount > 4){
+          console.log('BLOCKED',base)
+          return false
+        } else {
+          console.log(eventCount,base)
+          return true
+        }
+      }
+    },
+    returnReserved(base){
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(base,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        // console.log(eventsBase,'evetBase')
+        if(eventsBase.length > 0){
+          return true
+        } else {
+          return false
+        }
+    },
+    atInput(value){
+        let eventCount = 1
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(value,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        eventsBase.forEach(b=>{
+          let count = b.clientPax > 150 ? 2 : 1
+          // console.log(b['.key'],' - ',b.clientPax,' = ',count)
+          eventCount = eventCount + count
+        })
+       
+        if(eventCount > 4){
+          this.blockCount = (4 - eventCount) + 1
+          // console.log('BLOCKED',value)
+          console.log(this.blockCount,'remaining event')
+        } else {
+          this.blockCount = (4 - eventCount) + 1
+          // console.log(eventCount,value)
+          console.log(this.blockCount,'remaining event')  
+        }      
     }
 
   }
