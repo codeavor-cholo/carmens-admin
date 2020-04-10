@@ -23,8 +23,11 @@ const routes = [
       { path: '/cancelled', meta: {requiredAuth: true}, name: 'cancelled', component: () => import('pages/cancelled.vue') },
       { path: '/staffscheduling', meta: {requiredAuth: true}, name: 'staffscheduling', component: () => import('pages/staffScheduling.vue') },
       { path: '/staffdashboard', meta: {requiredAuth: true}, name: 'staffdashboard', component: () => import('pages/staffDashboard.vue') },
-      { path: '/reservationdetails/:id', meta: {requiredAuth: true}, name: 'mobreservation', component: () => import('pages/mobreservation.vue') }
-
+      { path: '/reservationdetails/:id', meta: {requiredAuth: true}, name: 'mobreservation', component: () => import('pages/mobreservation.vue') },
+      { path: '/salesReport', meta: {requiredAuth: true}, name: 'salesReport', component: () => import('pages/salesReport.vue') },
+      { path: '/topChoices', meta: {requiredAuth: true}, name: 'topChoices', component: () => import('pages/topChoices.vue') },
+      { path: '/traySalesReport', meta: {requiredAuth: true}, name: 'traySalesReport', component: () => import('pages/traySalesReport.vue') },
+      { path: '/paymentRecords', meta: {requiredAuth: true}, name: 'paymentRecords', component: () => import('pages/paymentRecords.vue') },
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },
