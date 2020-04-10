@@ -285,10 +285,14 @@ import { date } from 'quasar'
                 .then((ref) =>{
                     let paymentDetails = {
                         clientReservationKey: this.reserveId,
-                        clientPayDetails: 'CASH',
-                        clientTokenID: 'CASH',
                         clientPaymentType: 'CASH',
+                        clientTokenID: 'CASH',
+                        clientPayDetails: {
+                            amount: this.enteramount,
+                            source: 'COD'
+                        },
                         clientUID: 'WALK-IN',
+                        transactionType: 'WALK-IN',
                         forPartyTray: true,
                         clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                     }
@@ -301,10 +305,10 @@ import { date } from 'quasar'
                             textColor: 'white',
                             position: 'center'
                             })
+                            this.enterAmount = 0
+                            this.payment = false
                         })  
                     })
-                    this.enterAmount = 0
-                    this.payment = false
                 })
         },
         updatePaymentCard(){
@@ -326,14 +330,26 @@ import { date } from 'quasar'
             .then((ref) =>{
                 let paymentDetails = {
                     clientReservationKey: this.reserveId,
-                    clientPayDetails: this.charge,
-                    clientTokenID: this.token.id,
                     clientPaymentType: 'CARD',
+                    clientTokenID: this.token.id,
+                    clientPayDetails: this.paydetails,
                     clientUID: 'WALK-IN',
+                    transactionType: 'WALK-IN',
                     forPartyTray: true,
                     clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                 }
                 this.$firestoreApp.collection('Payments').add(paymentDetails)  
+                .then(()=>{
+                        this.$q.notify({
+                            message: 'Payments Updated!',
+                            icon: 'mdi-folder-plus-outline',
+                            color: 'orange-8',
+                            textColor: 'white',
+                            position: 'center'
+                            })
+                            this.enterAmount = 0
+                            this.payment = false
+                        })  
             })
         },
         openPayment (props) {

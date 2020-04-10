@@ -398,16 +398,19 @@ export default {
         this.$firestoreApp.collection('partyTrayOrders').add(checkout)
         .then((ref) =>{
         id = ref.id //for payment saving
-            let details = {
-                clientReservationKey: id,
-                clientPayDetails: this.charge,
-                clientTokenID: this.token.id,
-                clientPaymentType: 'CARD',
-                clientUID: 'WALK-IN',
-                forPartyTray: true,
-            }
-            console.log(details,'paydetails')
-            this.$firestoreApp.collection('Payments').add(details)
+        let key = ref.id
+        let paymentDetails = {
+            clientReservationKey: ref.id,
+            clientPaymentType: 'COD',
+            clientTokenID: this.token.id,
+            clientPayDetails: this.paydetails,
+            clientUID: 'WALK-IN',
+            transactionType: 'WALK-IN',
+            forPartyTray: true,
+            clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+        }
+            console.log(paymentDetails,'detailpayment')
+            this.$firestoreApp.collection('Payments').add(paymentDetails)
             .then(()=>{
                 this.$q.dialog({
                     title: `Successfully Placed Orders`,
@@ -468,16 +471,22 @@ export default {
                 this.$firestoreApp.collection('partyTrayOrders').add(checkout)
                 .then((ref) =>{
                 id = ref.id //for payment saving
-                    let details = {
-                        clientReservationKey: id,
-                        clientPayDetails: this.charge,
-                        clientTokenID: 'CASH',
+                    let key = ref.id
+                    let paymentDetails = {
+                        clientReservationKey: ref.id,
                         clientPaymentType: 'CASH',
+                        clientTokenID: 'CASH',
+                        clientPayDetails: {
+                            amount: this.amount,
+                            source: 'COD'
+                        },
                         clientUID: 'WALK-IN',
+                        transactionType: 'WALK-IN',
                         forPartyTray: true,
+                        clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                     }
-                    console.log(details,'paydetails')
-                    this.$firestoreApp.collection('Payments').add(details)
+                    console.log(paymentDetails,'detailspayment')
+                    this.$firestoreApp.collection('Payments').add(paymentDetails)
                     .then(()=>{
                         this.$q.dialog({
                             title: `Successfully Placed Orders`,

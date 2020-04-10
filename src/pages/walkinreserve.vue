@@ -991,10 +991,15 @@ export default {
               let key = ref.id
               let paymentDetails = {
                   clientReservationKey: ref.id,
-                  clientPayDetails: this.paydetails,
-                  clientTokenID: this.token.id,
                   clientPaymentType: 'CARD',
+                  clientTokenID: this.token.id,
+                  clientPayDetails: this.paydetails,
+                  clientUID: 'WALK-IN',
+                  transactionType: 'WALK-IN',
+                  forReservation: true,
+                  clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
               }
+              console.log(paymentDetails, 'detailspayment')
                   this.$firestoreApp.collection('Payments').add(paymentDetails)
                   .then(()=>{
                       this.$q.notify({
@@ -1056,10 +1061,18 @@ export default {
               let key = ref.id
               let paymentDetails = {
                   clientReservationKey: ref.id,
-                  clientPayDetails: 'CASH',
                   clientPaymentType: 'CASH',
                   clientTokenID: 'CASH',
+                  clientPayDetails: {
+                      amount: this.enterAmount,
+                      source: 'CASH'
+                  },
+                  clientUID: 'WALK-IN',
+                  transactionType: 'WALK-IN',
+                  forReservation: true,
+                  clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
               }
+              console.log(paymentDetails, 'detailspayment')
                   this.$firestoreApp.collection('Payments').add(paymentDetails)
                   .then(()=>{
                       this.$q.notify({
@@ -1069,27 +1082,27 @@ export default {
                         textColor: 'white',
                         position: 'center'
                       })
+                      this.showreserveform = false, //this is opposite
+                      this.showdateform = true,
+                      this.step = 1
+                      this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                      this.clientFName = ''
+                      this.clientLName = ''
+                      this.clientAddress = ''
+                      this.selectCity = ''
+                      this.clientEvent = ''
+                      this.selectMotif = ''
+                      this.clientPax = 0
+                      this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                      this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                      this.selected = []
+                      this.choiceOfFood = []
+                      this.addonsList = []
+                      this.enterAmount = 0
+                      this.amount = 0
+                      this.clientEmail = ''
                   })
             })
-                this.showreserveform = false, //this is opposite
-                this.showdateform = true,
-                this.step = 1
-                this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
-                this.clientFName = ''
-                this.clientLName = ''
-                this.clientAddress = ''
-                this.selectCity = ''
-                this.clientEvent = ''
-                this.selectMotif = ''
-                this.clientPax = 0
-                this.startTime = date.formatDate(new Date(), 'hh:mmA')
-                this.endTime = date.formatDate(new Date(), 'hh:mmA')
-                this.selected = []
-                this.choiceOfFood = []
-                this.addonsList = []
-                this.enterAmount = 0
-                this.amount = 0
-                this.clientEmail = ''
     },
     paymentSelect(){
       if(this.fullPayment === false && this.reservationFee === false && this.downPayment === false){
