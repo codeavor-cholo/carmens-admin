@@ -251,7 +251,7 @@
               <q-item-section>
                 <q-item-label >Reservation</q-item-label>
               </q-item-section>
-           </q-item>
+           </q-item> -->
         
           </q-list>
         </q-scroll-area>
@@ -259,10 +259,6 @@
         <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px;" >
           <div class="absolute-bottom bg-transparent" >
             <q-avatar color="deep-orange-4" size="56px" class="q-my-sm" text-color="white" style="filter: none;">{{userEmail.charAt(0).toUpperCase()}}</q-avatar>
-            <!-- <q-avatar size="56px" class="q-mb-sm">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-            </q-avatar> -->
-            <!-- <div class="text-weight-bold">STYX SALCEDO</div> -->
             <div style="font-size:25px;">{{userEmail.toUpperCase()}}</div>
           </div>
         </q-img>
