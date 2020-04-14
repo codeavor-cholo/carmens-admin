@@ -18,7 +18,7 @@
                                     <q-icon name="mdi-pencil" color="teal" class="cursor-pointer">
                                       <q-tooltip>Edit</q-tooltip>
                                       <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                        <q-date v-model="dates" color="deep-orange-4" mask="YYYY/MM/DD" @input="() => $refs.qDateProxy.hide()" />
+                                        <q-date v-model="dates" color="deep-orange-4" mask="YYYY/MM/DD" @input="$refs.qDateProxy.hide(),atInput" :options="returnOpenDates" :events="returnReserved" event-color="blue"  />
                                       </q-popup-proxy>
                                     </q-icon>
                                   </template>
@@ -49,10 +49,10 @@
                                         </q-icon>
                                         <q-popup-edit v-model="clientPax">
                                           <template v-slot="{ initialValue, value, emitValue, set, cancel }">
-                                            <q-input type="number" style="width: 200px" class="relative position" autofocus dense :value="clientPax" hint="Enter Pax" @input="emitValue">
+                                            <q-input type="number" style="width: 200px" class="relative position q-mb-md q-mt-sm" autofocus dense :value="clientPax" hint="Enter Pax" @input="emitValue" error-message="We can't accomodate pax greater than 150 anymore. Lower down your number of pax / Go back and select another date." :error="!isValid">
                                               <template v-slot:after>
                                                 <q-btn flat dense color="grey-8" icon="cancel" @click.stop="cancel" />
-                                                <q-btn flat dense color="deep-orange-4" icon="check_circle" @click.stop="set" />
+                                                <q-btn flat dense color="deep-orange-4" icon="check_circle" @click.stop="set" :disable="!isValid"/>
                                               </template>
                                             </q-input>
                                           </template>
@@ -511,6 +511,8 @@ export default {
       Addons: [],
       addonsList: [],
       FoodCategory: [],
+      Reservation: [],
+      blockCount: 0,
       step: 1,
       filter: '',
       pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
@@ -589,9 +591,49 @@ export default {
     this.$binding('FoodCategory', this.$firestoreApp.collection('FoodCategory'))
             .then(FoodCategory => {
             console.log(FoodCategory, 'FoodCategory')
+            }),
+    this.$binding('Reservation', this.$firestoreApp.collection('Reservation'))
+            .then(Reservation => {
+            console.log(Reservation, 'Reservation')
             })
   },
   computed: {
+    isValid () {
+      let max = 150
+
+      let value = this.dates
+        let eventCount = 1
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(value,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        eventsBase.forEach(b=>{
+          let count = b.clientPax > 150 ? 2 : 1
+          // console.log(b['.key'],' - ',b.clientPax,' = ',count)
+          eventCount = eventCount + count
+        })
+       
+        if(eventCount > 4){
+          this.blockCount = (4 - eventCount) + 1
+          console.log('BLOCKED',value)
+          console.log(this.blockCount,'remaining event')
+        } else {
+          this.blockCount = (4 - eventCount) + 1
+          console.log(eventCount,value)
+          console.log(this.blockCount,'remaining event')  
+        } 
+
+
+      if (this.blockCount <= 1){
+        return this.clientPax <= max
+      } else {
+        return true
+      }
+    }, 
     custompackPrice(){
         if(this.choiceOfFood.length === 0){
               return 0
@@ -884,13 +926,18 @@ export default {
         }
             this.$firestoreApp.collection('Reservation').add(reserveDetails)
             .then((ref) =>{
-              let key = ref.id
-              let paymentDetails = {
-                  clientReservationKey: ref.id,
-                  clientPayDetails: this.paydetails,
-                  clientTokenID: this.token.id,
-                  clientPaymentType: 'CARD',
-              }
+                let key = ref.id
+                let paymentDetails = {
+                    clientReservationKey: ref.id,
+                    clientPaymentType: 'CARD',
+                    clientTokenID: this.token.id,
+                    clientPayDetails: this.paydetails,
+                    clientUID: 'WALK-IN',
+                    transactionType: 'WALK-IN', 
+                    forReservation: true,
+                    clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
+                }
+                console.log(paymentDetails, 'detailspayment')
                   this.$firestoreApp.collection('Payments').add(paymentDetails)
                   .then(()=>{
                       this.$q.notify({
@@ -900,29 +947,30 @@ export default {
                         textColor: 'white',
                         position: 'center'
                       })
+                      this.showreserveform = false, //this is opposite
+                      this.showdateform = true,
+                      this.step = 1
+                      this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                      this.clientFName = ''
+                      this.clientLName = ''
+                      this.clientAddress = ''
+                      this.selectCity = ''
+                      this.clientEvent = ''
+                      this.selectMotif = ''
+                      this.clientPax = 0
+                      this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                      this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                      this.selected = []
+                      this.choiceOfFood = []
+                      this.addonsList = []
+                      this.enterAmount = 0
+                      this.amount = 0
+                      this.clientEmail = ''
                       this.$q.localStorage.clear()
                       this.$router.push('/walkinreserve')
+
                   })
             })
-                this.showreserveform = false, //this is opposite
-                this.showdateform = true,
-                this.step = 1
-                this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
-                this.clientFName = ''
-                this.clientLName = ''
-                this.clientAddress = ''
-                this.selectCity = ''
-                this.clientEvent = ''
-                this.selectMotif = ''
-                this.clientPax = 0
-                this.startTime = date.formatDate(new Date(), 'hh:mmA')
-                this.endTime = date.formatDate(new Date(), 'hh:mmA')
-                this.selected = []
-                this.choiceOfFood = []
-                this.addonsList = []
-                this.enterAmount = 0
-                this.amount = 0
-                this.clientEmail = ''
     },
     reserveNowCash(){
         let reserveDetails = {
@@ -954,10 +1002,18 @@ export default {
               let key = ref.id
               let paymentDetails = {
                   clientReservationKey: ref.id,
-                  clientPayDetails: this.paydetails,
-                  clientTokenID: this.token.id,
-                  clientPaymentType: 'CARD',
+                  clientPaymentType: 'CASH',
+                  clientTokenID: 'CASH',
+                  clientPayDetails: {
+                      amount: this.enterAmount,
+                      source: 'CASH'
+                  },
+                  clientUID: 'WALK-IN',
+                  transactionType: 'WALK-IN',
+                  forReservation: true,
+                  clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
               }
+              console.log(paymentDetails, 'detailspayment')
                   this.$firestoreApp.collection('Payments').add(paymentDetails)
                   .then(()=>{
                       this.$q.notify({
@@ -967,29 +1023,30 @@ export default {
                         textColor: 'white',
                         position: 'center'
                       })
+                      this.showreserveform = false,
+                      this.showdateform = true,
+                      this.step = 1
+                      this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                      this.clientFName = ''
+                      this.clientLName = ''
+                      this.clientAddress = ''
+                      this.selectCity = ''
+                      this.clientEvent = ''
+                      this.selectMotif = ''
+                      this.clientPax = 0
+                      this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                      this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                      this.selected = []
+                      this.choiceOfFood = []
+                      this.addonsList = []
+                      this.enterAmount = 0
+                      this.amount = 0
+                      this.clientEmail = ''
                       this.$q.localStorage.clear()
                       this.$router.push('/walkinreserve')
+                      
                   })
             })
-                this.showreserveform = false,
-                this.showdateform = true,
-                this.step = 1
-                this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
-                this.clientFName = ''
-                this.clientLName = ''
-                this.clientAddress = ''
-                this.selectCity = ''
-                this.clientEvent = ''
-                this.selectMotif = ''
-                this.clientPax = 0
-                this.startTime = date.formatDate(new Date(), 'hh:mmA')
-                this.endTime = date.formatDate(new Date(), 'hh:mmA')
-                this.selected = []
-                this.choiceOfFood = []
-                this.addonsList = []
-                this.enterAmount = 0
-                this.amount = 0
-                this.clientEmail = ''
     },
     //revisions for input checkbox payment select
 
@@ -1145,6 +1202,76 @@ export default {
           this.paydetails = charge
           this.reserveNowCard()
       }
+    },
+   returnOpenDates(base){
+      console.log(base,'base')
+      let today = new Date()
+      let format = date.formatDate(today,'YYYY/MM/DD')
+      if(format < base){
+        let eventCount = 1
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(base,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        eventsBase.forEach(b=>{
+          let count = b.clientPax > 150 ? 2 : 1
+          console.log(b['.key'],' - ',b.clientPax,' = ',count)
+          eventCount = eventCount + count
+        })
+       
+        if(eventCount > 4){
+          console.log('BLOCKED',base)
+          return false
+        } else {
+          console.log(eventCount,base)
+          return true
+        }
+      }
+    },
+    returnReserved(base){
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(base,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        if(eventsBase.length > 0){
+          return true
+        } else {
+          return false
+        }
+    },
+    atInput(value){
+        let eventCount = 1
+        let eventsBase = []
+
+        let filter = this.Reservation.forEach(a=>{
+          if(date.formatDate(value,'YYYY-MM-DD') == date.formatDate(a.clientReserveDate,'YYYY-MM-DD')){
+            eventsBase.push(a)
+          }
+        })
+
+        eventsBase.forEach(b=>{
+          let count = b.clientPax > 150 ? 2 : 1
+          // console.log(b['.key'],' - ',b.clientPax,' = ',count)
+          eventCount = eventCount + count
+        })
+       
+        if(eventCount > 4){
+          this.blockCount = (4 - eventCount) + 1
+          console.log('BLOCKED',value)
+          console.log(this.blockCount,'remaining event')
+        } else {
+          this.blockCount = (4 - eventCount) + 1
+          console.log(eventCount,value)
+          console.log(this.blockCount,'remaining event')  
+        }      
     }
 
   }

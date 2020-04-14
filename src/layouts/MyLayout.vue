@@ -134,6 +134,45 @@
 
             <q-expansion-item
               expand-separator
+              icon="assessment"
+              label="Reports"
+            >
+              <q-item clickable :to="{ name: 'salesReport' }" active-class="text-white bg-deep-orange-4">
+                <q-item-section avatar class="q-pl-xl">
+                  <q-icon color="white" name="assessment" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Reservation Sales</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable :to="{ name: 'traySalesReport' }" active-class="text-white bg-deep-orange-4">
+                <q-item-section avatar class="q-pl-xl">
+                  <q-icon color="white" name="fastfood" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Party Tray Sales</q-item-label>
+                </q-item-section>
+              </q-item>              
+              <q-item clickable :to="{ name: 'topChoices' }" active-class="text-white bg-deep-orange-4">
+                <q-item-section avatar class="q-pl-xl">
+                  <q-icon color="white" name="bar_chart" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Top Choices</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable :to="{ name: 'paymentRecords' }" active-class="text-white bg-deep-orange-4">
+                <q-item-section avatar class="q-pl-xl">
+                  <q-icon color="white" name="payment" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Payment Records</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-expansion-item>
+
+            <q-expansion-item
+              expand-separator
               icon="mdi-settings-outline"
               label="File Management"
               default-opened
@@ -196,7 +235,7 @@
               </q-item-section>
             </q-item> -->
 
-            <q-item clickable @click="$router.push('/statusupdate')">
+            <!-- <q-item clickable @click="$router.push('/statusupdate')">
               <q-item-section avatar>
                 <q-icon color="white" name="event_available" />
               </q-item-section>
@@ -212,8 +251,8 @@
               <q-item-section>
                 <q-item-label >Reservation</q-item-label>
               </q-item-section>
-            </q-item>
-
+           </q-item>
+        
           </q-list>
         </q-scroll-area>
 

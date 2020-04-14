@@ -575,11 +575,18 @@ import { date } from 'quasar'
                     .then((ref) =>{
                         let paymentDetails = {
                             clientReservationKey: this.reserveId,
-                            clientPayDetails: 'CASH',
-                            clientTokenID: 'CASH',
                             clientPaymentType: 'CASH',
+                            clientTokenID: 'CASH',
+                            clientPayDetails: {
+                                amount: this.enterAmount,
+                                source: 'CASH'
+                            },
+                            clientUID: this.selectedReservation.clientUID === undefined ? 'WALK-IN' : this.selectedReservation.clientUID,
+                            transactionType: 'WALK-IN',
+                            forReservation: true,
                             clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
+                        console.log(paymentDetails, 'detailspayment')
                         this.$firestoreApp.collection('Payments').add(paymentDetails)
                         .then(()=>{
                             this.$q.notify({
@@ -589,10 +596,10 @@ import { date } from 'quasar'
                                 textColor: 'white',
                                 position: 'center'
                                 })
+                                this.enterAmount = 0
+                                this.paymentDialog = false
                             })  
                         })
-                        this.enterAmount = 0
-                        this.paymentDialog = false
                     })
         },
         updatePaymentCard(){
@@ -624,11 +631,15 @@ import { date } from 'quasar'
                     .then((ref) =>{
                         let paymentDetails = {
                             clientReservationKey: this.reserveId,
-                            clientPayDetails: this.paydetails,
-                            clientTokenID: this.token.id,
                             clientPaymentType: 'CARD',
+                            clientTokenID: this.token.id,
+                            clientPayDetails: this.paydetails,
+                            clientUID: this.selectedReservation.clientUID === undefined ? 'WALK-IN' : this.selectedReservation.clientUID,
+                            transactionType: 'WALK-IN',
+                            forReservation: true,
                             clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
+                        console.log(paymentDetails, 'detailspayment')
                         this.$firestoreApp.collection('Payments').add(paymentDetails)
                         .then(()=>{
                             this.$q.notify({
