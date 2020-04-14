@@ -10,9 +10,15 @@
           </div>  
         </q-toolbar-title>
       </q-toolbar>
-      <div class="absolute-right q-pt-sm">
+
+      <div class="absolute-right row items-center q-gutter-sm q-pr-md">
+<!-- BUTTON FOR NOTIFICATIONS -->
+          <q-btn flat dense color="white" icon="notifications" @click="$router.push('/notification')">
+              <q-badge color="blue" floating>4</q-badge>
+          </q-btn>
+<!-- END OF BUTTON FOR NOTIF -->
             <div>
-                <q-btn flat color="white" icon="mdi-settings">
+                <q-btn dense flat color="white" icon="mdi-settings">
                   <q-menu>
                     <div class="row no-wrap q-pa-md">
                       <div class="column items-center">
@@ -245,7 +251,8 @@
               <q-item-section>
                 <q-item-label >Reservation</q-item-label>
               </q-item-section>
-            </q-item> -->
+           </q-item>
+        
           </q-list>
         </q-scroll-area>
 
