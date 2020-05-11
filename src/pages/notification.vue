@@ -126,9 +126,17 @@ export default {
                 if(details.position == 'Admin'){
                     console.log(this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc'),'types')
                     return this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc')
+                } else if(details.position == 'Staff' || details.position == 'Delivery Boy'){
+                    let filter = this.returnNotifsWithTypes.filter(a=>{
+                        return a.typeOf == 'schedule' && a.staffKey == user.uid
+                    })
+                    console.log(this.$lodash.orderBy(filter,'dateTime','desc'),'types')
+                    return this.$lodash.orderBy(filter,'dateTime','desc')
                 } else {
-                    //filter results
-                    //schedules
+                    let filter = this.returnNotifsWithTypes.filter(a=>{
+                        return a.typeOf != 'schedule' || a.typeOf != 'status'
+                    })     
+                    return this.$lodash.orderBy(filter,'dateTime','desc')               
                 }
 
                 

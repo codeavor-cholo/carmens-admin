@@ -14,7 +14,7 @@
       <div class="absolute-right row items-center q-gutter-sm q-pr-md">
 <!-- BUTTON FOR NOTIFICATIONS -->
           <q-btn flat dense color="white" icon="notifications" @click="$router.push('/notification')">
-              <q-badge color="blue" floating>4</q-badge>
+              <q-badge color="blue" floating>{{returnNotifLength.length}}</q-badge>
           </q-btn>
 <!-- END OF BUTTON FOR NOTIF -->
             <div>
@@ -281,10 +281,16 @@ export default {
     return {
             drawer: false,
             userEmail: '',
-            dashboardUsers: [],
             uid: '',
             permissions: {},
-            accountLoggedIn: {}
+            accountLoggedIn: {},
+            dashboardUsers: [],
+            AdminNotifications: [],
+            Reservation: [],
+            partyTrayOrders: [],
+            Payments: [],
+            StaffSchedules: [],
+            Customers: [],
       }
   },
   created() {
@@ -316,7 +322,13 @@ export default {
           })
   },
   mounted(){
-            this.$binding('dashboardUsers', this.$firestoreApp.collection('dashboardUsers'))
+    this.$binding('dashboardUsers', this.$firestoreApp.collection('dashboardUsers')),
+    this.$binding('AdminNotifications', this.$firestoreApp.collection('AdminNotifications')),
+    this.$binding('Reservation', this.$firestoreApp.collection('Reservation')),
+    this.$binding('partyTrayOrders', this.$firestoreApp.collection('partyTrayOrders')),
+    this.$binding('Payments', this.$firestoreApp.collection('Payments')),
+    this.$binding('StaffSchedules', this.$firestoreApp.collection('StaffSchedules')),
+    this.$binding('Customers', this.$firestoreApp.collection('Customers'))
   },
   computed: {
     returnPermissions(){
@@ -347,9 +359,120 @@ export default {
       } catch (error) {
         return {}
       }
+    },
+    returnUserNotifications(){
+        try {
+            let user = this.$firebase.auth().currentUser
+
+            let details =  this.dashboardUsers.filter(a=>{
+                return a['.key'] == user.uid
+            })[0]
+
+            console.log(details,'details user')
+            if(details.position == 'Admin'){
+                console.log(this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc'),'types')
+                return this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc')
+            } else if(details.position == 'Staff' || details.position == 'Delivery Boy'){
+                let filter = this.returnNotifsWithTypes.filter(a=>{
+                    return a.typeOf == 'schedule' && a.staffKey == user.uid
+                })
+                console.log(this.$lodash.orderBy(filter,'dateTime','desc'),'types')
+                return this.$lodash.orderBy(filter,'dateTime','desc')
+            } else {
+                let filter = this.returnNotifsWithTypes.filter(a=>{
+                    return a.typeOf != 'schedule' || a.typeOf != 'status'
+                })     
+                return this.$lodash.orderBy(filter,'dateTime','desc')               
+            }
+
+            
+            return ''
+        } catch (error) {
+            return []
+        }
+    },
+    returnNotifsWithTypes(){
+        try {
+            let notifs = this.AdminNotifications.map(a=>{
+            if(a.message.includes('Reservation')){
+                a.typeOf = 'reserve'
+                return {...a,...this.returnDataOfNotifs('reserve',a.reservationKey)}
+            } else if (a.message.includes('Order')) {
+                a.typeOf = 'order'
+                return {...a,...this.returnDataOfNotifs('order',a.reservationKey)}
+            } else if (a.message.includes('Payment')){
+                a.typeOf = 'payment'
+                a.clientName = this.returnCustomerData(a.userID).displayName
+                return {...a,...this.returnDataOfNotifs('payment',a.paymentKey)}
+            } else if (a.message.includes('Schedule')){
+                a.typeOf = 'schedule'
+                a.clientName = a.clientFName+ ' '+a.clientLName
+                return a
+            } else {
+                a.typeOf = 'status'
+                return {...a,...this.returnDataOfNotifs('status',a.reservationKey)}
+            }
+            })
+
+            
+            return notifs
+        } catch (error) {
+            return []
+        }
+    },
+    returnNotifLength(){
+      let today = date.formatDate(new Date(), 'YYYY-MM-DD')
+      let length = this.returnUserNotifications.filter(a=>{
+        return today == date.formatDate(a.dateTime, 'YYYY-MM-DD')
+      })
+      console.log(length,'length')
+      return length
     }
   },
   methods: {
+    returnDataOfNotifs(typeOf,key){
+        try {
+            if(typeOf == 'reserve'){
+                return this.Reservation.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            } else if(typeOf == 'order'){
+                return this.partyTrayOrders.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            } else if(typeOf == 'payment'){
+                return this.Payments.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            } else {
+                let reserve = this.Reservation.concat(this.partyTrayOrders)
+                reserve.forEach(a=>{
+                    if(a.deliveryDate == null){
+                        a.transactionType = 'EVENT RESERVATION'
+                        a.clientName = a.clientFName+ ' '+a.clientLName
+                    } else {
+                        a.transactionType = 'PARTY TRAY ORDER'
+                        a.clientName= a.clientFName+ ' '+a.clientLName
+                    }
+                })
+                console.log(reserve,'concat orders and reservation')
+                return reserve.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            }
+        } catch (error) {
+            return []
+        }
+    },
+    returnCustomerData(key){
+        try {
+            return this.Customers.filter(a=>{
+                return a['.key'] == key
+            })[0]
+        } catch (error) {
+            return []
+        }
+    },
     logout(){
       this.$q.dialog({
                 title: `Are you sure you want to logout?`,
