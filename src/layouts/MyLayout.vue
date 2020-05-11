@@ -298,6 +298,7 @@ export default {
                 let username = gg.email.toString().split('@')
                 self.userEmail = username[0]
                 self.accountLoggedIn = gg
+
                 // let index = this.$lodash.findIndex(this.dashboardUsers,a=>{
                 //   return a.userName == username[0]
                 // })
@@ -320,14 +321,13 @@ export default {
   computed: {
     returnPermissions(){
       try{
-        console.log('get')
         let user = this.accountLoggedIn
         console.log(user)
         if (user) {
          let permission = this.$lodash.filter(this.dashboardUsers, a=>{
            return a['.key'] == user.uid
          })
-         console.log(permission[0].permissions,'permission')
+         console.log(permission,'permission')
          return permission[0].permissions
         } else {
           console.log('err')
@@ -338,7 +338,15 @@ export default {
         console.log(err,'err')
         return {}
       }
-
+    },
+    returnUserDetails(){
+      try {
+          return this.$lodash.filter(this.dashboardUsers, a=>{
+           return a['.key'] == user.uid
+         })[0]       
+      } catch (error) {
+        return {}
+      }
     }
   },
   methods: {
