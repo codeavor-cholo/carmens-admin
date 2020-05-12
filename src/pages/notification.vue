@@ -198,7 +198,7 @@ export default {
                             a.clientName = a.clientFName+ ' '+a.clientLName
                         } else {
                             a.transactionType = 'PARTY TRAY ORDER'
-                            a.clientName= a.clientFName+ ' '+a.clientLName
+                            a.clientName= a.firstName+ ' '+a.lastName
                         }
                     })
                     console.log(reserve,'concat orders and reservation')
@@ -222,9 +222,6 @@ export default {
         returnUserPosition(){
           try {
             let user = {...this.$firebase.auth().currentUser}
-            console.log(this.dashboardUsers.filter(a=>{
-              return a['.key'] == user.uid
-            })[0].position,'userposition')
             return this.dashboardUsers.filter(a=>{
               return a['.key'] == user.uid
             })[0].position

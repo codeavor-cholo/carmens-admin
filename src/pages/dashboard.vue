@@ -1,6 +1,6 @@
 <template>
     <q-page class="flex flex-center">
-    <div class="q-pa-md row q-gutter-md">
+    <div class="q-pa-md row q-gutter-md desktop-only">
         <q-card bordered class="my-card col column justify-between">
             <q-card-section>
                 <q-item>
@@ -16,7 +16,7 @@
                 </q-item>
             </q-card-section>
             <q-card-actions align="center"> 
-                <q-btn color="deep-orange-4" class="full-width" label="VIEW RESERVATIONS" outline/>
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW RESERVATIONS" outline @click="$router.push('/reservation')"/>
             </q-card-actions>
         </q-card>
         
@@ -38,7 +38,7 @@
                 </q-item>
             </q-card-section>
             <q-card-actions align="center"> 
-                <q-btn color="deep-orange-4" class="full-width" label="VIEW ORDERS" outline/>
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW ORDERS" outline @click="$router.push('/partytrayreserve')"/>
             </q-card-actions>
         </q-card>
 
@@ -59,7 +59,7 @@
                 </q-item>
             </q-card-section>
             <q-card-actions align="center"> 
-                <q-btn color="deep-orange-4" class="full-width" label="VIEW PAYMENTS" outline/>
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW PAYMENTS" outline @click="$router.push('/paymentRecords')"/>
             </q-card-actions>
         </q-card>
 
@@ -79,11 +79,97 @@
                 </q-item>
             </q-card-section>
             <q-card-actions align="center"> 
-                <q-btn color="deep-orange-4" class="full-width" label="VIEW SCHEDULES" outline/>
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW SCHEDULES" outline @click="$router.push('/staffscheduling')"/>
             </q-card-actions>
         </q-card>
     </div>
-    <div class="q-pa-md row items-start q-gutter-md">
+
+   <div class="q-pa-md q-gutter-md mobile-only">
+        <q-card bordered class="my-card col column justify-between">
+            <q-card-section>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="event" style="font-size: 30px;" />
+                    </q-item-section>
+                    <q-item-section class="text-right"> 
+                    <q-item-label caption>
+                        Upcoming Events
+                    </q-item-label>
+                    <q-item-label class="text-h6">{{returnNumberOfUpcomingEvents.length}} Reservations</q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-card-section>
+            <q-card-actions align="center"> 
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW RESERVATIONS" outline @click="$router.push('/reservation')"/>
+            </q-card-actions>
+        </q-card>
+        
+        <q-card bordered class="my-card col column justify-between">
+            
+            <q-card-section>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="shopping_cart" style="font-size: 30px;" />
+                    </q-item-section>
+                    <q-item-section class="text-right"> 
+                    <q-item-label caption>
+                        Pending Party Tray Orders
+                    </q-item-label>
+                    <q-item-label class="text-h6">
+                        {{returnNumberOfPendingOrders.length}} Orders
+                    </q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-card-section>
+            <q-card-actions align="center"> 
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW ORDERS" outline @click="$router.push('/partytrayreserve')"/>
+            </q-card-actions>
+        </q-card>
+
+        <q-card bordered class="my-card col">
+            
+            <q-card-section>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="money" style="font-size: 30px;" />
+                    </q-item-section>
+                    <q-item-section class="text-right"> 
+                    <q-item-label caption>
+                        Confirm Payments (Month of {{$moment().format('MMM')}})
+                    </q-item-label>
+                    <q-item-label class="text-h6">{{returnNumberOfConfirmedPayments.length}} Payments</q-item-label>
+                    <q-item-label class="text-title">= ₱ {{formatNumber(returnSumOfConfirmedPayments)}}.00</q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-card-section>
+            <q-card-actions align="center"> 
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW PAYMENTS" outline @click="$router.push('/paymentRecords')"/>
+            </q-card-actions>
+        </q-card>
+
+        <q-card bordered class="my-card col">
+            
+            <q-card-section>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-icon name="event_note" style="font-size: 30px;" />
+                    </q-item-section>
+                    <q-item-section class="text-right"> 
+                    <q-item-label caption>
+                        Unscheduled Events & Deliveries
+                    </q-item-label>
+                    <q-item-label class="text-h6">{{returnNumberOfUnscheduledEvents}} Reservations & {{returnNumberOfUnscheduledOrders}} Orders </q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-card-section>
+            <q-card-actions align="center"> 
+                <q-btn color="deep-orange-4" class="full-width" label="VIEW SCHEDULES" outline @click="$router.push('/staffscheduling')"/>
+            </q-card-actions>
+        </q-card>
+    </div>
+
+
+    <div class="q-pa-md row items-start q-gutter-md desktop-only">
         <q-card bordered class="my-card">
             <q-card-section class="row justify-between">
                 <div>Top <b>{{returnType}}</b></div>
@@ -102,6 +188,27 @@
             </q-card-section>
         </q-card>
     </div>
+
+    <div class="q-pa-md q-gutter-md mobile-only text-center">
+        <q-card bordered class="my-card" flat>
+            <q-card-section class="">
+                <div>Top <b>{{returnType}}</b></div>
+                <q-select v-model="type" class="q-ma-md" dense :options="['packages','food choices(catering)','food choice(party trays)']" outlined=""/>
+            </q-card-section>
+            <q-card-section>
+                <apexcharts width="350" type="bar" :options="returnOptions" :series="returnSeries"></apexcharts>
+            </q-card-section>
+        </q-card>
+        <q-card bordered class="my-card q-mb-lg" flat>
+            <q-card-section>
+                <b>Sales Distribution (Month of {{$moment().format('MMM')}})</b>
+            </q-card-section>
+            <q-card-section class="center" style="height: auto; width: 350px">
+                <apexcharts width="350" type="donut" :options="returnSalesOptions" :series="returnSalesSeries"></apexcharts>
+            </q-card-section>
+        </q-card>
+    </div>
+
     </q-page>
 
 </template>

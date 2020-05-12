@@ -35,7 +35,7 @@
                                                 <q-item-label lines="2">{{ col.value }}</q-item-label>
                                                 </q-item-section>
                                             </q-item>
-                                            <q-item class="q-mt-sm">
+                                            <!-- <q-item class="q-mt-sm">
                                                 <span class="full-width text-center text-weight-bold">PERMISSIONS</span>
                                             </q-item>
                                             <q-item v-for="(permission, index) in returnPermissions(props.row)" :key="index">
@@ -47,7 +47,7 @@
                                                     <q-chip :color="permission.status == true ? 'teal' : 'red'" round size="xs" :text-color="permission.status == true ? 'teal' : 'red'" label=""/>
                                                 </q-item-label>
                                                 </q-item-section>
-                                            </q-item>
+                                            </q-item> -->
                                             
                                         </q-list>
                                         </q-card-section>
@@ -92,7 +92,7 @@
                             <q-radio @input="radioOpt" color="teal" v-model="newUser.position" val="Admin" label="Admin" />
                             <q-radio @input="radioOpt" color="teal" v-model="newUser.position" val="Cashier" label="Cashier" />
                         </div>
-                        <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
+                        <!-- <div class="text-caption text-weight-bold text-teal">FILE MAINTANCE</div>
                         <q-checkbox v-model="permissions.packages" label="Package Management" color="teal"/>
                         <q-checkbox v-model="permissions.food" label="Food Management" color="teal" class=""/>
                         <q-checkbox v-model="permissions.partyTray" label="Party Trays Management" color="teal" class=""/>
@@ -106,7 +106,7 @@
                         <q-checkbox v-model="permissions.dashBoard" label="Dashboard" color="teal" class=""/>
                         <q-checkbox v-model="permissions.calendar" label="Calendar" color="teal" class=""/>
                         <q-checkbox v-model="permissions.partyTrayReservation" label="Party Tray Reservation" color="teal" class=""/>
-                        <q-checkbox v-model="permissions.cancelled" label="Cancelled Events" color="teal" class=""/>
+                        <q-checkbox v-model="permissions.cancelled" label="Cancelled Events" color="teal" class=""/> -->
                     </div>
                 </q-card-section>
                 <q-card-section v-else>

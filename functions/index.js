@@ -34,7 +34,7 @@ exports.newNotification = functions.firestore.document('{collection}/{id}').onCr
             let object = {...newData,...dateObject}
             return adminNotifs.add(object)
         } else if(collection === 'EventStatus'){
-            clientNotifs.add({reservationKey: newData.reservationKey,dateTime: newData.dateTime,status:newData.status})
+            return clientNotifs.add({reservationKey: newData.reservationKey,dateTime: newData.dateTime,status:newData.status})
             .then(()=>{
                 return adminNotifs.add({reservationKey: newData.reservationKey,dateTime: newData.dateTime,status:newData.status, message: 'Status Updated'})
             })

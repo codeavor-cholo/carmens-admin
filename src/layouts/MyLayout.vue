@@ -42,7 +42,7 @@
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding style="height: 500px;">
-            <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnPermissions.walkIn">
+            <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnMenu.walkin">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-walk" />
               </q-item-section>
@@ -51,16 +51,16 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable @click="$router.push('/customReservation')" v-show="returnPermissions.walkIn" disable="">
+            <!-- <q-item clickable @click="$router.push('/customReservation')" disable="">
               <q-item-section avatar>
                 <q-icon color="white" name="category" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Custom Walk-In Reservation</q-item-label>
               </q-item-section>
-            </q-item>
+            </q-item> -->
 
-            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering" active-class="text-white bg-deep-orange-4">
+            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnMenu.order" active-class="text-white bg-deep-orange-4">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-cart-outline" />
               </q-item-section>
@@ -69,7 +69,7 @@
               </q-item-section>
             </q-item>
             
-            <q-item clickable :to="{ name: 'dashboard' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'dashboard' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.dashboard">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-view-dashboard" />
               </q-item-section>
@@ -78,16 +78,16 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'staffdashboard' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'staffdashboard' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.staffdashboard">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-view-dashboard" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Staff Dashboard</q-item-label>
+                <q-item-label>Staff {{returnUserPosition == 'Admin' ? 'Schedules' : 'Dashboard'}}</q-item-label>
               </q-item-section>
             </q-item>
             
-            <q-item clickable :to="{ name: 'reservation' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'reservation' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.reservation">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-calendar-range" />
               </q-item-section>
@@ -96,7 +96,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'partytrayreserve' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'partytrayreserve' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.partytrayreservation">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-cart" />
               </q-item-section>
@@ -105,7 +105,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'cancelled' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'cancelled' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.cancelled">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-close" />
               </q-item-section>
@@ -114,7 +114,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'calendar' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'calendar' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.calendar">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-calendar" />
               </q-item-section>
@@ -123,7 +123,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'staffscheduling' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'staffscheduling' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.staffscheduling">
               <q-item-section avatar>
                 <q-icon color="white" name="event_note" />
               </q-item-section>
@@ -136,6 +136,7 @@
               expand-separator
               icon="assessment"
               label="Reports"
+              v-show="returnMenu.reports"
             >
               <q-item clickable :to="{ name: 'salesReport' }" active-class="text-white bg-deep-orange-4">
                 <q-item-section avatar class="q-pl-xl">
@@ -177,9 +178,9 @@
               label="File Management"
               default-opened
               
-              v-show="returnPermissions.food || returnPermissions.partyTray || returnPermissions.packages || returnPermissions.others"
+              v-show="returnMenu.filemanagement"
             >
-                  <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'foodmanage' }" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="fastfood" />
                     </q-item-section>
@@ -188,7 +189,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'partytraymanage' }"  active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="fastfood" />
                     </q-item-section>
@@ -197,7 +198,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'package' }" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="assignment" />
                     </q-item-section>
@@ -206,7 +207,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'otherManage' }"  active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="mdi-table-chair" />
                     </q-item-section>
@@ -215,17 +216,17 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users" active-class="text-white bg-deep-orange-4">
-                    <q-item-section avatar class="q-pl-xl">
+
+
+            </q-expansion-item>
+                  <q-item clickable :to="{ name: 'users' }" v-show="returnMenu.users" active-class="text-white bg-deep-orange-4">
+                    <q-item-section avatar>
                       <q-icon color="white" name="people" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Users Management</q-item-label>
                     </q-item-section>
                   </q-item>
-
-            </q-expansion-item>
-
             <!-- <q-item clickable @click="$router.push('/monitor')">
               <q-item-section avatar>
                 <q-icon color="white" name="event_available" />
@@ -321,6 +322,45 @@ export default {
     this.$binding('Customers', this.$firestoreApp.collection('Customers'))
   },
   computed: {
+    returnMenu(){
+      try {
+       let position = this.returnUserPosition   
+
+        let p = {
+          walkin: position == 'Admin' ? true : false,
+          order: position == 'Admin' || position == 'Cashier' ? true : false,
+          dashboard: position == 'Admin' || position == 'Cashier' ? true : false,
+          staffdashboard: position !== 'Cashier' ? true : false,
+          reservation: position == 'Admin' || position == 'Cashier' ? true : false,
+          partytrayreservation: position == 'Admin' || position == 'Cashier' ? true : false,
+          cancelled: position == 'Admin' ? true : false,
+          calendar: position == 'Admin' || position == 'Cashier' ? true : false,
+          staffscheduling: position == 'Admin' ? true : false,
+          filemanagement: position == 'Admin' ? true : false,
+          users: position == 'Admin' ? true : false,
+          reports: position == 'Admin' ? true : false
+        }
+        console.log(p,'p')
+
+        return p
+      } catch (error) {
+        console.log(error,'error in Menu')
+        return {
+          walkin: true,
+          order: true,
+          dashboard: true,
+          staffdashboard: true,
+          reservation: true,
+          partytrayreservation: true,
+          cancelled: true,
+          calendar: true,
+          staffscheduling: true,
+          filemanagement: true,
+          users: true,
+          reports: true
+        }
+      }
+    },
     returnPermissions(){
       try{
         let user = this.accountLoggedIn
@@ -417,6 +457,16 @@ export default {
       })
       console.log(length,'length')
       return length
+    },
+    returnUserPosition(){
+      try {
+        let user = {...this.$firebase.auth().currentUser}
+        return this.dashboardUsers.filter(a=>{
+          return a['.key'] == user.uid
+        })[0].position
+      } catch (error) {
+        return ''
+      }
     },
   },
   methods: {
