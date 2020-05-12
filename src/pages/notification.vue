@@ -36,7 +36,7 @@
 
                 <q-item clickable v-ripple v-else-if="notif.typeOf == 'schedule'">
                     <q-item-section>
-                        <div id="newreserve" class="text-weight-medium" v-if="userPosition == 'Admin'">New Staff Schedule created.</div>
+                        <div id="newreserve" class="text-weight-medium" v-if="returnUserPosition() == 'Admin'">New Staff Schedule created.</div>
                         <div id="newreserve" class="text-weight-medium" v-else>You have new Schedule.</div>
                         <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
                         <div class="column q-pl-xl q-py-sm">
@@ -56,7 +56,7 @@
                         <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
                         <div class="column q-pl-xl q-py-sm">
                             <q-item-label class="text-deep-orange" caption>{{notif.clientName}}</q-item-label>
-                            <q-item-label class="text-deep-orange" caption>₱ {{notif.amount}}.00</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>₱ {{formatNumber(notif.amount)}}.00</q-item-label>
                         </div>
                         <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
                     </q-item-section>
@@ -218,7 +218,23 @@ export default {
             } catch (error) {
                 return []
             }
-        }
+        },
+        returnUserPosition(){
+          try {
+            let user = {...this.$firebase.auth().currentUser}
+            console.log(this.dashboardUsers.filter(a=>{
+              return a['.key'] == user.uid
+            })[0].position,'userposition')
+            return this.dashboardUsers.filter(a=>{
+              return a['.key'] == user.uid
+            })[0].position
+          } catch (error) {
+            return ''
+          }
+        },
+        formatNumber(num) {
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        },
     }
 }
 </script>
