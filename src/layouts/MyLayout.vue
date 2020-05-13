@@ -14,7 +14,7 @@
       <div class="absolute-right row items-center q-gutter-sm q-pr-md">
 <!-- BUTTON FOR NOTIFICATIONS -->
           <q-btn flat dense color="white" icon="notifications" @click="$router.push('/notification')">
-              <q-badge color="blue" floating>4</q-badge>
+              <q-badge color="blue" floating>{{returnNotifLength.length}}</q-badge>
           </q-btn>
 <!-- END OF BUTTON FOR NOTIF -->
             <div>
@@ -42,7 +42,7 @@
       >
         <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
           <q-list padding style="height: 500px;">
-            <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnPermissions.walkIn">
+            <q-item clickable @click="$router.push('/walkinreserve')" v-show="returnMenu.walkin">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-walk" />
               </q-item-section>
@@ -51,16 +51,16 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable @click="$router.push('/customReservation')" v-show="returnPermissions.walkIn" disable="">
+            <!-- <q-item clickable @click="$router.push('/customReservation')" disable="">
               <q-item-section avatar>
                 <q-icon color="white" name="category" />
               </q-item-section>
               <q-item-section>
                 <q-item-label>Custom Walk-In Reservation</q-item-label>
               </q-item-section>
-            </q-item>
+            </q-item> -->
 
-            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnPermissions.partyTrayOrdering" active-class="text-white bg-deep-orange-4">
+            <q-item clickable @click="$router.push('/partytrayordering')" v-show="returnMenu.order" active-class="text-white bg-deep-orange-4">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-cart-outline" />
               </q-item-section>
@@ -69,7 +69,7 @@
               </q-item-section>
             </q-item>
             
-            <q-item clickable :to="{ name: 'dashboard' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'dashboard' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.dashboard">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-view-dashboard" />
               </q-item-section>
@@ -78,16 +78,16 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'staffdashboard' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'staffdashboard' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.staffdashboard">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-view-dashboard" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Staff Dashboard</q-item-label>
+                <q-item-label>Staff {{returnUserPosition == 'Admin' ? 'Schedules' : 'Dashboard'}}</q-item-label>
               </q-item-section>
             </q-item>
             
-            <q-item clickable :to="{ name: 'reservation' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'reservation' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.reservation">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-calendar-range" />
               </q-item-section>
@@ -96,7 +96,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'partytrayreserve' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'partytrayreserve' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.partytrayreservation">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-cart" />
               </q-item-section>
@@ -105,7 +105,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'cancelled' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'cancelled' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.cancelled">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-close" />
               </q-item-section>
@@ -114,7 +114,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'calendar' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'calendar' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.calendar">
               <q-item-section avatar>
                 <q-icon color="white" name="mdi-calendar" />
               </q-item-section>
@@ -123,7 +123,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable :to="{ name: 'staffscheduling' }" active-class="text-white bg-deep-orange-4">
+            <q-item clickable :to="{ name: 'staffscheduling' }" active-class="text-white bg-deep-orange-4" v-show="returnMenu.staffscheduling">
               <q-item-section avatar>
                 <q-icon color="white" name="event_note" />
               </q-item-section>
@@ -136,6 +136,7 @@
               expand-separator
               icon="assessment"
               label="Reports"
+              v-show="returnMenu.reports"
             >
               <q-item clickable :to="{ name: 'salesReport' }" active-class="text-white bg-deep-orange-4">
                 <q-item-section avatar class="q-pl-xl">
@@ -177,9 +178,9 @@
               label="File Management"
               default-opened
               
-              v-show="returnPermissions.food || returnPermissions.partyTray || returnPermissions.packages || returnPermissions.others"
+              v-show="returnMenu.filemanagement"
             >
-                  <q-item clickable :to="{ name: 'foodmanage' }" v-show="returnPermissions.food" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'foodmanage' }" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="fastfood" />
                     </q-item-section>
@@ -188,7 +189,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'partytraymanage' }" v-show="returnPermissions.partyTray" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'partytraymanage' }"  active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="fastfood" />
                     </q-item-section>
@@ -197,7 +198,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'package' }" v-show="returnPermissions.packages" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'package' }" active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="assignment" />
                     </q-item-section>
@@ -206,7 +207,7 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'otherManage' }" v-show="returnPermissions.others" active-class="text-white bg-deep-orange-4">
+                  <q-item clickable :to="{ name: 'otherManage' }"  active-class="text-white bg-deep-orange-4">
                     <q-item-section avatar class="q-pl-xl">
                       <q-icon color="white" name="mdi-table-chair" />
                     </q-item-section>
@@ -215,17 +216,17 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item clickable :to="{ name: 'users' }" v-show="returnPermissions.users" active-class="text-white bg-deep-orange-4">
-                    <q-item-section avatar class="q-pl-xl">
+
+
+            </q-expansion-item>
+                  <q-item clickable :to="{ name: 'users' }" v-show="returnMenu.users" active-class="text-white bg-deep-orange-4">
+                    <q-item-section avatar>
                       <q-icon color="white" name="people" />
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Users Management</q-item-label>
                     </q-item-section>
                   </q-item>
-
-            </q-expansion-item>
-
             <!-- <q-item clickable @click="$router.push('/monitor')">
               <q-item-section avatar>
                 <q-icon color="white" name="event_available" />
@@ -281,10 +282,16 @@ export default {
     return {
             drawer: false,
             userEmail: '',
-            dashboardUsers: [],
             uid: '',
             permissions: {},
-            accountLoggedIn: {}
+            accountLoggedIn: {},
+            dashboardUsers: [],
+            AdminNotifications: [],
+            Reservation: [],
+            partyTrayOrders: [],
+            Payments: [],
+            StaffSchedules: [],
+            Customers: [],
       }
   },
   created() {
@@ -298,16 +305,7 @@ export default {
                 let username = gg.email.toString().split('@')
                 self.userEmail = username[0]
                 self.accountLoggedIn = gg
-                // let index = this.$lodash.findIndex(this.dashboardUsers,a=>{
-                //   return a.userName == username[0]
-                // })
-                // if(index == -1){
-                //     this.$firebase.auth().signOut()
-                //     .then(() => {
-                //     this.$router.push('/')
-                //   })
 
-                // }
               } else {
                   // No user is signed in.
                   self.$router.push('/')
@@ -315,19 +313,63 @@ export default {
           })
   },
   mounted(){
-            this.$binding('dashboardUsers', this.$firestoreApp.collection('dashboardUsers'))
+    this.$binding('dashboardUsers', this.$firestoreApp.collection('dashboardUsers')),
+    this.$binding('AdminNotifications', this.$firestoreApp.collection('AdminNotifications')),
+    this.$binding('Reservation', this.$firestoreApp.collection('Reservation')),
+    this.$binding('partyTrayOrders', this.$firestoreApp.collection('partyTrayOrders')),
+    this.$binding('Payments', this.$firestoreApp.collection('Payments')),
+    this.$binding('StaffSchedules', this.$firestoreApp.collection('StaffSchedules')),
+    this.$binding('Customers', this.$firestoreApp.collection('Customers'))
   },
   computed: {
+    returnMenu(){
+      try {
+       let position = this.returnUserPosition   
+
+        let p = {
+          walkin: position == 'Admin' ? true : false,
+          order: position == 'Admin' || position == 'Cashier' ? true : false,
+          dashboard: position == 'Admin' || position == 'Cashier' ? true : false,
+          staffdashboard: position !== 'Cashier' ? true : false,
+          reservation: position == 'Admin' || position == 'Cashier' ? true : false,
+          partytrayreservation: position == 'Admin' || position == 'Cashier' ? true : false,
+          cancelled: position == 'Admin' ? true : false,
+          calendar: position == 'Admin' || position == 'Cashier' ? true : false,
+          staffscheduling: position == 'Admin' ? true : false,
+          filemanagement: position == 'Admin' ? true : false,
+          users: position == 'Admin' ? true : false,
+          reports: position == 'Admin' ? true : false
+        }
+        console.log(p,'p')
+
+        return p
+      } catch (error) {
+        console.log(error,'error in Menu')
+        return {
+          walkin: true,
+          order: true,
+          dashboard: true,
+          staffdashboard: true,
+          reservation: true,
+          partytrayreservation: true,
+          cancelled: true,
+          calendar: true,
+          staffscheduling: true,
+          filemanagement: true,
+          users: true,
+          reports: true
+        }
+      }
+    },
     returnPermissions(){
       try{
-        console.log('get')
         let user = this.accountLoggedIn
         console.log(user)
         if (user) {
          let permission = this.$lodash.filter(this.dashboardUsers, a=>{
            return a['.key'] == user.uid
          })
-         console.log(permission[0].permissions,'permission')
+         console.log(permission,'permission')
          return permission[0].permissions
         } else {
           console.log('err')
@@ -338,10 +380,139 @@ export default {
         console.log(err,'err')
         return {}
       }
+    },
+    returnUserDetails(){
+      try {
+          return this.$lodash.filter(this.dashboardUsers, a=>{
+           return a['.key'] == user.uid
+         })[0]       
+      } catch (error) {
+        return {}
+      }
+    },
+    returnUserNotifications(){
+        try {
+            let user = this.$firebase.auth().currentUser
 
-    }
+            let details =  this.dashboardUsers.filter(a=>{
+                return a['.key'] == user.uid
+            })[0]
+
+            console.log(details,'details user')
+            if(details.position == 'Admin'){
+                console.log(this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc'),'types')
+                return this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc')
+            } else if(details.position == 'Staff' || details.position == 'Delivery Boy'){
+                let filter = this.returnNotifsWithTypes.filter(a=>{
+                    return a.typeOf == 'schedule' && a.staffKey == user.uid
+                })
+                console.log(this.$lodash.orderBy(filter,'dateTime','desc'),'types')
+                return this.$lodash.orderBy(filter,'dateTime','desc')
+            } else {
+                let filter = this.returnNotifsWithTypes.filter(a=>{
+                    return a.typeOf != 'schedule' || a.typeOf != 'status'
+                })     
+                return this.$lodash.orderBy(filter,'dateTime','desc')               
+            }
+
+            
+            return ''
+        } catch (error) {
+            return []
+        }
+    },
+    returnNotifsWithTypes(){
+        try {
+            let notifs = this.AdminNotifications.map(a=>{
+            if(a.message.includes('Reservation')){
+                a.typeOf = 'reserve'
+                return {...a,...this.returnDataOfNotifs('reserve',a.reservationKey)}
+            } else if (a.message.includes('Order')) {
+                a.typeOf = 'order'
+                return {...a,...this.returnDataOfNotifs('order',a.reservationKey)}
+            } else if (a.message.includes('Payment')){
+                a.typeOf = 'payment'
+                a.clientName = this.returnCustomerData(a.userID).displayName
+                return {...a,...this.returnDataOfNotifs('payment',a.paymentKey)}
+            } else if (a.message.includes('Schedule')){
+                a.typeOf = 'schedule'
+                a.clientName = a.clientFName+ ' '+a.clientLName
+                return a
+            } else {
+                a.typeOf = 'status'
+                return {...a,...this.returnDataOfNotifs('status',a.reservationKey)}
+            }
+            })
+
+            
+            return notifs
+        } catch (error) {
+            return []
+        }
+    },
+    returnNotifLength(){
+      let today = date.formatDate(new Date(), 'YYYY-MM-DD')
+      let length = this.returnUserNotifications.filter(a=>{
+        return today == date.formatDate(a.dateTime, 'YYYY-MM-DD')
+      })
+      console.log(length,'length')
+      return length
+    },
+    returnUserPosition(){
+      try {
+        let user = {...this.$firebase.auth().currentUser}
+        return this.dashboardUsers.filter(a=>{
+          return a['.key'] == user.uid
+        })[0].position
+      } catch (error) {
+        return ''
+      }
+    },
   },
   methods: {
+    returnDataOfNotifs(typeOf,key){
+        try {
+            if(typeOf == 'reserve'){
+                return this.Reservation.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            } else if(typeOf == 'order'){
+                return this.partyTrayOrders.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            } else if(typeOf == 'payment'){
+                return this.Payments.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            } else {
+                let reserve = this.Reservation.concat(this.partyTrayOrders)
+                reserve.forEach(a=>{
+                    if(a.deliveryDate == null){
+                        a.transactionType = 'EVENT RESERVATION'
+                        a.clientName = a.clientFName+ ' '+a.clientLName
+                    } else {
+                        a.transactionType = 'PARTY TRAY ORDER'
+                        a.clientName= a.clientFName+ ' '+a.clientLName
+                    }
+                })
+                console.log(reserve,'concat orders and reservation')
+                return reserve.filter(a=>{
+                    return a['.key'] == key
+                })[0]
+            }
+        } catch (error) {
+            return []
+        }
+    },
+    returnCustomerData(key){
+        try {
+            return this.Customers.filter(a=>{
+                return a['.key'] == key
+            })[0]
+        } catch (error) {
+            return []
+        }
+    },
     logout(){
       this.$q.dialog({
                 title: `Are you sure you want to logout?`,

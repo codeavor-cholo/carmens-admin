@@ -199,6 +199,7 @@ export default {
             userEmail: '',
             accountLoggedIn: {},
             EventStatus: [],
+            dashboardUsers: [],
             selectedEvent: null,
             tomorrow: date.addToDate(new Date(), {days: 1}),
             eventStatusArray: ['Preparing Food!','Preparing Setup!','The Catering Team is en route!','Arrived at the Event Area','Setup on Progress','Event Place Is Ready!'],
@@ -230,13 +231,15 @@ export default {
         this.$binding('EventStatus', this.$firestoreApp.collection('EventStatus'))
         .then(EventStatus => {
         console.log(EventStatus, 'EventStatus')
-        })
+        }),
+        this.$binding('dashboardUsers', this.$firestoreApp.collection('dashboardUsers'))
     },
     computed:{
         returnStaffSchedule(){
             let today = new Date()
             let user = this.accountLoggedIn
-            // console.log(user,'user')
+            console.log(user,'user')
+
 
             let filter = this.StaffSchedules.filter(a=>{
                 let dates = date.formatDate(a.clientReserveDate, 'YYYY/MM/DD')
@@ -257,7 +260,13 @@ export default {
 
                 a.dateBasis = create  
 
-                return a.staffKey == user.uid && date.formatDate(a.clientReserveDate, 'YYYY/MM/DD') >= date.formatDate(today, 'YYYY/MM/DD')
+                if(this.returnPosition(user.uid) == 'Admin'){
+                    return date.formatDate(a.clientReserveDate, 'YYYY/MM/DD') >= date.formatDate(today, 'YYYY/MM/DD')
+                } else {
+                    return a.staffKey == user.uid && date.formatDate(a.clientReserveDate, 'YYYY/MM/DD') >= date.formatDate(today, 'YYYY/MM/DD')
+                }
+
+                
             })
 
             let order = this.$lodash.orderBy(filter,'dateBasis','asc')
@@ -296,6 +305,15 @@ export default {
 
     },
     methods:{
+        returnPosition(uid){
+            try {
+                return this.dashboardUsers.filter(a=>{
+                    return uid == a['.key']
+                })[0].position
+            } catch (error) {
+                return ''
+            }
+        },
         returnLengthOfStatus(event){
             let filter = this.$lodash.filter(this.EventStatus,a=>{
                 return a.scheduleKey == event['.key']

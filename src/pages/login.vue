@@ -133,7 +133,11 @@ export default {
               
               if (user) {
                 console.log('createdUser',user)
+                if(self.returnUserPosition(user.uid) == 'Admin' || self.returnUserPosition(user.uid) == 'Cashier'){
                   self.$router.push('/dashboard')
+                } else {
+                  self.$router.push('/staffdashboard')
+                }
               } else {
                   // No user is signed in.
                   // self.$router.push('/')
@@ -144,6 +148,15 @@ export default {
 
     },
     methods: {
+        returnUserPosition(uid){
+          try {
+            return this.users.filter(a=>{
+              return a['.key'] == uid
+            })[0].position
+          } catch (error) {
+            return 'Admin'
+          }
+        },
         signup(){
           this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
                 .then(result => {
