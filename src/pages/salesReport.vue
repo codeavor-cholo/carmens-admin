@@ -122,7 +122,7 @@ export default {
 
                 for(var x = 0; x < map.length; x++){
                     let sum = this.$lodash.sumBy(map[x].paymentArray, a=>{
-                        return a.clientPayDetails.amount
+                        return parseInt(a.clientPayDetails.amount)
                     })
                     map[x].totalSales = sum
                 }
@@ -222,7 +222,7 @@ export default {
 
             for(var y = 0; y < map3.length; y++){
                 let sum = this.$lodash.sumBy(map3[y].dataArray, a=>{
-                    return a.totalSales
+                    return parseInt(a.totalSales)
                 })
                 map3[y].totalSales = sum
                 map3[y].basis = map3[y].dataArray[0].basis

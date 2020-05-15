@@ -176,7 +176,8 @@ export default {
                     a.id = a['.key'].substr(14).toUpperCase()
                     let reservename = this.forPayment == 'Reservations' ? a.clientFName+' '+a.clientLName : a.firstName+' '+a.lastName
                     a.clientName = reservename
-                    a.totalPaid = this.$lodash.sumBy(payments,'clientPayDetails.amount')
+                    a.totalPaid = this.$lodash.sumBy(payments,a=>{
+                        return parseInt(a.clientPayDetails.amount)})
                     a.toPayAmount = this.forPayment == 'Reservations' ? a.clientTotalPayment : a.totalToPayAmount
 
                     let totalAmount = this.forPayment == 'Reservations' ? a.clientTotalPayment : a.totalToPayAmount
@@ -226,14 +227,16 @@ export default {
         },
         returnTotalPaid(){
             try {
-                return this.$lodash.sumBy(this.returnReports,'totalPaid')
+                return this.$lodash.sumBy(this.returnReports,a=>{
+                        return parseInt(a.totalPaid)})
             } catch (error) {
                 return 0
             }
         },
         returnToPay(){
             try {
-                return this.$lodash.sumBy(this.returnReports,'toPayAmount')
+                return this.$lodash.sumBy(this.returnReports,a=>{
+                        return parseInt(a.toPayAmount)})
             } catch (error) {
                 return 0
             }
