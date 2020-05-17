@@ -324,7 +324,7 @@ export default {
                 clientStartTime: this.selectedReservation.clientStartTime,
                 clientEndTime: this.selectedReservation.clientEndTime,
                 clientSelectPackage: this.selectedReservation.clientSelectPackage,
-                clientPackageType: this.selectedReservation.clientPackageType,
+                // clientPackageType: this.selectedReservation.clientPackageType,
                 clientFoodChoice: this.selectedReservation.clientFoodChoice,
                 clientServices: this.selectedReservation.clientServices,
                 clientAddons: this.selectedReservation.clientAddons,
@@ -340,11 +340,15 @@ export default {
                     .then((ref) =>{
                         let paymentDetails = {
                             clientReservationKey: this.reserveID,
-                            clientPayDetails: this.paydetails,
-                            clientTokenID: this.token.id,
                             clientPaymentType: 'CARD',
+                            clientTokenID: this.token.id,
+                            clientPayDetails: this.paydetails,
+                            clientUID: 'WALK-IN',
+                            transactionType: 'WALK-IN', 
+                            forReservation: true,
                             clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
+                        console.log(paymentDetails, 'detailspayment')
                         this.$firestoreApp.collection('Payments').add(paymentDetails)
                         .then(()=>{
                             this.$q.notify({
@@ -354,10 +358,10 @@ export default {
                                 textColor: 'white',
                                 position: 'center'
                                 })
+                                this.detailsAndPayment = false
+                                this.enterAmount = 0
                             })  
                         })
-                        this.detailsAndPayment = false
-                        this.enterAmount = 0
         },
         updatePaymentCash(){
             var PaymentBago = {
@@ -373,7 +377,7 @@ export default {
                 clientStartTime: this.selectedReservation.clientStartTime,
                 clientEndTime: this.selectedReservation.clientEndTime,
                 clientSelectPackage: this.selectedReservation.clientSelectPackage,
-                clientPackageType: this.selectedReservation.clientPackageType,
+                // clientPackageType: this.selectedReservation.clientPackageType,
                 clientFoodChoice: this.selectedReservation.clientFoodChoice,
                 clientServices: this.selectedReservation.clientServices,
                 clientAddons: this.selectedReservation.clientAddons,
@@ -395,11 +399,18 @@ export default {
                     .then((ref) =>{
                         let paymentDetails = {
                             clientReservationKey: this.reserveID,
-                            clientPayDetails: 'CASH',
-                            clientTokenID: 'CASH',
                             clientPaymentType: 'CASH',
+                            clientTokenID: 'CASH',
+                            clientPayDetails: {
+                                amount: this.enterAmount,
+                                source: 'CASH'
+                            },
+                            clientUID: 'WALK-IN',
+                            transactionType: 'WALK-IN',
+                            forReservation: true,
                             clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
+                        console.log(paymentDetails, 'detailspayment')
                         this.$firestoreApp.collection('Payments').add(paymentDetails)
                         .then(()=>{
                             this.$q.notify({
@@ -409,10 +420,10 @@ export default {
                                 textColor: 'white',
                                 position: 'center'
                                 })
+                                this.detailsAndPayment = false
+                                this.enterAmount = 0
                             })  
                         })
-                        this.detailsAndPayment = false
-                        this.enterAmount = 0
                     })
         },
         payamount(){

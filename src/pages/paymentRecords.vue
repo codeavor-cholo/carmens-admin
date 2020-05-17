@@ -29,7 +29,7 @@
                                 </template>
                             </q-input>
                         </div>
-                        <q-btn fab icon="print" color="deep-orange-4" class="q-my-md">
+                        <q-btn fab icon="print" @click="printdialog = true" color="deep-orange-4" class="q-my-md">
                             <q-tooltip>
                             Print Report
                             </q-tooltip>
@@ -37,7 +37,7 @@
                     </div>
 
                     <div class="q-mx-lg" >
-                        <q-table  hide-bottom=""  :data="returnReports" :binary-state-sort="true" :columns="columns" :pagination.sync="pagination" :filter="filter" class="full-width align-center ">
+                        <q-table  hide-bottom="" flat :data="returnReports" :binary-state-sort="true" :columns="columns" :pagination.sync="pagination" :filter="filter" class="full-width align-center ">
                             <template v-slot:body="props">
                                 <q-tr :props="props" class="cursor-pointer">
                                     <q-td key="clientReserveDate" :props="props">
@@ -105,6 +105,112 @@
                 </template>
                 </q-splitter>
         </template>
+        <q-dialog
+            v-model="printdialog"
+            persistent
+            :maximized="maximizedToggle"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+        >
+            <q-card class="shadow-0">
+            <q-bar>
+                <q-space />
+                <q-btn class="bodyText" dense flat icon="close" v-close-popup>
+                <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+                </q-btn>
+            </q-bar>
+
+            <q-card-section>
+                <div align="center">
+                    <img class="q-ma-none q-pa-none" style="height:80%;width:300px" src="statics/pics/carmen-logo.png">
+                </div>
+                <div class="text-grey-8" align="center">
+                    <p class="q-pb-none q-mb-none">J Center Bldg. Vista Verde Ave., Vista Verde Executive Village Cainta, Rizal</p>
+                    <p class="q-pt-none q-mt-none">09175057991 . 09772774030</p>
+                </div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+               <div class="q-mx-lg" >
+                <q-table  hide-bottom="" flat :data="returnReports" :binary-state-sort="true" :columns="columns" :pagination.sync="pagination" :filter="filter" class="full-width align-center ">
+                    <template v-slot:body="props">
+                        <q-tr :props="props" class="cursor-pointer">
+                            <q-td key="clientReserveDate" :props="props">
+                                {{$moment(props.row.clientReserveDate).format('LL')}}
+                            </q-td>
+                            <q-td key="id" :props="props" class="text-grey-10">
+                                {{props.row.id}}
+                            </q-td>
+
+                            <q-td key="clientName" :props="props" class="text-capitalize">
+                                {{props.row.clientName}}
+                            </q-td>
+                            <q-td key="status" :props="props">
+                                <div class="text-overline" :class="returnColor(props.row.status)">{{props.row.status}}</div>
+                            </q-td>   
+                            <q-td key="toPayAmount" :props="props"  class="text-grey-10">
+                                <b>₱ {{ formatNumber(props.row.toPayAmount)}}.00</b>
+                            </q-td>
+                            <q-td key="totalPaid" :props="props"  class="text-grey-10">
+                                ₱ {{ formatNumber(props.row.totalPaid)}}.00
+                            </q-td>
+                            <q-td key="balance" :props="props">
+                                <b>₱ {{ formatNumber(props.row.balance)}}.00</b>
+                            </q-td>
+                                                    
+                        </q-tr>
+                    </template>
+                    <template v-slot:header="props">
+                        <q-tr :props="props" class="bg-grey-9 text-white text-overline">
+                        <q-th
+                            v-for="col in props.cols"
+                            :key="col.name"
+                            :props="props"
+                            
+                        >
+                            {{ col.label }}
+                        </q-th>
+                        </q-tr>
+                    </template>                        
+                </q-table>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="col q-pa-md">
+                            <div class="text-h6">Prepared By:</div>
+                            <br>
+                            <div style="margin-top: -20px" class="q-pl-xl q-ml-xl text-h6">{{userEmail.toUpperCase()}}</div>
+                        </div>
+                        <q-page-sticky position="bottom" :offset="[18, 18]">
+                                <q-btn class="bodyText" label="Print" color="pink-3" @click="printNow" icon="print" />
+                        </q-page-sticky>
+                    </div>
+                    <div class="col-6" v-show="returnReports.length > 0">
+                        <div class="col">
+
+                        </div>
+                        <div class="q-pa-md col-4 bg-white">
+                            <div class="text-overline text-center q-mb-md">OVERVIEW</div>
+                            <div class="row justify-between">
+                                <div class="">Total Forcasted Sales</div>
+                                <div class=" text-deep-orange-4"><b>₱ {{ formatNumber(returnToPay) }}.00</b></div>
+                            </div>
+                            <div class="row justify-between">
+                                <div class="">Total Paid</div>
+                                <div class=" text-grey-10">- ₱ {{ formatNumber(returnTotalPaid) }}.00</div>
+                            </div>
+                            <q-separator inset spaced="" />
+                            <div class="row justify-between">
+                                <div class="">Accounts Recievables</div>
+                                <div class="text-deep-orange-4"><b>₱ {{ formatNumber(returnToPay - returnTotalPaid) }}.00</b></div>
+                            </div>
+                        </div>                            
+                    </div>
+                </div>
+
+            </div>
+            </q-card-section>
+            </q-card>
+        </q-dialog>
     </q-page>
 </template>
 <script>
@@ -114,6 +220,8 @@ const { capitalize } = format
 export default {
     data(){
         return {
+            printdialog: false,
+            maximizedToggle: true,
             forPayment: 'Reservations',
             type: 'all',
             splitterModel: 20,
@@ -138,6 +246,24 @@ export default {
                 rowsPerPage: 0,
             },
         }
+    },
+    created() {
+          let self = this
+          this.$firebase.auth().onAuthStateChanged(function(user) {
+              
+              if (user) {
+                let gg = {...user}
+                console.log('createdUser',user)
+                console.log('createdUser',user.uid)
+                let username = gg.email.toString().split('@')
+                self.userEmail = username[0]
+                self.accountLoggedIn = gg
+
+              } else {
+                  // No user is signed in.
+                  self.$router.push('/')
+              }
+          })
     },
     mounted () {
         this.$binding('Payments', this.$firestoreApp.collection('Payments'))
@@ -240,6 +366,9 @@ export default {
         },
     },
     methods:{
+        printNow(){
+            window.print();
+        },
         formatNumber(num) {
             return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
         },
@@ -290,3 +419,13 @@ export default {
     }
 }
 </script>
+<style type = "text/css">
+      @media print {
+        .bodyText {
+            display: none;
+          }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+      }
+</style>

@@ -420,11 +420,18 @@ import { date } from 'quasar'
                     }).onOk(() => { 
                     this.$firestoreApp.collection('Reservation').doc(this.reserveId).set(PaymentBago)
                     .then((ref) =>{
+                        let key = ref.id
                         let paymentDetails = {
                             clientReservationKey: this.reserveId,
-                            clientPayDetails: 'CASH',
-                            clientTokenID: 'CASH',
                             clientPaymentType: 'CASH',
+                            clientTokenID: 'CASH',
+                            clientPayDetails: {
+                                amount: this.enterAmount,
+                                source: 'CASH'
+                            },
+                            clientUID: 'WALK-IN',
+                            transactionType: 'WALK-IN',
+                            forReservation: true,
                             clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
                         this.$firestoreApp.collection('Payments').add(paymentDetails)
@@ -436,10 +443,10 @@ import { date } from 'quasar'
                                 textColor: 'white',
                                 position: 'center'
                                 })
+                                this.enterAmount = 0
+                                this.paymentDialog = false
                             })  
                         })
-                        this.enterAmount = 0
-                        this.paymentDialog = false
                     })
         },
         updatePaymentCard(){
@@ -469,11 +476,15 @@ import { date } from 'quasar'
             } 
                     this.$firestoreApp.collection('Reservation').doc(this.reserveId).set(PaymentBago)
                     .then((ref) =>{
+                        let key = ref.id
                         let paymentDetails = {
                             clientReservationKey: this.reserveId,
-                            clientPayDetails: this.paydetails,
-                            clientTokenID: this.token.id,
                             clientPaymentType: 'CARD',
+                            clientTokenID: this.token.id,
+                            clientPayDetails: this.paydetails,
+                            clientUID: 'WALK-IN',
+                            transactionType: 'WALK-IN',
+                            forReservation: true,
                             clientPaymentDate: date.formatDate(new Date(), 'YYYY-MM-DD')
                         }
                         this.$firestoreApp.collection('Payments').add(paymentDetails)
@@ -485,9 +496,10 @@ import { date } from 'quasar'
                                 textColor: 'white',
                                 position: 'center'
                                 })
+                                this.enterAmount = 0
+                                this.paymentDialog = false
                             })  
                         })
-                        this.enterAmount = 0
         },
         expandeds(props){
             this.expanded = !this.expanded
