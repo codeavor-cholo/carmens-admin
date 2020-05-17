@@ -16,6 +16,7 @@
           </div>
         </q-chip>
         </div>
+        
 
         <div class="mobile-only">
       <q-chip square color="primary" class="q-ma-md q-pa-md full-width" style="height: 50px" text-color="white" icon="event">

@@ -25,7 +25,7 @@
                                 </template>
                             </q-input>
                         </div>
-                        <q-btn fab icon="print" color="deep-orange-4" class="q-my-md">
+                        <q-btn fab icon="print" @click="printdialog = true" color="deep-orange-4" class="q-my-md">
                             <q-tooltip>
                             Print Report
                             </q-tooltip>
@@ -65,6 +65,72 @@
                 </template>
                 </q-splitter>
         </template>
+        <q-dialog
+            v-model="printdialog"
+            persistent
+            :maximized="maximizedToggle"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+        >
+            <q-card class="shadow-0">
+            <q-bar>
+                <q-space />
+                <q-btn class="bodyText" dense flat icon="close" v-close-popup>
+                <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+                </q-btn>
+            </q-bar>
+
+            <q-card-section>
+                <div align="center">
+                    <img class="q-ma-none q-pa-none" style="height:80%;width:300px" src="statics/pics/carmen-logo.png">
+                </div>
+                <div class="text-grey-8" align="center">
+                    <p class="q-pb-none q-mb-none">J Center Bldg. Vista Verde Ave., Vista Verde Executive Village Cainta, Rizal</p>
+                    <p class="q-pt-none q-mt-none">09175057991 . 09772774030</p>
+                </div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+                <div class="q-mx-lg" >
+                    <q-table hide-bottom="" dense flat :data="returnPopular" :binary-state-sort="true" :columns="columns" :pagination.sync="pagination" :filter="filter" class="full-width align-center ">
+                        <template v-slot:body="props">
+                            <q-tr :props="props">
+                            <q-td key="rank" :props="props" class="text-overline text-grey-10">
+                                {{props.row.rank}}
+                            </q-td>
+                            <q-td key="name" :props="props" class="text-overline text-grey-10">
+                            {{props.row.name}}
+                            </q-td>
+                            <q-td key="count" :props="props" class="text-overline text-grey-10">
+                            {{props.row.count}}
+                            </q-td>
+                            </q-tr>
+                        </template>
+                        <template v-slot:header="props">
+                            <q-tr :props="props" class="bg-grey-9 text-white text-overline">
+                            <q-th
+                                v-for="col in props.cols"
+                                :key="col.name"
+                                :props="props"
+                                
+                            >
+                                {{ col.label }}
+                            </q-th>
+                            </q-tr>
+                        </template>  
+                    </q-table>
+                    <div class="col q-pa-md">
+                        <div class="text-h6">Prepared By:</div>
+                        <br>
+                        <div style="margin-top: -20px" class="q-pl-xl q-ml-xl text-h6">{{userEmail.toUpperCase()}}</div>
+                    </div>
+                    <q-page-sticky position="bottom" :offset="[18, 18]">
+                            <q-btn class="bodyText" label="Print" color="pink-3" @click="printNow" icon="print" />
+                    </q-page-sticky>
+                </div>
+            </q-card-section>
+            </q-card>
+        </q-dialog>
     </q-page>
 </template>
 <script>
@@ -73,6 +139,8 @@ const { capitalize } = format
 export default {
     data(){
         return {
+            printdialog: false,
+            maximizedToggle: true,
             type: 'packages',
             splitterModel: 20,
             partyTrayOrders: [],
@@ -90,6 +158,24 @@ export default {
                 rowsPerPage: 0,
             },
         }
+    },
+    created() {
+          let self = this
+          this.$firebase.auth().onAuthStateChanged(function(user) {
+              
+              if (user) {
+                let gg = {...user}
+                console.log('createdUser',user)
+                console.log('createdUser',user.uid)
+                let username = gg.email.toString().split('@')
+                self.userEmail = username[0]
+                self.accountLoggedIn = gg
+
+              } else {
+                  // No user is signed in.
+                  self.$router.push('/')
+              }
+          })
     },
     mounted () {
         this.$binding('Reservation', this.$firestoreApp.collection('Reservation'))
@@ -195,6 +281,9 @@ export default {
         },
     },
     methods:{
+        printNow(){
+            window.print();
+        },
         formatNumber(num) {
             return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
         },
@@ -235,3 +324,13 @@ export default {
     }
 }
 </script>
+<style type = "text/css">
+      @media print {
+        .bodyText {
+            display: none;
+          }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+      }
+</style>
