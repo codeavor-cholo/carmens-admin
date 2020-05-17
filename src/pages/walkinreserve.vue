@@ -1109,6 +1109,7 @@ export default {
             clientReserveType: 'WALK-IN',
             clientDateofReserve: date.formatDate(new Date(), 'YYYY-MM-DD'),
         } 
+        //sdasdasda
             this.$firestoreApp.collection('Reservation').add(reserveDetails)
             .then((ref) =>{
               let key = ref.id
