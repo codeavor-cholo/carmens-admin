@@ -73,10 +73,11 @@
                                 </q-list>
                                 <q-separator/>
                                 </q-card-section>
-                                <q-card-actions class="q-pt-none q-mt-none">
-                                    <q-btn class="q-pt-none q-mt-none" color="deep-orange-4" label="Assign Delivery Staff" flat dense />
-                                    <q-space />
-                                    <q-btn class="q-pt-none q-mt-none" v-show="props.row.firstPayment != props.row.totalToPayAmount" flat dense color="deep-orange-4" @click="openPayment(props.row)" label="Update Payment" />
+                                <q-card-actions align="center" class="q-pt-none q-mt-none">
+                                    <!-- <q-btn class="q-pt-none q-mt-none" color="deep-orange-4" label="Assign Delivery Staff" flat dense />
+                                    <q-space /> -->
+                                    <q-btn class="q-pt-none q-mt-none" v-if="props.row.firstPayment != props.row.totalToPayAmount" flat dense color="deep-orange-4" @click="openPayment(props.row)" label="Update Payment" />
+                                    <q-btn class="q-pt-none q-mt-none" v-else flat dense color="deep-orange-4" label="No Balance" />
                                 </q-card-actions>
                             </q-card>
                         </div>
