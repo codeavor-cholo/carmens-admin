@@ -999,6 +999,7 @@ export default {
       setTask(){
                 var motifBago = {
                     motif: this.motif,
+                    hex: this.hex
                 }
                 if(this.motif === ''){
                     this.$q.dialog({
@@ -1032,6 +1033,7 @@ export default {
             console.log(task, 'task')
             this.motifID = task['.key']
             this.motif = task.motif
+            this.hex = task.motif
 			this.addmotifdialog = true
 			this.isEditMotif = true
 		    },

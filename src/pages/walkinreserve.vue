@@ -427,11 +427,88 @@
 
                             </q-step>
 
+                            <q-step :name="5" title="Contract" icon="print">
+                              <div align="center">
+                                <img class="q-ma-none q-pa-none" style="height:80%;width:300px" src="statics/pics/carmen-logo.png">
+                              </div>
+                              <div class="text-grey-8" align="center">
+                                  <p class="q-pb-none q-mb-none">J Center Bldg. Vista Verde Ave., Vista Verde Executive Village Cainta, Rizal</p>
+                                  <p class="q-pt-none q-mt-none">09175057991 . 09772774030</p>
+                              </div>
+                              <div class="row q-pa-sm" style="margin-top: -20px">
+                                    <div class="col-8 ">
+                                        <div class="col q-pa-sm"> 
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif" >Full Name:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientFName}}&nbsp;{{this.clientLName}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Email Address:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientEmail}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Event Address:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientPlace}},&nbsp;{{this.selectCity}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Time:&nbsp;&nbsp; <b class="text-weight-bold">{{this.startTime}} - {{this.endTime}}</b></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 class-q-pa-sm">
+                                        <div>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif" >Date of Event:&nbsp;&nbsp; <b class="text-weight-bold">{{this.dates}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Event:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientEvent}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Guest:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientPax}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Motif:&nbsp;&nbsp; <b class="text-weight-bold">{{this.selectMotif}}</b></p>
+                                        </div>
+                                    </div>
+                              </div>
+                              <div class="row">
+                                   <div class="col-8" style="margin-top: -20px">
+                                        <strong class="q-pa-md text-h6">Food Choices</strong>
+                                          <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
+                                            <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" :color="choice.foodChoices.length == returnLimit(choice.viandName) ? 'teal' : 'pink-6'" class="text-white" :label="choice.foodChoices.length+' / '+returnLimit(choice.viandName)" /></span>
+                                            <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
+                                              <div dense class="col q-mr-sm">{{pick.foodName}}</div>
+                                              <div dense class="col-1 text-weight-bold">x 1</div>
+                                            </div>
+                                          </div>
+                                    </div>
+                                    <div class="col-4" style="margin-top: -20px">
+                                        <div class="q-pa-sm"><b>Inclusions: </b></div>
+                                            <div v-for="(inc,i) in returnSelectedPackageInclusion" :key="i" dense>
+                                                      <div lines="1">{{inc.inclusion}}</div>
+                                            </div>
+                                        <div v-show="this.addonsList.length != 0" class="q-pa-sm"><b>Add-Ons:</b></div>
+                                          <div class="row" v-for="(i, index) in addonsListNew" :key="index" dense>
+                                                      <div class="q-pr-xl">{{i.addonsQuantities}}x {{i.addonsNames}}</div>
+                                                      <div>{{i.addonsTotalPrices}}php</div>       
+                                          </div>
+                                    </div>
+                              </div>
+                              <div>
+                                <q-item>
+                                  <div class="q-pr-xl"><strong><b>Total Payment:</b></strong></div>
+                                  <div class="q-pr-xl"><strong>{{totalPayment}}php</strong></div>
+                                </q-item>
+                                <q-item style="margin-top: -20px">
+                                    <div class="q-pr-xl"><strong><b>Paid Amount:</b></strong></div>
+                                    <div class="q-pr-xl"><strong>{{this.amount}}</strong></div>
+                                </q-item>
+                                <q-item style="margin-top: -20px">
+                                    <div class="q-pr-xl"><strong><b>Balance:</b></strong></div>
+                                    <div class="q-pr-xl"><strong>{{balance}}php</strong></div>
+                                </q-item>
+                              </div>
+                              <div class="text-grey-8" align="center">
+                                  <p class="q-pb-none q-mb-none text-h6 text-weigh-bold">TERMS AND CONDITIONS</p>
+                              </div>
+                              <div class="text-weight-bold">
+                                <q-list dense>
+                                    <q-item class="column">
+                                        <li>P 5,000.00 reservation fee is deductible from the total bill. Non refundable upon cancellation</li>
+                                        <li>50% downpayment upon signing of contract. Full payment on the day of event.</li>
+                                    </q-item>
+                                </q-list>
+                              </div>
+                            </q-step>
+
                             <template v-slot:navigation>
                                 <q-stepper-navigation align="right">
                                 <!-- <q-btn v-if="step === 4 || this.selectPay === 'CARD'" v-show="step === 4" outlined color="teal" class="col" size="md" @click="submit">PAY&nbsp;&nbsp;&nbsp;<b>PHP&nbsp;{{amount}}</b></q-btn> -->
-                                <q-btn flat @click="stepcheck" color="deep-orange-4" :label="step === 4 ? 'Reserve Now' : 'Continue'" />
-                                <q-btn v-if="step > 1" flat color="grey-8" @click="backFunction" label="Back" class="q-ml-sm" />
+                                <q-btn flat @click="stepcheck" color="deep-orange-4" :label="step === 5 ? 'Print Contract' : 'Continue'" />
+                                <q-btn v-if="step > 1" flat color="grey-8" @click="$router.push('/reservation')" :label="step === 5 ? 'Go To Reservation' : 'Back'" class="q-ml-sm" />
+                                <q-btn v-show="step === 5" flat color="grey-8" @click="reserveagain" label="Reserve Again" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>
                         </q-stepper>
@@ -567,6 +644,88 @@
             </q-page-sticky>
         </div>
     </div> <!-- <----- End Div-->
+    <q-dialog v-model="contract" full-height>
+                    <q-card class="my-card shadow-0" style="width: 900px; max-width: 90vw;">
+                        <q-card-section>
+                             <div align="center">
+                                <img class="q-ma-none q-pa-none" style="height:80%;width:300px" src="statics/pics/carmen-logo.png">
+                              </div>
+                              <div class="text-grey-8" align="center">
+                                  <p class="q-pb-none q-mb-none">J Center Bldg. Vista Verde Ave., Vista Verde Executive Village Cainta, Rizal</p>
+                                  <p class="q-pt-none q-mt-none">09175057991 . 09772774030</p>
+                              </div>
+                              <div class="row q-pa-sm" style="margin-top: -20px">
+                                    <div class="col-8 ">
+                                        <div class="col q-pa-sm"> 
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif" >Full Name:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientFName}}&nbsp;{{this.clientLName}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Email Address:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientEmail}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Event Address:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientPlace}},&nbsp;{{this.selectCity}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Time:&nbsp;&nbsp; <b class="text-weight-bold">{{this.startTime}} - {{this.endTime}}</b></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 class-q-pa-sm">
+                                        <div>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif" >Date of Event:&nbsp;&nbsp; <b class="text-weight-bold">{{this.dates}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Event:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientEvent}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Guest:&nbsp;&nbsp; <b class="text-weight-bold">{{this.clientPax}}</b></p>
+                                            <p class="q-mt-none q-pt-none" style="font-family: 'Roboto Slab', serif; margin-top: -20px" >Motif:&nbsp;&nbsp; <b class="text-weight-bold">{{this.selectMotif}}</b></p>
+                                        </div>
+                                    </div>
+                              </div>
+                              <div class="row">
+                                   <div class="col-8" style="margin-top: -20px">
+                                        <strong class="q-pa-md text-h6">Food Choices</strong>
+                                          <div class="q-px-md" v-for="(choice,i) in returnChoiceOfFood" :key="i">
+                                            <span class="text-weight-bold">{{choice.viandName}} <q-chip size="sm" :color="choice.foodChoices.length == returnLimit(choice.viandName) ? 'teal' : 'pink-6'" class="text-white" :label="choice.foodChoices.length+' / '+returnLimit(choice.viandName)" /></span>
+                                            <div class="q-px-sm q-mb-sm row" v-for="(pick,q) in choice.foodChoices" :key="q">
+                                              <div dense class="col q-mr-sm">{{pick.foodName}}</div>
+                                              <div dense class="col-1 text-weight-bold">x 1</div>
+                                            </div>
+                                          </div>
+                                    </div>
+                                    <div class="col-4" style="margin-top: -20px">
+                                        <div class="q-pa-sm"><b>Inclusions: </b></div>
+                                            <div v-for="(inc,i) in returnSelectedPackageInclusion" :key="i" dense>
+                                                      <div lines="1">{{inc.inclusion}}</div>
+                                            </div>
+                                        <div v-show="this.addonsList.length != 0" class="q-pa-sm"><b>Add-Ons:</b></div>
+                                          <div class="row" v-for="(i, index) in addonsListNew" :key="index" dense>
+                                                      <div class="q-pr-xl">{{i.addonsQuantities}}x {{i.addonsNames}}</div>
+                                                      <div>{{i.addonsTotalPrices}}php</div>       
+                                          </div>
+                                    </div>
+                              </div>
+                              <div>
+                                <q-item>
+                                  <div class="q-pr-xl"><strong><b>Total Payment:</b></strong></div>
+                                  <div class="q-pr-xl"><strong>{{totalPayment}}php</strong></div>
+                                </q-item>
+                                <q-item style="margin-top: -20px">
+                                    <div class="q-pr-xl"><strong><b>Paid Amount:</b></strong></div>
+                                    <div class="q-pr-xl"><strong>{{this.amount}}</strong></div>
+                                </q-item>
+                                <q-item style="margin-top: -20px">
+                                    <div class="q-pr-xl"><strong><b>Balance:</b></strong></div>
+                                    <div class="q-pr-xl"><strong>{{balance}}php</strong></div>
+                                </q-item>
+                              </div>
+                              <div class="text-grey-8" align="center">
+                                  <p class="q-pb-none q-mb-none text-h6 text-weigh-bold">TERMS AND CONDITIONS</p>
+                              </div>
+                              <div class="text-weight-bold">
+                                <q-list dense>
+                                    <q-item class="column">
+                                        <li>P 5,000.00 reservation fee is deductible from the total bill. Non refundable upon cancellation</li>
+                                        <li>50% downpayment upon signing of contract. Full payment on the day of event.</li>
+                                    </q-item>
+                                </q-list>
+                              </div>
+                              <div class="text-h6 column items-center">
+                                  <q-btn class="bodyText" label="Print" color="pink-3" @click="printNow" icon="print" />
+                              </div>
+                        </q-card-section>
+                    </q-card>
+                </q-dialog>
   </q-page>
 </template>
 <style>
@@ -587,6 +746,7 @@ export default {
   },
   data () {
     return {
+      contract: false,
       paymentMode: 'fullPayment',
       loading: false,
       amount: 0,
@@ -676,6 +836,14 @@ export default {
             })
   },
   computed: {
+    balance(){
+      if(this.totalPayment === 0){
+            return 0
+        }else{
+        let sum = parseInt(this.totalPayment) - parseInt(this.amount)
+        return sum
+        }
+    },
     isValid () {
       let max = 150
 
@@ -901,6 +1069,46 @@ export default {
       }
   },
   methods: {
+    reserveagain(){
+      this.$q.dialog({
+          title: `New Reservation??`,
+          message: 'Reserve Again??',
+          color: 'pink-3',
+          textColor: 'grey',
+          icon: 'mdi-positive',
+          ok: 'Ok',
+          cancel: 'Cancel'
+      }).onOk(()=>{
+          this.showreserveform = false, //this is opposite
+          this.showdateform = true,
+          this.step = 1
+          this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+          this.clientFName = ''
+          this.clientLName = ''
+          this.clientAddress = ''
+          this.selectCity = ''
+          this.clientEvent = ''
+          this.selectMotif = []
+          this.clientPax = 0
+          this.startTime = '09:00'
+          this.endTime = '13:00'
+          this.selected = []
+          this.choiceOfFood = []
+          this.addonsList = []
+          this.enterAmount = 0
+          this.amount = 0
+          this.clientEmail = ''
+      }).onCancel(() => {
+
+      })
+      
+    },
+    printNow(){
+            // this.$htmlToPaper('printMe', () => {
+            //   console.log('Printing completed or was cancelled!');
+            window.print();
+            // })
+    },
     formatTimeInput(time){
       //get time to format for display
       console.log(time,'time')
@@ -987,8 +1195,8 @@ export default {
               }
           }else if(this.step === 3){
                 this.$refs.stepper.next()
-          }else{
-              if(this.enterAmount === 0){
+          }else if(this.step === 4){
+              if(this.selectPay === ''){
                 this.$q.dialog({
                     title: `Unable to Continue??`,
                     message: 'Please Select Payment Type??',
@@ -1008,10 +1216,13 @@ export default {
                       cancel: 'Cancel'
                   }).onOk(()=>{
                       this.reserveNowCash()
+                      this.$refs.stepper.next()
                   }).onCancel(() => {
 
                   })
               }
+          }else{
+            this.contract = true
           }
     },
     reserveNowCard(){
@@ -1064,25 +1275,25 @@ export default {
                       })
                   })
             })
-                this.showreserveform = false, //this is opposite
-                this.showdateform = true,
-                this.step = 1
-                this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
-                this.clientFName = ''
-                this.clientLName = ''
-                this.clientAddress = ''
-                this.selectCity = ''
-                this.clientEvent = ''
-                this.selectMotif = ''
-                this.clientPax = 0
-                this.startTime = date.formatDate(new Date(), 'hh:mmA')
-                this.endTime = date.formatDate(new Date(), 'hh:mmA')
-                this.selected = []
-                this.choiceOfFood = []
-                this.addonsList = []
-                this.enterAmount = 0
-                this.amount = 0
-                this.clientEmail = ''
+                // this.showreserveform = false, //this is opposite
+                // this.showdateform = true,
+                // this.step = 1
+                // this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                // this.clientFName = ''
+                // this.clientLName = ''
+                // this.clientAddress = ''
+                // this.selectCity = ''
+                // this.clientEvent = ''
+                // this.selectMotif = ''
+                // this.clientPax = 0
+                // this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                // this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                // this.selected = []
+                // this.choiceOfFood = []
+                // this.addonsList = []
+                // this.enterAmount = 0
+                // this.amount = 0
+                // this.clientEmail = ''
     },
     reserveNowCash(){
         let reserveDetails = {
@@ -1136,25 +1347,25 @@ export default {
                         textColor: 'white',
                         position: 'center'
                       })
-                      this.showreserveform = false, //this is opposite
-                      this.showdateform = true,
-                      this.step = 1
-                      this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
-                      this.clientFName = ''
-                      this.clientLName = ''
-                      this.clientAddress = ''
-                      this.selectCity = ''
-                      this.clientEvent = ''
-                      this.selectMotif = ''
-                      this.clientPax = 0
-                      this.startTime = date.formatDate(new Date(), 'hh:mmA')
-                      this.endTime = date.formatDate(new Date(), 'hh:mmA')
-                      this.selected = []
-                      this.choiceOfFood = []
-                      this.addonsList = []
-                      this.enterAmount = 0
-                      this.amount = 0
-                      this.clientEmail = ''
+                      // this.showreserveform = false, //this is opposite
+                      // this.showdateform = true,
+                      // this.step = 1
+                      // this.dates = date.formatDate(new Date(), 'YYYY-MM-DD'),
+                      // this.clientFName = ''
+                      // this.clientLName = ''
+                      // this.clientAddress = ''
+                      // this.selectCity = ''
+                      // this.clientEvent = ''
+                      // this.selectMotif = ''
+                      // this.clientPax = 0
+                      // this.startTime = date.formatDate(new Date(), 'hh:mmA')
+                      // this.endTime = date.formatDate(new Date(), 'hh:mmA')
+                      // this.selected = []
+                      // this.choiceOfFood = []
+                      // this.addonsList = []
+                      // this.enterAmount = 0
+                      // this.amount = 0
+                      // this.clientEmail = ''
                   })
             })
     },
@@ -1388,6 +1599,7 @@ export default {
       }else{
           this.paydetails = charge
           this.reserveNowCard()
+          this.$refs.stepper.next()
       }
     },
     customizeSaveLocal(){
@@ -1469,3 +1681,13 @@ export default {
   }
 }
 </script>
+<style type = "text/css">
+      @media print {
+        .bodyText {
+            display: none;
+          }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+      }
+</style>

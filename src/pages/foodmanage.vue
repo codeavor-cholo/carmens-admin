@@ -30,7 +30,7 @@
                 <div class="relative-position text-center">
                 <q-btn color="teal" outline class="q-mb-md" icon="check" label="DONE EDITING" @click="editCateg = false" v-show="editCateg == true"/>
                 <q-btn color="teal" outline class="q-mb-md" icon="check" label="DONE DELETING" @click="deleteCateg = false" v-show="deleteCateg == true"/>
-                <q-scroll-area style="height:75vh" :visible="true">
+                <q-scroll-area style="height:80vh" :visible="true">
                 <q-tab class="text-white" name="ALL" value="ALL" style="font-family: 'Roboto Slab', serif;" label="ALL"></q-tab>
                 <q-tab name="WOPP" value="WOPP" label="WITHOUT PACKAGE PRICE" class="text-teal"></q-tab>
                  <q-tab :name="i.category" :value="i.category" v-for="(i, index) in FoodCategory" :key="index" class="" v-show="tab != 'addInc'">
@@ -44,7 +44,7 @@
                 </q-scroll-area>
                 <q-btn style="font-family: 'Roboto Slab', serif;" label="SCROLL FOR MORE CATEGORIES" flat size="sm" class="bg-grey-9 absolute-bottom full-width" color="deep-orange-6" v-show="tab != 'addInc'"></q-btn>
                 </div>
-                <q-tab name="addInc" style="font-family: 'Roboto Slab', serif;"   class="absolute-bottom bg-grey-9 text-white" label="INCLUSIONS"></q-tab>
+                <!-- <q-tab name="addInc" style="font-family: 'Roboto Slab', serif;"   class="absolute-bottom bg-grey-9 text-white" label="INCLUSIONS"></q-tab> -->
 
                 </q-tabs>
                 </template>
