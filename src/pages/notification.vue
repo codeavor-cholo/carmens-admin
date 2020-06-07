@@ -5,9 +5,9 @@
         </div>
         <div id="list">
             <q-list bordered separator>
-                <div v-for="notif in returnUserNotifications" :key="notif['.key']">
-                <q-item clickable v-ripple v-if="notif.typeOf == 'reserve'">
-                    <q-item-section>
+                <div >
+                <q-item clickable v-ripple v-for="(notif,i) in returnUserNotifications" :key="i">
+                    <q-item-section v-if="notif.typeOf == 'reserve'">
                         <div id="newreserve" class="text-weight-medium">We have new Reservation.</div>
                         <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
                         <div class="column q-pl-xl q-py-sm">
@@ -18,9 +18,52 @@
                         </div>
                         <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
                     </q-item-section>
+                    <q-item-section  v-else-if="notif.typeOf == 'order'">
+                        <div id="newreserve" class="text-weight-medium">We have new Party Tray Order.</div>
+                        <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
+                        <div class="column q-pl-xl q-py-sm">
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientName}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.deliveryDate}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.deliveryTime}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientAddress}}, {{notif.city}}</q-item-label> 
+                        </div>
+                        <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section v-else-if="notif.typeOf == 'schedule'">
+                        <div id="newreserve" class="text-weight-medium" v-if="returnUserPosition() == 'Admin'">New Staff Schedule created.</div>
+                        <div id="newreserve" class="text-weight-medium" v-else>You have new Schedule.</div>
+                        <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
+                        <div class="column q-pl-xl q-py-sm">
+                            <q-item-label class="text-deep-orange" caption>{{notif.type}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientName}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientReserveDate}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientStartTime}} - {{notif.clientEndTime}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientPlace}}, {{notif.clientCity}}</q-item-label> 
+                        </div>
+                        <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section v-else-if="notif.typeOf == 'payment'">
+                        <div id="newreserve" class="text-weight-medium">We have new customer's payment.</div>
+                        <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
+                        <div class="column q-pl-xl q-py-sm">
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientName}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>₱ {{formatNumber(notif.amount)}}.00</q-item-label>
+                        </div>
+                        <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section v-else>
+                        <div id="newreserve" class="text-weight-medium">We have new status update.</div>
+                        <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
+                        <div class="column q-pl-xl q-py-sm">
+                            <q-item-label class="text-deep-orange" caption>{{notif.clientName}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.transactionType}}</q-item-label>
+                            <q-item-label class="text-deep-orange" caption>{{notif.status}}</q-item-label>
+                        </div>
+                        <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
+                    </q-item-section>
                 </q-item>
-
-                <q-item clickable v-ripple v-else-if="notif.typeOf == 'order'">
+<!-- 
+                <q-item clickable v-ripple >
                     <q-item-section>
                         <div id="newreserve" class="text-weight-medium">We have new Party Tray Order.</div>
                         <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
@@ -34,7 +77,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable v-ripple v-else-if="notif.typeOf == 'schedule'">
+                <q-item clickable v-ripple >
                     <q-item-section>
                         <div id="newreserve" class="text-weight-medium" v-if="returnUserPosition() == 'Admin'">New Staff Schedule created.</div>
                         <div id="newreserve" class="text-weight-medium" v-else>You have new Schedule.</div>
@@ -50,7 +93,7 @@
                     </q-item-section>
                 </q-item>
 
-                <q-item clickable v-ripple v-else-if="notif.typeOf == 'payment'">
+                <q-item clickable v-ripple >
                     <q-item-section>
                         <div id="newreserve" class="text-weight-medium">We have new customer's payment.</div>
                         <q-item-label class="q-pt-sm q-pl-md" caption>Details</q-item-label>
@@ -73,7 +116,7 @@
                         </div>
                         <q-item-label class="text-blue" caption>{{$moment(notif.dateTime).fromNow()}}</q-item-label>
                     </q-item-section>
-                </q-item>
+                </q-item> -->
                 </div>
             </q-list>
         </div>
@@ -117,31 +160,36 @@ export default {
         returnUserNotifications(){
             try {
                 let user = this.$firebase.auth().currentUser
-
+                console.log(user,'usere firebsase')
                 let details =  this.dashboardUsers.filter(a=>{
                     return a['.key'] == user.uid
                 })[0]
 
                 console.log(details,'details user')
                 if(details.position == 'Admin'){
-                    console.log(this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc'),'types')
-                    return this.$lodash.orderBy(this.returnNotifsWithTypes,'dateTime','desc')
+                    return this.$lodash.orderBy(this.returnNotifsWithTypes, a=>{
+                        return new Date(a.dateTime)
+                    },'desc')
                 } else if(details.position == 'Staff' || details.position == 'Delivery Boy'){
                     let filter = this.returnNotifsWithTypes.filter(a=>{
                         return a.typeOf == 'schedule' && a.staffKey == user.uid
                     })
-                    console.log(this.$lodash.orderBy(filter,'dateTime','desc'),'types')
-                    return this.$lodash.orderBy(filter,'dateTime','desc')
+                    return this.$lodash.orderBy(filter, a=>{
+                        return new Date(a.dateTime)
+                    },'desc')
                 } else {
                     let filter = this.returnNotifsWithTypes.filter(a=>{
                         return a.typeOf != 'schedule' || a.typeOf != 'status'
                     })     
-                    return this.$lodash.orderBy(filter,'dateTime','desc')               
+                    return this.$lodash.orderBy(filter, a=>{
+                        return new Date(a.dateTime)
+                    },'desc')             
                 }
 
                 
                 return ''
             } catch (error) {
+                console.log(error,'error in return admin')
                 return []
             }
         },
@@ -156,7 +204,12 @@ export default {
                     return {...a,...this.returnDataOfNotifs('order',a.reservationKey)}
                 } else if (a.message.includes('Payment')){
                     a.typeOf = 'payment'
-                    a.clientName = this.returnCustomerData(a.userID).displayName
+                    if(a.userID == 'WALK-IN'){
+                        a.clientName = 'WALK-IN'
+                    } else {
+                        a.clientName = this.returnCustomerData(a.userID).displayName
+                    }
+                    
                     return {...a,...this.returnDataOfNotifs('payment',a.paymentKey)}
                 } else if (a.message.includes('Schedule')){
                     a.typeOf = 'schedule'
@@ -167,10 +220,9 @@ export default {
                     return {...a,...this.returnDataOfNotifs('status',a.reservationKey)}
                 }
                 })
-
-                
                 return notifs
             } catch (error) {
+                console.log(error,'returnNotifsWithTypes')
                 return []
             }
         }

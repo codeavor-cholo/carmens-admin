@@ -65,7 +65,7 @@
                 </template>
                 </q-splitter>
         </template>
-        <q-dialog v-model="addPackageDialog" persistent>
+        <q-dialog v-model="addPackageDialog" persistent >
             <q-card style="min-width: 1000px">
                 <q-banner inline-actions class="text-white bg-warning" v-show="showCompleteBanner">
                     <q-icon name="warning"/>&nbsp;Complete the <b>Viand Qty Input</b> to show <b>Price per Pax</b>
@@ -110,7 +110,7 @@
                                             <q-item-label dense class="q-pl-md" lines="1" v-else>{{i.category+' ('+ i.min +' - '+ i.max +' Pesos)'}}</q-item-label>
                                         </q-item-section>
                                         <q-item-section side>
-                                            <q-input color="deep-orange-4" outlined="" class="q-ma-sm" type="number" dense min="0" v-model="viandsQty[i.category]" label="Viands Qty"/>
+                                            <q-input color="deep-orange-4" outlined="" class="q-ma-sm" type="number" dense min="0" :max="returnMaxViands(i.category)" v-model="viandsQty[i.category]" label="Qty"/>
                                         </q-item-section>
                                     </q-item>
                                 </q-list>
@@ -143,7 +143,7 @@
                 
                 <q-card-section class="col container q-mt-xl q-pl-none q-mr-sm">
                     <q-page-sticky position="top-right" :offset="[200, -30]"> 
-                    <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: teal;width: 330px">
+                    <div class="my-card q-mt-md q-pa-sm bg-white" style="border: 1.5px solid;border-color: teal;width: 330px">
                         <div class="q-ml-sm q-mr-sm text-weight-bold text-teal">
                             <span style="font-family: 'Roboto Slab', serif;">
                             Package Pricing Per Pax
@@ -201,7 +201,7 @@
                             </q-item>
                         </q-list>
                     </div>
-                    <div class="my-card q-mt-md q-pa-sm" style="border: 1.5px solid;border-color: #FFDAB9;">
+                    <div class="my-card q-mt-md q-pa-sm bg-white" style="border: 1.5px solid;border-color: #FFDAB9;">
                         <div class="q-ml-sm q-mr-sm text-weight-bold text-grey-8">
                             <span style="font-family: 'Roboto Slab', serif;">
                             Package Pricing
@@ -572,6 +572,18 @@ export default {
             }
             this.selectedInclusions = pushs
             console.log(this.selectedInclusions)
+        },
+        returnMaxViands(category){
+            try {
+                let filter = this.Food.filter(a=>{
+                    return a.category == category && a.foodPrice !== undefined
+                })
+                console.log(filter,'filter')
+                console.log(filter.length,'length max')
+                return filter.length
+            } catch (error) {
+                return 0
+            }
         },
         updatePackage(){
             let key = this.selectedKeyEdit
