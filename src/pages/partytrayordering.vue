@@ -104,7 +104,7 @@
                 </q-card-section>
                 <q-card-actions align="right" class="justify-between row">
                     <div class="text-weight-bold text-h6" >SUBTOTAL : <span class="text-teal-6">{{returnSubTotal}}</span></div>
-                    <q-btn :label="'Checkout '+returnLength+ ' items'" color="pink-6" v-close-popup @click="checkout = true"  class="text-weight-bold" outline=""/>
+                    <q-btn :label="'Checkout '+returnLength+ ' items'" color="pink-6" v-close-popup @click="checkcheck"  class="text-weight-bold" outline=""/>
                 </q-card-actions>
                 </q-card>
             </q-dialog>
@@ -131,7 +131,7 @@
                                 <q-img :src="order.foodPic" :ratio="1" spinner-color="primary" spinner-size="82px" style="width:4em;border-radius:5px;" class=""/>
                                 <div class="column">
                                     <q-item-label>{{order.foodName}}</q-item-label>
-                                    <q-item-label caption lines="1">{{order.size}}</q-item-label>
+                                    <q-item-label caption lines="1">{{order.size}} ({{order.min}}-{{order.max}})</q-item-label>
                                     <q-item-label class="text-subtitle2" lines="1">₱ {{order.price}}</q-item-label>
                                 </div>
                                 </div>
@@ -158,7 +158,7 @@
                 </div>
                 <div class="col-8">
                     <q-card class="my-card">
-                        <q-stepper style="height: 555px" v-model="step" ref="stepper" color="pink-4" active-color="pink-3" inactive-color="grey-8" animated>
+                        <q-stepper header-nav style="height: 555px" v-model="step" ref="stepper" color="pink-4" active-color="pink-3" inactive-color="grey-8" animated>
                             <q-step :name="1" title="Customer Details" icon="settings" :done="step > 1">
                                 <div class="text-h5">Please fill-up all the details below </div>
                                 <div class="column q-gutter-md q-pt-md">
@@ -237,18 +237,180 @@
                                 </div>
                             </div>
                             </q-step>
+                            <q-step :name="4" title="Print Receipt" icon="print" :done="step > 4">
+                                <div style="margin-left: 150px"  class="row items-center q-pa-sm q-pl-lg">
+                                    <img class="bg-deep-orange-4" style="height:80%;width:130px" src="statics/pics/logo.png" >
+                                    <div class="q-pl-md text-h6 text-weight-bold" style="font-family: 'Simonetta', serif;">
+                                    Carmen's Diner and Catering Services
+                                    </div> 
+                                    <div class="q-pl-lg q-ml-lg text-weight-light" style="font-family: 'Simonetta', serif;">
+                                    Stall #7 J. Center Bldg., Vista Verte Ave., San Isidro, Cainta Rizal
+                                    </div> 
+                                </div>
+                                <div class="row">
+                                    <div class="col-7">
+                                        <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Client Name:</b> {{this.fname}} {{this.lname}}</p></div>
+                                        <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Contact No.:</b> {{this.cnum}}</p></div>
+                                    </div>
+                                    <div class="col-5 q-pl-lg">
+                                        <div><p class="col q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Date of Delivery:</b> {{this.date}}</p></div>
+                                        <div><p class="col q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Delivery Time:</b> {{this.time}}</p></div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Where:</b> {{this.address}} {{this.city}}</p></div>
+                                </div>
+                                <div class="q-pa-lg">
+                                <q-list dense class="q-pt-sm q-pb-none q-mb-none text-weight-bold">
+                                    <q-item dense class="q-pb-none q-mb-none">
+                                        <q-item-section class="col-1" top>
+                                            <q-item-label>Qty</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-4 items-center" top>
+                                            <q-item-label>Description</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-3 items-center" top>
+                                            <q-item-label>Size</q-item-label>    
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center" top>
+                                            <q-item-label>Unit Price</q-item-label>    
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center" top>
+                                            <q-item-label>Total Price</q-item-label>    
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item dense style="margin-top: -10px" class="q-mt-none q-pt-none text-weight-bold" v-for="(i, index) in this.basketList" :key="index">
+                                        <q-item-section class="col-1">
+                                            <q-item-label lines="2">{{i.qty}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-4 items-center">
+                                            <q-item-label lines="2">{{i.foodName}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-3 items-center">
+                                            <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.size}}( {{i.min}} - {{i.max}})</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center">
+                                            <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.price}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center">
+                                            <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.price * i.qty}}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                                </div>
+                                <q-separator />
+                                <div class="col-2 q-pa-sm" style="float: right;clear: both">
+                                    <div><p class="col"><b>SubTotal: </b> <b class="text-h6" style="font-family: 'Roboto Slab', serif;">{{returnSubTotal}}</b></p></div>
+                                </div>
+                                <br>
+                                <br>
+                                <div>
+                                    <div><p><b>Customer's Note: </b> <b class="text-h6" style="font-family: 'Roboto Slab', serif;">{{this.message}}</b></p></div>
+                                </div>
+                            </q-step>
 
                             <template v-slot:navigation>
                                 <q-stepper-navigation>
-                                <q-btn @click="$refs.stepper.next()" color="teal" :label="step === 3 ? 'Finish' : 'Continue'" v-show="step !== 3"/>
-                                <q-btn v-if="step > 1" color="grey-8" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
+                                <q-btn :disabled="step === 3" @click="$refs.stepper.next()" color="teal" :label="step === 4 ? 'Print Receipt' : 'Continue'" v-show="step !== 4"/>
+                                <q-btn v-if="step > 1" :color="step===4? 'deep-orange' : 'grey-8'" :icon="step===4? 'print' : '' " @click="stepback" :label="step === 4 ? 'Print' : 'Back'" class="q-ml-sm" />
+                                <q-btn v-show="step === 4" color="deep-orange" @click="clearmuna" label="Order Again" class="q-ml-sm" />
+                                <q-btn v-show="step === 4" color="deep-orange" @click="$router.push('/partytrayreserve')" label="Go To Orders" class="q-ml-sm" />
                                 </q-stepper-navigation>
                             </template>
                             </q-stepper>
                     </q-card>
                 </div>
               </div>
-        </q-dialog>   
+        </q-dialog>
+        <q-dialog v-model="contract" full-height>
+                    <q-card class="my-card shadow-0" style="width: 900px; max-width: 90vw;">
+                        <q-card-section>
+                             <div style="margin-left: 20px" class="row items-center q-pa-sm q-pl-lg">
+                                    <img class="bg-deep-orange-4" style="height:80%;width:130px" src="statics/pics/logo.png" >
+                                    <div class="q-pl-md text-h6 text-weight-bold" style="font-family: 'Simonetta', serif;">
+                                    Carmen's Diner and Catering Services
+                                    </div> 
+                                    <div class="q-pl-lg q-ml-lg text-weight-light" style="font-family: 'Simonetta', serif;">
+                                    Stall #7 J. Center Bldg., Vista Verte Ave., San Isidro, Cainta Rizal
+                                    </div> 
+                                </div>
+                                <div class="row">
+                                    <div class="col-7">
+                                        <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Client Name:</b> {{this.fname}} {{this.lname}}</p></div>
+                                        <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Contact No.:</b> {{this.cnum}}</p></div>
+                                    </div>
+                                    <div class="col-5 q-pl-lg">
+                                        <div><p class="col q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Date of Delivery:</b> {{this.date}}</p></div>
+                                        <div><p class="col q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Delivery Time:</b> {{this.time}}</p></div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Where:</b> {{this.address}} {{this.city}}</p></div>
+                                </div>
+                                <div class="q-pa-md">
+                                <q-list dense class="q-pt-sm q-pb-none q-mb-none text-weight-bold">
+                                    <q-item dense class="q-pb-none q-mb-none">
+                                        <q-item-section class="col-1" top>
+                                            <q-item-label>Qty</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-4 items-center" top>
+                                            <q-item-label>Description</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-3 items-center" top>
+                                            <q-item-label>Size</q-item-label>    
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center" top>
+                                            <q-item-label>Unit Price</q-item-label>    
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center" top>
+                                            <q-item-label>Total Price</q-item-label>    
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item dense style="margin-top: -10px" class="q-mt-none q-pt-none text-weight-bold" v-for="(i, index) in this.basketList" :key="index">
+                                        <q-item-section class="col-1">
+                                            <q-item-label lines="2">{{i.qty}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-4 items-center">
+                                            <q-item-label lines="2">{{i.foodName}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-3 items-center">
+                                            <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.size}}( {{i.min}} - {{i.max}})</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center">
+                                            <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.price}}</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section class="col-2 items-center">
+                                            <q-item-label class="text-weight-bold" style="font-family: 'Roboto Slab', serif;">{{i.price * i.qty}}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                                </div>
+                                <q-separator />
+                                <div class="col-2 q-pa-sm" style="float: right;clear: both">
+                                    <div><p class="col"><b>SubTotal: </b> <b class="text-h6" style="font-family: 'Roboto Slab', serif;">{{returnSubTotal}}</b></p></div>
+                                </div>
+                                <br>
+                                <br>
+                                <div>
+                                    <div><p><b>Customer's Note: </b> <b class="text-h6" style="font-family: 'Roboto Slab', serif;">{{this.message}}</b></p></div>
+                                </div>
+                                <div class="text-grey-8" align="center">
+                                  <p class="q-pb-none q-mb-none text-h6 text-weigh-bold">TERMS AND CONDITIONS</p>
+                                </div>
+                                <div align="center" class="q-pa-md text-weight-bold">
+                                    <q-list dense>
+                                        <q-item class="column">
+                                            <li>Non refundable upon cancellation</li>
+                                            <li>Full payment on the day of event.</li>
+                                        </q-item>
+                                    </q-list>
+                                </div>
+                              <div class="text-h6 column items-center">
+                                  <q-btn class="bodyText" label="Print" color="deep-orange" @click="printNow" icon="print" />
+                              </div>
+                        </q-card-section>
+                    </q-card>
+                </q-dialog>   
 </q-page>
 </template>
 <script>
@@ -260,6 +422,7 @@ export default {
   },
   data () {
     return {
+        contract: false,
         selectPay: 'CARD',
         payoptions: [
             {label: 'CASH', value: 'CASH'},
@@ -298,7 +461,7 @@ export default {
         CartItems: [],
         addPorder: false,
         filter: '',
-        pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 10},
+        pagination: { sortBy: 'Category', descending: false, page: 1, rowsPerPage: 1000},
         columns: [
             { name: 'category', required: true, label: 'Food Category', align: 'center', field: 'category', sortable: true },
             { name: 'foodName', align: 'center', label: 'Food Name', field: 'foodName', sortable: true },
@@ -374,6 +537,54 @@ export default {
     }
   },
   methods: {
+    checkcheck(){
+        if(this.basketList.length === 0){
+            this.$q.dialog({
+                title: `Nothing To Checkout`,
+                message: 'Please put some item on the basket.',
+                color: 'teal',
+                textColor: 'deep-orange',
+                icon: 'positive',
+                persistent: true,
+                ok: 'OK',
+            }).onOk(()=>{
+                this.basket = true
+            })
+        }else{
+            this.checkout = true
+        }
+    },
+    clearmuna(){
+        this.step = 1
+        this.paymentOpt = 'FULL'
+        this.amount = 0
+        this.addPorder = false
+        this.basket = false
+        this.contract = false
+        this.checkout = false,
+        this.fname = ''
+        this.lname = ''
+        this.address = ''
+        this.city = ''
+        this.cnum = ''
+        this.date = date.formatDate(new Date(), 'YYYY/MM/DD')
+        this.time = '09:00'
+        this.message = ''
+        this.basketList = []
+    },
+    stepback(){
+        if(this.step === 4){
+            this.contract = true
+        }else{
+            this.$refs.stepper.previous()
+        }
+    },  
+    printNow(){
+            // this.$htmlToPaper('printMe', () => {
+            //   console.log('Printing completed or was cancelled!');
+            window.print();
+            // })
+    },
     payCheckout(){
         let checkout = {
             clientName: this.fname +' '+this.lname,
@@ -421,7 +632,8 @@ export default {
                     persistent: true,
                     ok: 'OK',
                 }).onOk(()=>{
-                    this.$router.push('/partytrayreserve')
+                    this.$refs.stepper.next()
+                    // this.$router.push('/partytrayreserve')
                 })
             })
         })
@@ -497,7 +709,8 @@ export default {
                             persistent: true,
                             ok: 'OK',
                         }).onOk(()=>{
-                            this.$router.push('/partytrayreserve')
+                            this.$refs.stepper.next()
+                            // this.$router.push('/partytrayreserve')
                         })
                     })
                 })            
@@ -683,3 +896,13 @@ export default {
   }
 }
 </script>
+<style type = "text/css">
+      @media print {
+        .bodyText {
+            display: none;
+          }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+      }
+</style>

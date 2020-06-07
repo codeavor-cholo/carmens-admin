@@ -29,7 +29,7 @@ const routes = [
       { path: '/topChoices', meta: {requiredAuth: true}, name: 'topChoices', component: () => import('pages/topChoices.vue') },
       { path: '/traySalesReport', meta: {requiredAuth: true}, name: 'traySalesReport', component: () => import('pages/traySalesReport.vue') },
       { path: '/paymentRecords', meta: {requiredAuth: true}, name: 'paymentRecords', component: () => import('pages/paymentRecords.vue') },
-      { path: '/finishreserve', meta: {requiredAuth: true}, name: 'finishreserve', component: () => import('pages/finishreserve.vue') },
+      // { path: '/finishreserve', meta: {requiredAuth: true}, name: 'finishreserve', component: () => import('pages/finishreserve.vue') },
     ]
   },
   { path: '/', component: () => import('pages/login.vue') },

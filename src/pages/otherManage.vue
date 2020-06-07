@@ -344,6 +344,7 @@ export default {
       addons: '',
       addonsPrice: 0,
       Motif: [],
+      Food: [],
       FoodCategory: [],
       City: [],
       Position: [],
@@ -387,6 +388,10 @@ export default {
       this.$binding('FoodCategory', this.$firestoreApp.collection('FoodCategory'))
             .then(FoodCategory => {
             console.log(FoodCategory, 'FoodCategory')
+            }),
+      this.$binding('Food', this.$firestoreApp.collection('Food'))
+            .then(Food => {
+            console.log(Food, 'Food')
             }),
       this.$binding('Inclusion', this.$firestoreApp.collection('Inclusion'))
             .then(Inclusion => {
@@ -811,21 +816,35 @@ export default {
 		    },
       openDeleteDialogCateg (task) {
                 var id = task['.key']
-                this.$q.dialog({
-                    title: 'Delete Category?',
-                    message: 'Delete This Category?',
-                    ok: 'Yes',
-                    cancel: 'Cancel'
-                }).onOk(() => { 
-                    this.$firestoreApp.collection('FoodCategory').doc(id).delete()
-                    this.$q.notify({
-                            message: 'Category Deleted!',
-                            icon: 'mdi-delete',
-                            color: 'pink-6',
-                            textColor: 'white',
-                            position: 'center'
-                        })
+                let categ = this.$lodash.filter(this.Food, a=>{
+                    return a.category == task.category
                 })
+                if(categ.length === 0){
+                    this.$q.dialog({
+                        title: 'Delete Category?',
+                        message: 'Delete This Category?',
+                        ok: 'Yes',
+                        cancel: 'Cancel'
+                    }).onOk(() => { 
+                        this.$firestoreApp.collection('FoodCategory').doc(id).delete()
+                        this.$q.notify({
+                                message: 'Category Deleted!',
+                                icon: 'mdi-delete',
+                                color: 'pink-6',
+                                textColor: 'white',
+                                position: 'center'
+                            })
+                    })
+                } else {
+                    this.$q.dialog({
+                        title: 'Unable to Delete Category?',
+                        message: 'This Category has been used from some Data?',
+                        ok: 'Ok',
+                        persistent: true
+                    }).onOk(() => { 
+                        
+                    })
+                }
 
             },
       addCateg () {
