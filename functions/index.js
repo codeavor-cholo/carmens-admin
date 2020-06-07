@@ -24,11 +24,11 @@ exports.newNotification = functions.firestore.document('{collection}/{id}').onCr
 
 
         if(collection === 'Reservation'){
-            return adminNotifs.add({userID: newData.clientUID ?  newData.clientUID : '',clientName: newData.clientFName+' '+newData.clientLName,message: 'New Event Reservation for '+  newData.clientFName+' '+newData.clientLName,dateTime: moment(today).toString(), reservationKey: id})
+            return adminNotifs.add({userID: newData.clientUID ?  newData.clientUID : '',clientName: newData.clientFName+' '+newData.clientLName,message: 'New Event Reservation for '+  newData.clientFName+' '+newData.clientLName,dateTime: moment().toString(), reservationKey: id})
         } else if(collection === 'partyTrayOrders'){
-            return adminNotifs.add({userID: newData.accountUID ?  newData.accountUID : '',clientName: newData.clientName,message: 'New Party Tray Order from '+  newData.clientName,dateTime: moment(today).toString(),reservationKey: id})
+            return adminNotifs.add({userID: newData.accountUID ?  newData.accountUID : '',clientName: newData.clientName,message: 'New Party Tray Order from '+  newData.clientName,dateTime: moment().toString(),reservationKey: id})
         } else if(collection === 'Payments'){
-            return adminNotifs.add({userID: newData.clientUID ?  newData.clientUID : '',message: 'Payment Recieved!',dateTime: moment(today).toString(),amount: newData.clientPayDetails.amount, forPartyTray: newData.forPartyTray ?  newData.forPartyTray : '', reservationKey: newData.clientReservationKey, paymentKey: id})
+            return adminNotifs.add({userID: newData.clientUID ?  newData.clientUID : '',message: 'Payment Recieved!',dateTime: moment().toString(),amount: newData.clientPayDetails.amount, forPartyTray: newData.forPartyTray ?  newData.forPartyTray : '', reservationKey: newData.clientReservationKey, paymentKey: id})
         } else if(collection === 'StaffSchedules'){
             let dateObject = {dateTime: moment().toString(),message: 'New Schedule Created'}
             let object = {...newData,...dateObject}

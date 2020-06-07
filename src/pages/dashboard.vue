@@ -290,7 +290,7 @@ export default {
         returnSumOfConfirmedPayments(){
             try {
                 return this.$lodash.sumBy(this.returnNumberOfConfirmedPayments,a=>{
-                    return a.clientPayDetails.amount
+                    return parseInt(a.clientPayDetails.amount)
                 })
             } catch (error) {
                 return 0
