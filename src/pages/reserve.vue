@@ -12,11 +12,10 @@
                             </template>
                         </q-input>
                         <q-tab class="text-white" name="reservation" value="All Reservation" style="font-family: 'Roboto Slab', serif;" label="ALL RESERVATIONS"></q-tab>
-                        <q-tab class="text-white" name="today" value="today" style="font-family: 'Roboto Slab', serif;" label="TODAY's EVENTS"></q-tab>
-                        <q-tab class="text-white" name="coming" value="come" style="font-family: 'Roboto Slab', serif;" label="UPCOMING EVENTS"></q-tab>
-                        <q-tab class="text-white" name="finish" value="fin" style="font-family: 'Roboto Slab', serif;" label="FINISH EVENTS"></q-tab>
                         <q-tab class="text-white" name="fpaid" value="full" style="font-family: 'Roboto Slab', serif;" label="FULLY PAID"></q-tab>
                         <q-tab class="text-white" name="bal" value="bal" style="font-family: 'Roboto Slab', serif;" label="WITH BALANCES"></q-tab>
+                        <q-tab class="text-white" name="due" value="due" style="font-family: 'Roboto Slab', serif;" label="DUE PAYMENTS"></q-tab>
+                        <q-tab class="text-white" name="over" value="over" style="font-family: 'Roboto Slab', serif;" label="OVERDUE PAYMENTS"></q-tab>
                     </div>
                 </q-tabs>
                 </template>    
@@ -32,7 +31,6 @@
                                 <div class="q-pa-md col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
                                     <q-card flat class="my-card" style="border: 2px solid;border-color: #ffdab9" >
                                         <q-card-section side>
-                                            <q-badge color="deep-orange" align="top" :label="props.row.clientPaidAmount != props.row.clientTotalPayment ? 'WITH BALANCE' : 'FULLY PAID'"></q-badge>
                                             <q-list dense>
                                             <q-item>
                                             <div class="full-width text-center text-grey-8 text-h6">
@@ -55,10 +53,12 @@
                                                 <div><p class="q-pt-none q-mt-none q-pb-none q-mb-none" style="font-family: 'Roboto Slab', serif;"><b>Email:</b> {{props.row.clientEmail}}</p></div>
                                                 <div><p class="q-pt-none q-mt-none"></p></div>
                                             </div>
-                                            <!-- <div style="margin-top: -10px" class="row items-center">
+                                            <div style="margin-top: -10px" class="row items-center">
                                                 <q-btn class="col" flat dense color="deep-orange-4" @click="openContract(props.row)" label="View Contract" />
-                                            </div> -->
-                                            <!-- <q-slide-transition>
+                                            </div>
+                                            
+                                            <q-separator/>
+                                            <q-slide-transition>
                                                 <div v-show="expanded">
                                                 <q-separator />
                                                   <q-list dense>
@@ -74,7 +74,7 @@
                                                         <q-item class="q-mt-sm" v-show="props.row.clientSelectPackage.inclusions">
                                                         <span class="full-width text-center text-weight-bold text-grey-8" style="font-family: 'Roboto Slab', serif;">INCLUSIONS</span>
                                                         </q-item>
-                                                        <q-item v-for="(price, indexx) in props.row.clientSelectPackage.inclusions" :key="indexx" class="text-grey-8">
+                                                        <q-item v-for="(price, index) in props.row.clientSelectPackage.inclusions" :key="index" class="text-grey-8">
                                                             <q-item-section>
                                                             <q-item-label> {{ price.inclusion }}</q-item-label>
                                                             </q-item-section>
@@ -83,24 +83,22 @@
                                                         <q-item class="q-mt-sm" v-show="props.row.clientAddOns.lenght != 0">
                                                         <span class="full-width text-center text-weight-bold text-grey-8" style="font-family: 'Roboto Slab', serif;">ADD-ONS</span>
                                                         </q-item>
-                                                        <q-item v-for="(price, indexxx) in props.row.clientAddOns" :key="indexxx" class="text-grey-8">
+                                                        <q-item v-for="(price, index) in props.row.clientAddOns" :key="index" class="text-grey-8">
                                                             <q-item-section>
                                                             <q-item-label>{{ price.addonsQuantities }} {{ price.addonsNames }}</q-item-label>
                                                             </q-item-section>
                                                     </q-item>
                                                   </q-list>
                                                 </div>
-                                            </q-slide-transition> -->
+                                            </q-slide-transition>
                                         </q-list>
                                         </q-card-section>
                                         <!-- color="expanded ? 'grey-8':'pink-3' " -->
-                                        <q-card-actions style="margin-top: -20px">
+                                        <q-card-actions>
                                             <q-btn color="deep-orange-4" @click="paybalance(props.row)" :disable="props.row.clientTotalPayment === props.row.clientPaidAmount"  :label="props.row.clientTotalPayment === props.row.clientPaidAmount ? 'NO BALANCE' : 'PAY BALANCE'" :icon="props.row.clientTotalPayment === props.row.clientPaidAmount ? '' : 'mdi-paypal'"  flat dense />
                                             <q-space />
-                                            <q-btn flat dense color="deep-orange-4" @click="openContract(props.row)" label="View Contract" />
-                                            <!-- <q-btn :color="expanded ? 'grey-8':'deep-orange-4'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" /> -->
+                                            <q-btn :color="expanded ? 'grey-8':'deep-orange-4'" :label="expanded ? 'Hide Details' : 'View Details'" flat dense :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" @click="expandeds(props.row)" />
                                         </q-card-actions>
-                                        <q-separator/>
                                         <q-card-actions>
                                             <q-btn color="deep-orange-4" @click="openResched(props.row),rescheduleEvent=true" label="Reschedule Event" flat dense />
                                             <q-space />
@@ -210,28 +208,34 @@
                                     </div>
                               </div>
                               <div class="row">
-                                   <div class="col-8 q-pa-md" style="margin-top: -20px">
-                                        <div dense> 
-                                                <div class="text-grey-8">
+                                   <div class="col-8" style="margin-top: -20px">
+                                        <q-list dense> 
+                                                <q-item class="text-grey-8">
                                                 <span class="full-width text-weight-bold" style="font-family: 'Roboto Slab', serif;">FOOD Choices</span>
-                                                </div>
-                                                <div v-for="(i, indexs) in this.selectedContract.clientFoodChoice" :key="indexs" > 
-                                                    <div class="text-weight-bold">{{i.foodName}}</div>
-                                                </div>
-                                            </div>
+                                                </q-item>
+                                                <q-item v-for="(i, index) in this.selectedContract.clientFoodChoice" :key="index" >
+                                                    <q-item-section class="text-weight-bold"> 
+                                                    <q-item-label>{{i.foodName}}</q-item-label>
+                                                    </q-item-section>
+                                                </q-item>
+                                            </q-list>
                                     </div>
                                     <div class="col-4" style="margin-top: -20px">
-                                        <div class="q-ma-none q-pa-none" dense> 
-                                            <div v-show="this.returnFree.inclusions" class="text-grey-8">
+                                        <q-list class="q-ma-none q-pa-none" dense> 
+                                            <q-item v-show="this.returnFree.inclusions" class="text-grey-8">
                                             <span class="full-width text-weight-bold" style="font-family: 'Roboto Slab', serif;">Inclusions</span>
-                                            </div>
-                                            <div class="q-ma-none q-pa-none q-mb-none q-pb-none text-weight-bold" v-for="(i, indexs) in this.returnFree.inclusions" :key="indexs">
-                                                <div>{{i.inclusion}}</div>    
-                                            </div>
-                                            <div class="q-ma-none q-pa-none q-mb-none q-pb-none text-weight-bold"  v-for="(i, indexss) in this.selectedContract.clientAddOns" :key="indexss">
-                                                <div>{{i.addonsQuantities}}x {{i.addonsNames}}</div>    
-                                            </div>
-                                        </div>
+                                            </q-item>
+                                            <q-item class="q-ma-none q-pa-none q-mb-none q-pb-none text-weight-bold" v-for="(i, index) in this.returnFree.inclusions" :key="index">
+                                                <q-item-section>
+                                                <q-item-label>{{i.inclusion}}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            <q-item class="q-ma-none q-pa-none q-mb-none q-pb-none text-weight-bold"  v-for="(i, index) in this.selectedContract.clientAddOns" :key="index">
+                                                <q-item-section>
+                                                <q-item-label>{{i.addonsQuantities}}x {{i.addonsNames}}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                        </q-list>
                                 </div>
                                 <div>
                                     <div>
@@ -373,7 +377,6 @@ import { date } from 'quasar'
             columns: [
                 { name: 'clientFName', required: true, label: 'First Name', align: 'center', field: 'clientFName', sortable: true },
                 { name: 'clientLName', align: 'center', label: 'Last Name', field: 'clientLName', sortable: true },
-                { name: 'clientEvent', align: 'center', label: 'Event', field: 'clientEvent', sortable: true },
             ]
         }
     },
@@ -402,42 +405,25 @@ import { date } from 'quasar'
     },
     computed: {
         filterTable(){
+            console.log(this.tab, 'tab')
             if(this.tab == 'bal'){
                let wow = this.$lodash.filter(this.Reservation, c=>{
                     return c.clientTotalPayment != c.clientPaidAmount 
                 })
-                let orderBy = this.$lodash.orderBy(wow, ['clientReserveDate'], ['asc']);
-                return orderBy
+                return wow
             } else if (this.tab == 'fpaid'){
                 let wo = this.$lodash.filter(this.Reservation, b=>{
                     return b.clientPaidAmount === b.clientTotalPayment 
                 })
-                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
-                return orderBy
+                return wo
             } else if (this.tab == 'reservation'){
-                let wo = this.$lodash.filter(this.Reservation, b=>{
-                    return b.clientReserveDate
-                })
-                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
-                return orderBy
-            } else if (this.tab == 'coming'){
-                let wo = this.$lodash.filter(this.Reservation, b=>{
-                    return b.clientReserveDate >= date.formatDate(new Date(), 'YYYY/MM/DD') 
-                })
-                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
-                return orderBy
-            } else if (this.tab == 'today'){
-                let wo = this.$lodash.filter(this.Reservation, b=>{
-                    return date.formatDate(b.clientReserveDate, 'YYYY/MM/DD') === date.formatDate(new Date(), 'YYYY/MM/DD') 
-                })
-                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
-                return orderBy
-            } else {
-                let wo = this.$lodash.filter(this.Reservation, b=>{
-                    return date.formatDate([b.clientReserveDate], 'YYYY/MM/DD') < date.formatDate(new Date(), 'YYYY/MM/DD') 
-                })
-                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
-                return orderBy
+                return this.Reservation
+            }else if (this.tab === 'addons'){
+                return this.Addons
+            }else if (this.tab === 'position'){
+                return this.Position
+            }else{
+                return this.Inclusion
             }
         },
         cardAmount(){

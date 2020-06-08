@@ -10,16 +10,22 @@
                             <q-icon name="search" color="deep-orange-4"/>
                         </template>
                     </q-input>
+                    <q-tab name="all" value="all" style="font-family: 'Roboto Slab', serif;"  class="text-white" label="ALL ORDERS"></q-tab>
+                    <q-tab class="text-white" name="today" value="today" style="font-family: 'Roboto Slab', serif;" label="TODAY's ORDERS"></q-tab>
+                    <q-tab class="text-white" name="coming" value="come" style="font-family: 'Roboto Slab', serif;" label="UPCOMING ORDERS"></q-tab>
+                    <q-tab class="text-white" name="finish" value="fin" style="font-family: 'Roboto Slab', serif;" label="FINISH ORDERS"></q-tab>
+                    <q-tab class="text-white" name="fpaid" value="full" style="font-family: 'Roboto Slab', serif;" label="FULLY PAID"></q-tab>
+                    <q-tab class="text-white" name="bal" value="bal" style="font-family: 'Roboto Slab', serif;" label="WITH BALANCES"></q-tab>
                 </div>
-                <q-tab name="reservation" style="font-family: 'Roboto Slab', serif;"   class="bg-grey-9 text-white" label="Reservation"></q-tab>
             </q-tabs>
             </template>    
             <template v-slot:after>   
-                <q-table grid :data="partyTrayOrders" :columns="columns" :filter="filter">
+                <q-table grid :data="filterTable" :pagination.sync="pagination" :columns="columns" :filter="filter">
                     <template v-slot:item="props">
                         <div class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-4 grid-style-transition " :style="props.selected ? 'transform: scale(0.95);' : ''">
                             <q-card flat class="my-card" style="border: 2px solid;border-color: #ffdab9" >
                                 <q-card-section class="q-pb-none q-mb-none" side>
+                                    <q-badge color="deep-orange" align="top" :label="props.row.firstPayment != props.row.totalToPayAmount ? 'WITH BALANCE' : 'FULLY PAID'"></q-badge>
                                     <q-list dense>
                                     <q-item>
                                     <div class="full-width text-center text-grey-8 text-h6">
@@ -226,6 +232,7 @@ import { date } from 'quasar'
             filter: '',
             selectedPayment: [],
             partyTrayOrders: [],
+            pagination: { sortBy: 'clientReserveDate', descending: false, page: 1, rowsPerPage: 50},
             columns: [
                 { name: 'clientName', required: true, label: 'Full Name', align: 'center', field: 'clientName', sortable: true },
                 { name: 'firstName', required: true, label: 'First Name', align: 'center', field: 'firstName', sortable: true },
@@ -240,6 +247,45 @@ import { date } from 'quasar'
             })
     },
     computed: {
+        filterTable(){
+            if(this.tab == 'bal'){
+               let wow = this.$lodash.filter(this.partyTrayOrders, c=>{
+                    return c.totalToPayAmount != c.firstPayment 
+                })
+                let orderBy = this.$lodash.orderBy(wow, ['clientReserveDate'], ['asc']);
+                return orderBy
+            } else if (this.tab == 'fpaid'){
+                let wo = this.$lodash.filter(this.partyTrayOrders, b=>{
+                    return b.firstPayment === b.totalToPayAmount 
+                })
+                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
+                return orderBy
+            } else if (this.tab == 'partyTrayOrders'){
+                let wo = this.$lodash.filter(this.partyTrayOrders, b=>{
+                    return b.clientReserveDate
+                })
+                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
+                return orderBy
+            } else if (this.tab == 'coming'){
+                let wo = this.$lodash.filter(this.partyTrayOrders, b=>{
+                    return b.clientReserveDate >= date.formatDate(new Date(), 'YYYY/MM/DD') 
+                })
+                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
+                return orderBy
+            } else if (this.tab == 'today'){
+                let wo = this.$lodash.filter(this.partyTrayOrders, b=>{
+                    return date.formatDate(b.clientReserveDate, 'YYYY/MM/DD') === date.formatDate(new Date(), 'YYYY/MM/DD') 
+                })
+                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
+                return orderBy
+            } else {
+                let wo = this.$lodash.filter(this.partyTrayOrders, b=>{
+                    return date.formatDate([b.clientReserveDate], 'YYYY/MM/DD') < date.formatDate(new Date(), 'YYYY/MM/DD') 
+                })
+                let orderBy = this.$lodash.orderBy(wo, ['clientReserveDate'], ['asc']);
+                return orderBy
+            }
+        },
         balance(){      
             if(this.partyTrayOrders.length === 0){
                 return 0
