@@ -1420,7 +1420,8 @@ export default {
    returnOpenDates(base){
       console.log(base,'base')
       let today = new Date()
-      let format = date.formatDate(today,'YYYY/MM/DD')
+      let today1week = date.addToDate(today,{days: 6})
+      let format = date.formatDate(today1week,'YYYY/MM/DD')
       if(format < base){
         let eventCount = 1
         let eventsBase = []

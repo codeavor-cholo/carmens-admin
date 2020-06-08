@@ -421,35 +421,39 @@ export default {
             return []
         }
     },
-    returnNotifsWithTypes(){
-        try {
-            let notifs = this.AdminNotifications.map(a=>{
-            if(a.message.includes('Reservation')){
-                a.typeOf = 'reserve'
-                return {...a,...this.returnDataOfNotifs('reserve',a.reservationKey)}
-            } else if (a.message.includes('Order')) {
-                a.typeOf = 'order'
-                return {...a,...this.returnDataOfNotifs('order',a.reservationKey)}
-            } else if (a.message.includes('Payment')){
-                a.typeOf = 'payment'
-                a.clientName = this.returnCustomerData(a.userID).displayName
-                return {...a,...this.returnDataOfNotifs('payment',a.paymentKey)}
-            } else if (a.message.includes('Schedule')){
-                a.typeOf = 'schedule'
-                a.clientName = a.clientFName+ ' '+a.clientLName
-                return a
-            } else {
-                a.typeOf = 'status'
-                return {...a,...this.returnDataOfNotifs('status',a.reservationKey)}
+        returnNotifsWithTypes(){
+            try {
+                let notifs = this.AdminNotifications.map(a=>{
+                if(a.message.includes('Reservation')){
+                    a.typeOf = 'reserve'
+                    return {...a,...this.returnDataOfNotifs('reserve',a.reservationKey)}
+                } else if (a.message.includes('Order')) {
+                    a.typeOf = 'order'
+                    return {...a,...this.returnDataOfNotifs('order',a.reservationKey)}
+                } else if (a.message.includes('Payment')){
+                    a.typeOf = 'payment'
+                    if(a.userID == 'WALK-IN'){
+                        a.clientName = 'WALK-IN'
+                    } else {
+                        a.clientName = this.returnCustomerData(a.userID).displayName
+                    }
+                    
+                    return {...a,...this.returnDataOfNotifs('payment',a.paymentKey)}
+                } else if (a.message.includes('Schedule')){
+                    a.typeOf = 'schedule'
+                    a.clientName = a.clientFName+ ' '+a.clientLName
+                    return a
+                } else {
+                    a.typeOf = 'status'
+                    return {...a,...this.returnDataOfNotifs('status',a.reservationKey)}
+                }
+                })
+                return notifs
+            } catch (error) {
+                console.log(error,'returnNotifsWithTypes')
+                return []
             }
-            })
-
-            
-            return notifs
-        } catch (error) {
-            return []
-        }
-    },
+        },
     returnNotifLength(){
       let today = date.formatDate(new Date(), 'YYYY-MM-DD')
       let length = this.returnUserNotifications.filter(a=>{
