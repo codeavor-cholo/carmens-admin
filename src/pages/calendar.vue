@@ -41,7 +41,7 @@
           :locale="locale"
           class="calendar"
           style="height: 500px"
-          ref="day"
+          ref="calendar"
           :drag-over-func="onDragOver"
           :drop-func="onDrop"
           
@@ -128,6 +128,70 @@
                     </q-card-actions>
                 </q-card>
         </q-dialog> -->
+      <q-dialog v-model="eventShow">
+        <q-card style="width:700px;">
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6 text-deep-orange-4 text-weight-bold text-uppercase">{{selectedEvent.clientEvent}}
+            </div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+
+          <q-card-section>
+        <div class="column q-pt-sm q-gutter-sm">
+            <div class="text-weight-bold">Name of Customer: <br> <span class="text-caption">{{selectedEvent.clientFName}} {{selectedEvent.clientLName}}</span></div>
+            <div class="text-weight-bold">Date of Event: <br> <span class="text-caption">{{selectedEvent.clientReserveDate}}</span></div>
+            <div class="row q-pr-lg">
+                <div class="col text-weight-bold">Time Start: <br> <span class="text-caption">{{selectedEvent.clientStartTime}}</span></div> 
+                <div class="text-weight-bold q-pr-xl">Time End: <br> <span class="text-caption">{{selectedEvent.clientEndTime}}</span></div>
+            </div>
+            <div class="text-weight-bold">Place of Event: <br> <span class="text-caption">{{selectedEvent.clientPlace}}, {{selectedEvent.clientCity}}</span></div>
+            <div class="text-weight-bold">Guest: <br> <span class="text-caption">{{selectedEvent.clientPax}}</span></div>
+            <div class="text-weight-bold">Email Address: <br> <span class="text-caption">{{selectedEvent.clientEmail}}</span></div> 
+            <div class="text-weight-bold">Motif: <br> <span class="text-caption">{{selectedEvent.clientMotif}}</span></div>
+            <div class="text-weight-bold" v-show="selectedPackage !== null">Package Name: <br> <span class="text-caption">{{selectedPackage.name}}</span></div>
+        </div>
+                <div class="q-py-sm text-weight-bold">
+                    Foods: 
+                </div>
+                <q-list bordered separator>
+                        <q-item v-for="(food,i) in selectedEvent.clientFoodChoice" :key="i">
+                            <q-item-section>
+                            <div class="row items-center justify-between q-px-sm">
+                                <img :src="food.foodPic" style="width:50px;height:45px">
+                                <div class="text-right col-8">
+                                    <q-item-label class="ellipsis-2-lines">{{food.foodName}}</q-item-label>
+                                    <q-item-label caption>{{food.category}}</q-item-label>
+                                </div>
+                            </div>
+                            </q-item-section>
+                        </q-item>
+                </q-list>
+                <div class="text-weight-bold q-py-md">
+                    Add Ons: 
+                </div>
+                 <q-list bordered separator>
+                    <q-item v-for="(add,i) in selectedEvent.clientAddOns" :key="i">
+                        <q-item-section>
+                            <div class="row justify-between">
+                                <div>{{add.addonsNames}}</div>
+                                 <div>x {{add.addonsQuantities}}</div>
+                            </div>
+                        </q-item-section>
+                    </q-item>
+
+                 </q-list>
+                <div class="text-weight-bold q-py-md">
+                    Inclusions: 
+                </div>
+                 <q-list bordered separator>
+                    <q-item v-for="(inclusion,i) in selectedPackage.inclusions" :key="i">
+                        <q-item-section>{{inclusion.inclusion}}</q-item-section>
+                    </q-item>
+                 </q-list>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </q-page>
 </template>
 <style src="@quasar/quasar-ui-qcalendar/dist/index.css"></style>
@@ -145,6 +209,9 @@ export default {
 //   },
   data () {
     return {
+      selectedPackage: {},
+      selectedEvent: {},
+      eventShow: false,
       billingdialog: false,
       additionalList: [],
       amenities: '',
@@ -206,6 +273,12 @@ export default {
     this.updateFormatters()
   },
   methods: {
+    showEvent(event){
+      console.log(event,'event')
+      this.eventShow = true
+      this.selectedEvent = event
+      this.selectedPackage = event.clientSelectPackage !== undefined ? event.clientSelectPackage : null
+    },
     deleteServicesTask(index){
                 this.servicesList.splice(index, 1) 
                 this.services = ''
@@ -509,17 +582,17 @@ export default {
       return s
     },
     returnCalendar(dt){
-          console.log('dt',dt)
+          // console.log('dt',dt)
           let ReserveDate = []
           for(let x=0; x < this.Reservation.length; x++){
             let dateFormat = date.formatDate(this.Reservation[x].clientReserveDate, 'YYYY-MM-DD')
             if(dateFormat == dt){
               
-              console.log('clientReserveDate',this.Reservation[x].clientReserveDate)
+              // console.log('clientReserveDate',this.Reservation[x].clientReserveDate)
               ReserveDate.push(this.Reservation[x])
             }
           }
-          console.log('ReserveDate',ReserveDate)
+          // console.log('ReserveDate',ReserveDate)
           return ReserveDate
         }
       },
@@ -550,6 +623,15 @@ export default {
         })
       },
       computed: {
+        // returnSelectedPackage(){
+        //     try {
+        //       console.log(this.selectedEvent.clientSelectPackage)
+        //       return this.selectedEvent.clientSelectPackage
+        //     } catch (error) {
+        //       console.log(error,'returnSelectedPackage')
+        //         return null
+        //     }
+        // },
         plusTwenty(){
         if(this.pax <= 99){
             return 20
@@ -719,14 +801,14 @@ export default {
           this.Reservation.forEach((event) => (map[event.clientReserveDate] = map[event.clientReserveDate] || []).push(event))
           return map
         },
-        selectedDate: {
-        get () {
-          return this.$store.state.calendar.selectedDate
-        },
-        set (date) {
-          this.$store.commit('calendar/selectedDate', clientReserveDate)
-        }
-      },
+        // selectedDate: {
+        // get () {
+        //   return this.$store.state.calendar.selectedDate
+        // },
+        // set (date) {
+        //   this.$store.commit('calendar/selectedDate', clientReserveDate)
+        // }
+      // },
         dateToday () {
             if (this.titleFormatter && this.locale) {
               const date =  new Date(this.selectedDate)
@@ -735,7 +817,8 @@ export default {
             }
             return ''
           },
-      }
+      },
+
         
 }
 </script>
