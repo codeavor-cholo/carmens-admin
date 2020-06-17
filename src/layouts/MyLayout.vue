@@ -434,7 +434,11 @@ export default {
                     a.typeOf = 'payment'
                     if(a.userID == 'WALK-IN'){
                         a.clientName = 'WALK-IN'
+                    } else if(this.returnCustomerData(a.userID) == undefined) {
+                        console.log(a.userID,'lost data')
+                        a.clientName = 'WALK-IN'
                     } else {
+                        console.log('payment',a)
                         a.clientName = this.returnCustomerData(a.userID).displayName
                     }
                     
@@ -499,7 +503,7 @@ export default {
                         a.clientName= a.clientFName+ ' '+a.clientLName
                     }
                 })
-                console.log(reserve,'concat orders and reservation')
+                // console.log(reserve,'concat orders and reservation')
                 return reserve.filter(a=>{
                     return a['.key'] == key
                 })[0]
